@@ -1,7 +1,6 @@
 <?php
 namespace model;
 include_once "BaseDao.php";
-use model\User;
 use PDO;
 use PDOException;
 class UserDAO

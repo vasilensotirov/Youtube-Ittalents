@@ -23,6 +23,6 @@
         </tr>
     </table>
 </form>
-<button><a href='view/register.php'>Register</a></button>
+<button><a href='register.php'>Register</a></button>
 </body>
 </html>

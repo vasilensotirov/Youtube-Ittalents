@@ -1,3 +1,6 @@
+<?php 
+namespace view;
+?>
 <!doctype html>
 <html lang="en">
 <head>
@@ -39,6 +42,6 @@
     </tr>
 </table>
 </form>
-<button><a href="view/login.php">Login here</a></button>
+<button><a href="login.php">Login here</a></button>
 </body>
 </html>

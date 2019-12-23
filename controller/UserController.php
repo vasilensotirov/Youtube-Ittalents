@@ -15,6 +15,7 @@ class UserController {
                 $user = UserDAO::checkUser($email);
                 if (!$user) {
                     echo "Invalid password or email! Try again.";
+                    include_once "view/login.php";
                 } else {
                     if (password_verify($password, $user['password'])) {
                         $_SESSION['logged_user'] = $user;
@@ -22,6 +23,7 @@ class UserController {
                         include_once "view/main.php";
                     } else {
                         echo 'Invalid email or password.Try again.';
+                        include_once "view/login.php";
                     }
                 }
             }
