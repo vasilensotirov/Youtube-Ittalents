@@ -56,4 +56,21 @@ class VideoController{
             }
         }
     }
+
+    public function getAll($owner_id=null){
+        if (isset($_GET["owner_id"])){
+            $owner_id = $_GET["owner_id"];
+        }
+        $videos = VideoDAO::getAll($owner_id);
+        $_SESSION["videos"] = $videos;
+        include_once "view/main.php";
+    }
+    
+    public function getById($id=null){
+        if (isset ($_GET["id"])){
+            $id = $_GET["id"];
+        }
+        $video = VideoDAO::getById($id);
+        include_once "view/video.php";
+    }
 }

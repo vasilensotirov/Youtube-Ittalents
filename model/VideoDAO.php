@@ -37,4 +37,36 @@ class VideoDAO{
             return $e->getMessage();
         }
     }
+    
+    public static function getAll($owner_id=null){
+        try {
+            $pdo = getPDO();
+            $sql = "SELECT id, title, date_uploaded, thumbnail_url FROM videos WHERE owner_id = ?;";
+            $params = [];
+            $params[] = $owner_id;
+            $stmt = $pdo->prepare($sql);
+            $stmt->execute($params);
+            $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            return $rows;
+        }
+        catch (PDOException $e){
+            return false;
+        }
+    }
+
+    public static function getById($id){
+        try{
+            $pdo = getPDO();
+            $sql = "SELECT * FROM videos WHERE id = ?;";
+            $params = [];
+            $params[] = $id;
+            $stmt = $pdo->prepare($sql);
+            $stmt->execute($params);
+            $row = $stmt->fetch(PDO::FETCH_ASSOC);
+            return $row;
+        }
+        catch (PDOException $e){
+            return false;
+        }
+    }
 }
