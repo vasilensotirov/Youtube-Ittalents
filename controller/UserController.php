@@ -3,6 +3,7 @@ namespace controller;
 
 use \model\User;
 use \model\UserDAO;
+use model\VideoDAO;
 
 class UserController {
     public function login()
@@ -74,9 +75,18 @@ class UserController {
         return false;
     }
     public function logout(){
-            unset($_SESSION);
-            session_destroy();
-            header("Location: index.php?view=login");
-            exit;
+        unset($_SESSION);
+        session_destroy();
+        header("Location: index.php?view=login");
+        exit;
+    }
+
+    public function getById($id=null){
+        if (isset($_GET["id"])) {
+            $id = $_GET["id"];
         }
+        $user = UserDAO::getById($id);
+        $videos = VideoDAO::getByOwnerId($id);
+        include_once "view/profile.php";
+    }
 }

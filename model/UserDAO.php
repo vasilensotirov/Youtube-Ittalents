@@ -47,4 +47,18 @@ class UserDAO
             echo "Something went wrong" . $e->getMessage();
         }
     }
+
+    public static function getById($id){
+        try{
+            $pdo = getPDO();
+            $sql = "SELECT username, name, registration_date, avatar_url FROM users WHERE id = ?;";
+            $stmt = $pdo->prepare($sql);
+            $stmt->execute(array($id));
+            $rows = $stmt->fetch(PDO::FETCH_ASSOC);
+            return $rows;
+        }
+        catch (PDOException $e){
+            return false;
+        }
+    }
 }

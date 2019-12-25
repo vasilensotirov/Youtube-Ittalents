@@ -57,12 +57,11 @@ class VideoController{
         }
     }
 
-    public function getAll($owner_id=null){
+    public function getByOwnerId($owner_id=null){
         if (isset($_GET["owner_id"])){
             $owner_id = $_GET["owner_id"];
         }
-        $videos = VideoDAO::getAll($owner_id);
-        $_SESSION["videos"] = $videos;
+        $videos = VideoDAO::getByOwnerId($owner_id);
         include_once "view/main.php";
     }
     
@@ -72,5 +71,10 @@ class VideoController{
         }
         $video = VideoDAO::getById($id);
         include_once "view/video.php";
+    }
+
+    public function getAll(){
+        $videos = VideoDAO::getAll();
+        include_once "view/main.php";
     }
 }
