@@ -5,6 +5,7 @@
     <meta name="viewport"
           content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="styles/style.css">
     <title>Youtube</title>
 </head>
 <body>
@@ -23,6 +24,6 @@
         </tr>
     </table>
 </form>
-<button><a href='register.php'>Register</a></button>
+<button><a href='index.php?view=register'>Register</a></button>
 </body>
 </html>

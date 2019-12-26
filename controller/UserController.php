@@ -20,8 +20,8 @@ class UserController {
                 } else {
                     if (password_verify($password, $user['password'])) {
                         $_SESSION['logged_user'] = $user;
-                        echo "Successful login! <br>";
                         include_once "view/main.php";
+                        echo "Successful login! <br>";
                     } else {
                         echo 'Invalid email or password.Try again.';
                         include_once "view/login.php";
@@ -54,8 +54,8 @@ class UserController {
                     $arrayUser['email'] = $user->getEmail();
                     $arrayUser['id'] = $user->getId();
                     $_SESSION['logged_user'] = $arrayUser;
-                    echo "Successful registration!<br>";
                     include_once "view/main.php";
+                    echo "Successful registration!<br>";
                 }
 
             }

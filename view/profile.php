@@ -5,6 +5,20 @@ if (!isset($_SESSION["logged_user"])){
 echo "Hello " .$_SESSION['logged_user']['username'].", you are in the main page";
 $user_id = $_SESSION["logged_user"]["id"];
 ?>
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="styles/style.css">
+    <title>Document</title>
+</head>
+<body>
+<?php
+require_once "header.php";
+?>
 <br>
 <a href="index.php"><button>Home</button></a>
 <a href="index.php?target=user&action=logout"><button>Logout</button></a>
@@ -41,3 +55,5 @@ if (isset($videos)) {
     echo "</table>";
 }
 ?>
+</body>
+</html>

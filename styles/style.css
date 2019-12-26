@@ -1,0 +1,28 @@
+html, body {
+    height: 100%;
+    padding: 0;
+    margin: 0;
+    background-color: #F9F9F9;
+}
+
+
+header {
+    height: 7vh;
+    width: 100%;
+    background-color: #FFFFFF;
+}
+.youtubeLogo {
+    width: 70px;
+    margin: auto;
+    float:left;
+}
+#searchForm {
+    margin-top: 10px;
+    margin-left: 10px;
+    float:left;
+}
+.headerButtons {
+    margin-top: 10px;
+    margin-left: 10px;
+
+}

@@ -6,9 +6,13 @@
           content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Upload Video</title>
+    <link rel="stylesheet" href="styles/style.css">
 </head>
 <body>
-<button><a href="index.php">Home</a></button>
+<?php
+require_once "header.php";
+?>
+<!--<button><a href="index.php">Home</a></button>-->
 <form action="index.php?target=video&action=upload" method="post" enctype="multipart/form-data">
     <table>
         <tr>
