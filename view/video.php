@@ -33,6 +33,10 @@ require_once "header.php";
         echo $video["name"] . "<br>";
         echo "<a href='index.php?target=user&action=getById&id=" . $video["user_id"] . "'>" . $video["username"] . "</a><br>";
         echo $video["description"] . "<br>";
+        if ($video["owner_id"] == $_SESSION["logged_user"]["id"]){
+            echo "
+    <a href='index.php?target=video&action=loadEdit&id=" . $video["id"] . "'><button>Edit video</button></a>";
+        }
     }
     else {
         header("Location:main.php");

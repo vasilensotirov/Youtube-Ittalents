@@ -57,6 +57,63 @@ class VideoController{
         }
     }
 
+    public function loadEdit($id=null){
+        if (isset($_GET["id"])){
+            $id = $_GET["id"];
+        }
+        $video = VideoDAO::getById($id);
+        include_once "view/editVideo.php";
+    }
+
+    public function edit($id=null){
+        if(isset($_POST["edit"])) {
+            $error = false;
+            $msg = "";
+            if (!isset($_POST["id"]) || empty($_POST["id"])) {
+                $msg = "Video not found";
+                $error = true;
+            }
+            if (!isset($_POST["title"]) || empty($_POST["title"])) {
+                $msg = "Title not found";
+                $error = true;
+            }
+            if (!isset($_POST["description"]) || empty($_POST["description"])) {
+                $msg = "Description not found";
+                $error = true;
+            }
+            if (!isset($_POST["category_id"]) || empty($_POST["category_id"])) {
+                $msg = "Category not found";
+                $error = true;
+            }
+            if ($error) {
+                echo $msg;
+                include_once "view/editVideo.php";
+            }
+            if (!$error) {
+                $video = new Video();
+                $video->setId($_POST["id"]);
+                $video->setTitle($_POST["title"]);
+                $video->setDescription($_POST["description"]);
+                $video->setCategoryId($_POST["category_id"]);
+                if (isset($_FILES["thumbnail"])) {
+                    $video->setThumbnailUrl(uploadFile("thumbnail", $_SESSION["logged_user"]["username"]));
+                }
+                if ($video->getThumbnailUrl() == false) {
+                    $video->setThumbnailUrl($_POST["thumbnail_url"]);
+                }
+                if (VideoDAO::edit($video) === true){
+                    echo "Edit successfull.";
+                    include_once "view/main.php";
+                }
+                else {
+                    echo "Error";
+                    include_once "view/editVideo.php";
+                }
+            }
+        }
+        include_once "view/main.php";
+    }
+
     public function getByOwnerId($owner_id=null){
         if (isset($_GET["owner_id"])){
             $owner_id = $_GET["owner_id"];

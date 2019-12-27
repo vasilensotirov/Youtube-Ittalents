@@ -37,6 +37,32 @@ class VideoDAO{
             return $e->getMessage();
         }
     }
+
+    public static function edit(Video $video){
+        $title = $video->getTitle();
+        $description = $video->getDescription();
+        $category_id = $video->getCategoryId();
+        $thumbnail_url = $video->getThumbnailUrl();
+        $id = $video->getId();
+        try {
+            $pdo = getPDO();
+            $sql = "UPDATE videos
+                SET title = ?, description = ?, category_id = ?, thumbnail_url = ?
+                WHERE id = ?;";
+            $params = [];
+            $params[] = $title;
+            $params[] = $description;
+            $params[] = $category_id;
+            $params[] = $thumbnail_url;
+            $params[] = $id;
+            $stmt = $pdo->prepare($sql);
+            $stmt->execute($params);
+            return true;
+        }
+        catch (PDOException $e) {
+            return $e->getMessage();
+        }
+    }
     
     public static function getByOwnerId($owner_id){
         try {
@@ -59,7 +85,7 @@ class VideoDAO{
     public static function getById($id){
         try{
             $pdo = getPDO();
-            $sql = "SELECT v.title, v.description, v.date_uploaded, v.owner_id, v.category_id, v.video_url, v.duration, v.thumbnail_url, 
+            $sql = "SELECT v.id, v.title, v.description, v.date_uploaded, v.owner_id, v.category_id, v.video_url, v.duration, v.thumbnail_url, 
                     u.id AS user_id, u.username, u.name FROM videos AS v
                     JOIN users AS u ON v.owner_id = u.id
                     WHERE v.id = ?;";
