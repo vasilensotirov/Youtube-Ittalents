@@ -61,6 +61,25 @@ class UserDAO
             return false;
         }
     }
+    public static function editUser(User $user)
+    {
+        try {
+            $username = $user->getUsername();
+            $email  = $user->getEmail();
+            $password   = $user->getPassword();
+            $full_name = $user->getFullName();
+            $avatar_url = $user->getAvatarUrl();
+            $id = $user->getId();
+            $pdo = getPDO();
+            $sql = "UPDATE users SET username = ? , email = ?, password = ?, name = ?, avatar_url = ? WHERE id=?;";
+            $stmt = $pdo->prepare($sql);
+            $stmt->execute(array($username, $email, $password, $full_name, $avatar_url, $id));
+            return true;
+        } catch (PDOException $e) {
+            echo $e->getMessage();
+            return false;
+        }
+    }
 
     public static function followUser($follower_id, $followed_id){
         try {

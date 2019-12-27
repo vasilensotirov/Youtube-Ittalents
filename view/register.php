@@ -9,7 +9,7 @@
     <title>Document</title>
 </head>
 <body>
-<form action="../index.php?target=user&action=register" method="post" enctype="multipart/form-data">
+<form action="index.php?target=user&action=register" method="post" enctype="multipart/form-data">
 <table>
     <tr>
         <td><label for="username"><b>Username:</b></label></td>

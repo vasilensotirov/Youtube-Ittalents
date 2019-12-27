@@ -19,6 +19,7 @@ class UserController {
                     include_once "view/login.php";
                 } else {
                     if (password_verify($password, $user['password'])) {
+                        $user['full_name'] = $user['name'];
                         $_SESSION['logged_user'] = $user;
                         include_once "view/main.php";
                         echo "Successful login! <br>";
@@ -51,6 +52,7 @@ class UserController {
                     $arrayUser = [];
                     $arrayUser['username'] = $user->getUsername();
                     $arrayUser['full_name'] = $user->getFullName();
+                    $arrayUser['password'] = $user->getPassword();
                     $arrayUser['email'] = $user->getEmail();
                     $arrayUser['id'] = $user->getId();
                     $_SESSION['logged_user'] = $arrayUser;
@@ -58,6 +60,39 @@ class UserController {
                     echo "Successful registration!<br>";
                 }
 
+            }
+        }
+    }
+    public function edit(){
+        if(isset($_POST['edit'])){
+        if (!isset($_SESSION["logged_user"])) {
+            header("Location: index.php");
+        }
+        if(isset($_POST['username']) && isset($_POST['email']) && isset($_POST['full_name'])){
+            $password = $_SESSION['logged_user']['password'];
+            if(isset($_POST['password']) && !empty($_POST['password'])){
+                if(password_verify($_POST['password'], $password)){
+                    if(isset($_POST['new_password']) && isset($_POST['cpassword'])){
+                        $newAvatar = $this->uploadFile("avatar", $_POST['username']);
+                        $password = password_hash($_POST['new_password'], PASSWORD_BCRYPT);
+                        $email = $_SESSION['logged_user']['email'];
+                        $user = new User($_POST['username'], $email, $password, $_POST['full_name'], $newAvatar);
+                        $user->setId($_SESSION['logged_user']['id']);
+                        UserDAO::editUser($user);
+                        $userArray['username'] = $user->getUsername();
+                        $userArray['email'] = $user->getEmail();
+                        $userArray['password'] = $user->getPassword();
+                        $userArray['full_name'] = $user->getFullName();
+                        $userArray['id'] = $user->getId();
+                        $_SESSION['logged_user'] = $userArray;
+                        include_once "view/main.php";
+                        echo "Profile is changed successfully!";
+                    }
+                }else{
+                    include_once "view/main.php";
+                    echo "The password is incorrect!";
+                    }
+                }
             }
         }
     }
@@ -69,7 +104,6 @@ class UserController {
             $file_url = "uploads" . DIRECTORY_SEPARATOR . $filename;
             if (move_uploaded_file($_FILES[$file]["tmp_name"], $file_url)){
                 return $file_url;
-
             }
         }
         return false;
