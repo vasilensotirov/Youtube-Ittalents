@@ -63,6 +63,18 @@ class VideoDAO{
             return $e->getMessage();
         }
     }
+
+    public static function delete($id, $owner_id){
+        try {
+            $pdo = getPDO();
+            $sql = "DELETE FROM videos WHERE id = ? AND owner_id = ?;";
+            $stmt = $pdo->prepare($sql);
+            $stmt->execute(array($id, $owner_id));
+            return true;
+        } catch (PDOException $e) {
+            return false;
+        }
+    }
     
     public static function getByOwnerId($owner_id){
         try {

@@ -89,4 +89,28 @@ class UserController {
         $videos = VideoDAO::getByOwnerId($id);
         include_once "view/profile.php";
     }
+
+    public function isFollowing($followed_id=null){
+        if (isset($_GET["id"])){
+            $followed_id = $_GET["id"];
+        }
+        $follower_id = $_SESSION["logged_user"]["id"];
+        return UserDAO::isFollowing($follower_id, $followed_id);
+    }
+
+    public function follow($followed_id=null){
+        if (isset($_GET["id"])){
+            $followed_id = $_GET["id"];
+        }
+        $follower_id = $_SESSION["logged_user"]["id"];
+        UserDAO::followUser($follower_id, $followed_id);
+    }
+
+    public function unfollow($followed_id=null){
+        if (isset($_GET["id"])){
+            $followed_id = $_GET["id"];
+        }
+        $follower_id = $_SESSION["logged_user"]["id"];
+        UserDAO::unfollowUser($follower_id, $followed_id);
+    }
 }

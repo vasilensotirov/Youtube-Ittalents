@@ -61,4 +61,48 @@ class UserDAO
             return false;
         }
     }
+
+    public static function followUser($follower_id, $followed_id){
+        try {
+            $pdo = getPDO();
+            $sql = "INSERT INTO users_follow_users (follower_id, followed_id)
+                   VALUES (?, ?)";
+            $stmt = $pdo->prepare($sql);
+            $stmt->execute(array($follower_id, $followed_id));
+                return true;
+        } catch (PDOException $e) {
+            echo "Something went wrong" . $e->getMessage();
+        }
+    }
+
+    public static function unfollowUser($follower_id, $followed_id){
+        try {
+            $pdo = getPDO();
+            $sql = "DELETE FROM users_follow_users WHERE follower_id = ? AND followed_id = ?;";
+            $stmt = $pdo->prepare($sql);
+            $stmt->execute(array($follower_id, $followed_id));
+            return true;
+        } catch (PDOException $e) {
+            echo "Something went wrong" . $e->getMessage();
+        }
+    }
+
+    public static function isFollowing($follower_id, $followed_id){
+        try{
+            $pdo = getPDO();
+            $sql = "SELECT followed_id FROM users_follow_users WHERE follower_id = ? AND followed_id = ?;";
+            $stmt = $pdo->prepare($sql);
+            $stmt->execute(array($follower_id, $followed_id));
+            $row = $stmt->fetch(PDO::FETCH_ASSOC);
+            if ($row){
+                return true;
+            }
+            else {
+                return false;
+            }
+        }
+        catch (PDOException $e){
+            return $e->getMessage();
+        }
+    }
 }

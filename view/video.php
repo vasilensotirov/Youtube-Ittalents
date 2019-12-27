@@ -32,11 +32,19 @@ require_once "header.php";
         echo $video["date_uploaded"] . "<br>";
         echo $video["name"] . "<br>";
         echo "<a href='index.php?target=user&action=getById&id=" . $video["user_id"] . "'>" . $video["username"] . "</a><br>";
-        echo $video["description"] . "<br>";
         if ($video["owner_id"] == $_SESSION["logged_user"]["id"]){
-            echo "
-    <a href='index.php?target=video&action=loadEdit&id=" . $video["id"] . "'><button>Edit video</button></a>";
+            echo "<a href='index.php?target=video&action=loadEdit&id=" . $video["id"] . "'><button>Edit video</button></a><br>";
+            echo "<a href='index.php?target=video&action=delete&id=" . $video["id"] . "'><button>Delete video</button></a><br>";
         }
+        else {
+            if ($video["isFollowed"]) {
+                echo "<a href='index.php?target=user&action=unfollow&id=" . $video["user_id"] . "'><button>Unollow user</button></a><br>";
+            }
+            else {
+                echo "<a href='index.php?target=user&action=follow&id=" . $video["user_id"] . "'><button>Follow user</button></a><br>";
+            }
+        }
+        echo $video["description"] . "<br>";
     }
     else {
         header("Location:main.php");

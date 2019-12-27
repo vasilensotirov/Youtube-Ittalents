@@ -114,6 +114,20 @@ class VideoController{
         include_once "view/main.php";
     }
 
+    public function delete($id=null){
+        if (isset($_GET["id"])){
+            $id = $_GET["id"];
+        }
+        $user_id = $_SESSION["logged_user"]["id"];
+        if (VideoDAO::delete($id, $user_id)){
+            echo "Delete successful.";
+        }
+        else {
+            echo "Error!";
+        }
+        include_once "view/main.php";
+    }
+
     public function getByOwnerId($owner_id=null){
         if (isset($_GET["owner_id"])){
             $owner_id = $_GET["owner_id"];
@@ -126,7 +140,9 @@ class VideoController{
         if (isset ($_GET["id"])){
             $id = $_GET["id"];
         }
+        $user_id = $_SESSION["logged_user"]["id"];
         $video = VideoDAO::getById($id);
+        $video["isFollowed"] = UserDAO::isFollowing($user_id, $video["owner_id"]);
         include_once "view/video.php";
     }
 
