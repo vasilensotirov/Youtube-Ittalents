@@ -76,7 +76,7 @@ class UserController {
                         $newAvatar = $this->uploadFile("avatar", $_POST['username']);
                         $password = password_hash($_POST['new_password'], PASSWORD_BCRYPT);
                         $email = $_SESSION['logged_user']['email'];
-                        $user = new User($_POST['username'], $email, $password, $_POST['full_name'], $newAvatar);
+                        $user = new User($_POST['username'], $email, $password, $_POST['full_name'],null, $newAvatar);
                         $user->setId($_SESSION['logged_user']['id']);
                         UserDAO::editUser($user);
                         $userArray['username'] = $user->getUsername();
