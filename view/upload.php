@@ -11,6 +11,7 @@
 <body>
 <?php
 require_once "header.php";
+require_once "navigation.php";
 ?>
 <!--<button><a href="index.php">Home</a></button>-->
 <form action="index.php?target=video&action=upload" method="post" enctype="multipart/form-data">

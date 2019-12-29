@@ -46,12 +46,12 @@ class VideoController{
                 $video->setVideoUrl(uploadFile("video", $_SESSION["logged_user"]["username"]));
                 $video->setThumbnailUrl(uploadFile("thumbnail", $_SESSION["logged_user"]["username"]));
                 if(VideoDAO::add($video) === true){
-                echo "Upload successfull.";
                 include_once "view/main.php";
+                    echo "Upload successfull.";
                 }
                 else {
-                    echo "File handling error";
                     include_once "view/upload.php";
+                    echo "File handling error";
                 }
             }
         }

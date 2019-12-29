@@ -18,6 +18,7 @@ $user_id = $_SESSION["logged_user"]["id"];
 <body>
 <?php
 require_once "header.php";
+require_once "navigation.php";
 ?>
 <br>
 <a href="index.php"><button>Home</button></a>

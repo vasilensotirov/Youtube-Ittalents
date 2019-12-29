@@ -17,7 +17,9 @@ $user_id = $_SESSION["logged_user"]["id"];
 <body>
 <?php
 require_once "header.php";
+require_once "navigation.php";
 ?>
+<main>
 <table>
     <?php
     if (isset($videos)) {
@@ -40,5 +42,6 @@ require_once "header.php";
     }
     ?>
 </table>
+</main>
 </body>
 </html>

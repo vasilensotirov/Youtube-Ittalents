@@ -15,6 +15,7 @@ $user = $_SESSION['logged_user'];
 <body>
 <?php
 require_once "header.php";
+require_once "navigation.php";
 ?>
 <form action="index.php?target=user&action=edit" method="post" enctype="multipart/form-data">
     <table>
