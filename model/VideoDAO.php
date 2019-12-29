@@ -125,4 +125,8 @@ class VideoDAO{
             return false;
         }
     }
+    public static function addToPlaylist(){
+        $pdo = getPDO();
+        $sql = "";
+    }
 }
