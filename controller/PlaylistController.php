@@ -38,8 +38,14 @@ class PlaylistController {
                     include_once "view/createPlaylist.php";
                     echo "Try again!";
                 }
-
             }
         }
+    }
+    public function getMyPlaylists(){
+        if (isset($_GET["owner_id"])){
+            $owner_id = $_GET["owner_id"];
+        }
+        $playlists = PlaylistDAO::getAll($owner_id);
+        include_once "view/playlists.php";
     }
 }

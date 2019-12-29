@@ -32,8 +32,8 @@ class VideoController{
                 $error = true;
             }
             if ($error) {
-                echo $msg;
                 include_once "view/upload.php";
+                echo $msg;
             }
             if (!$error) {
                 $video = new Video();
@@ -46,12 +46,12 @@ class VideoController{
                 $video->setVideoUrl(uploadFile("video", $_SESSION["logged_user"]["username"]));
                 $video->setThumbnailUrl(uploadFile("thumbnail", $_SESSION["logged_user"]["username"]));
                 if(VideoDAO::add($video) === true){
-                include_once "view/main.php";
                     echo "Upload successfull.";
+                    include_once "view/main.php";
                 }
                 else {
-                    include_once "view/upload.php";
                     echo "File handling error";
+                    include_once "view/upload.php";
                 }
             }
         }
@@ -120,12 +120,13 @@ class VideoController{
         }
         $user_id = $_SESSION["logged_user"]["id"];
         if (VideoDAO::delete($id, $user_id)){
+            include_once "view/main.php";
             echo "Delete successful.";
         }
         else {
+            include_once "view/main.php";
             echo "Error!";
         }
-        include_once "view/main.php";
     }
 
     public function getByOwnerId($owner_id=null){

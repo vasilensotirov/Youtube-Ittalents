@@ -18,12 +18,6 @@ $user_id = $_SESSION["logged_user"]["id"];
 <?php
 require_once "header.php";
 ?>
-<!--<br>-->
-<!--<a href="index.php"><button>Home</button></a>-->
-<!--<a href="index.php?target=user&action=logout"><button>Logout</button></a>-->
-<!--<br>-->
-<!--<a href="index.php?target=view&action=viewRouter&view=upload"><button>Upload video</button></a>-->
-<!--<br>-->
     <?php
     if (isset($video)) {
         echo "<video width='470' height='255' controls>
@@ -38,7 +32,7 @@ require_once "header.php";
         }
         else {
             if ($video["isFollowed"]) {
-                echo "<a href='index.php?target=user&action=unfollow&id=" . $video["user_id"] . "'><button>Unollow user</button></a><br>";
+                echo "<a href='index.php?target=user&action=unfollow&id=" . $video["user_id"] . "'><button>Unfollow user</button></a><br>";
             }
             else {
                 echo "<a href='index.php?target=user&action=follow&id=" . $video["user_id"] . "'><button>Follow user</button></a><br>";

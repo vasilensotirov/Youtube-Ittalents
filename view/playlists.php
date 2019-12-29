@@ -2,6 +2,9 @@
 if (!isset($_SESSION["logged_user"])){
     header("Location:login.php");
 }
+if (isset($_GET["id"])){
+    $video_id = $_GET["id"];
+}
 $user_id = $_SESSION["logged_user"]["id"];
 ?>
 <!doctype html>
@@ -17,6 +20,14 @@ $user_id = $_SESSION["logged_user"]["id"];
 <?php
 require_once "header.php";
 require_once "navigation.php";
+
+if(isset($playlists)){
+    foreach ($playlists as $playlist) {
+        echo "<b>" . $playlist["title"]. "</b>" . "<br>";
+        echo $playlist["date_created"]. "<br>";
+        echo "<hr>";
+    }
+}
 ?>
 </body>
 </html>

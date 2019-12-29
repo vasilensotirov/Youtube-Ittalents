@@ -27,7 +27,7 @@ require_once "header.php";
     <li><a href="index.php?view=history"><img src="styles/images/historyLogo.png" class="navPics">History</a></li>
     <li><a href="index.php?view=watchlater"><img src="styles/images/watchlaterLogo.png" class="navPics">Watch Later</a></li>
     <li><a href="index.php?view=likedvideos"><img src="styles/images/likedLogo.png" class="navPics">Liked videos</a></li>
-    <li><a href="index.php?view=playlists"><img src="styles/images/playlistLogo.png" class="navPics">Playlists</a></li>
+    <li><a href="index.php?target=playlist&action=getMyPlaylists&owner_id=<?= $user_id; ?>""><img src="styles/images/playlistLogo.png" class="navPics">Playlists</a></li>
     </ul>
 </nav>
 </body>
