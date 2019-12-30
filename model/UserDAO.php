@@ -124,4 +124,48 @@ class UserDAO
             return $e->getMessage();
         }
     }
+
+    public static function isReacting($user_id, $video_id){
+        try{
+            $pdo = getPDO();
+            $sql = "SELECT status FROM users_react_videos WHERE user_id = ? AND video_id = ?;";
+            $stmt = $pdo->prepare($sql);
+            $stmt->execute(array($user_id, $video_id));
+            $row = $stmt->fetch(PDO::FETCH_ASSOC);
+            if ($row){
+                return $row["status"];
+            }
+            else {
+                return false;
+            }
+        }
+        catch (PDOException $e){
+            return $e->getMessage();
+        }
+    }
+
+    public static function reactVideo($user_id, $video_id, $status){
+        try {
+            $pdo = getPDO();
+            $sql = "INSERT INTO users_react_videos (user_id, video_id, status)
+                   VALUES (?, ?, ?)";
+            $stmt = $pdo->prepare($sql);
+            $stmt->execute(array($user_id, $video_id, $status));
+            return true;
+        } catch (PDOException $e) {
+            echo "Something went wrong" . $e->getMessage();
+        }
+    }
+
+    public static function unreactVideo($user_id, $video_id){
+        try {
+            $pdo = getPDO();
+            $sql = "DELETE FROM users_react_videos WHERE user_id = ? AND video_id = ?;";
+            $stmt = $pdo->prepare($sql);
+            $stmt->execute(array($user_id, $video_id));
+            return true;
+        } catch (PDOException $e) {
+            echo "Something went wrong" . $e->getMessage();
+        }
+    }
 }

@@ -41,7 +41,7 @@ require_once "navigation.php";
         </tr>
         <tr>
             <td><label for="full_name"><b>Full name:</b></label></td>
-            <td><input type="text" id="full_name" name="full_name" value="<?= $user['full_name'] ?>" required></td>
+            <td><input type="text" id="full_name" name="full_name" value="<?= $user['name'] ?>" required></td>
         </tr>
         <tr>
             <td><label for="avatar"><b>Change avatar</b></label></td>

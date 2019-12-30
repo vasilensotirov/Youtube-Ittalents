@@ -12,12 +12,15 @@ $user_id = $_SESSION["logged_user"]["id"];
           content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <link rel="stylesheet" href="styles/style.css">
+    <script type="text/javascript" src="view/script.js"></script>
     <title>Document</title>
 </head>
 <body>
 <?php
 require_once "header.php";
+require_once "navigation.php";
 ?>
+<main>
     <?php
     if (isset($video)) {
         echo "<video width='470' height='255' controls>
@@ -39,11 +42,32 @@ require_once "header.php";
             }
         }
         echo $video["description"] . "<br>";
+        ?>
+    <p id="reactstatus">
+<?php
+        if ($video["isReacting"] !== false){
+            if ($video["isReacting"] == 1){
+                echo "Liked.";
+            }
+            elseif ($video["isReacting"] == 0){
+                echo "Disliked.";
+            }
+            else {
+                echo $video["isReacting"];
+            }
+        }
+        else {
+            echo "Neutral.";
+        }
     }
     else {
         header("Location:main.php");
     }
     ?>
+    </p>
+<button id="like" onclick="like(<?= $video["id"]; ?>)">Like</button>
+<button id="dislike" onclick="dislike(<?= $video["id"]; ?>)">Dislike</button>
+</main>
 </body>
 </html>
 

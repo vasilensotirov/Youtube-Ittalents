@@ -144,6 +144,7 @@ class VideoController{
         $user_id = $_SESSION["logged_user"]["id"];
         $video = VideoDAO::getById($id);
         $video["isFollowed"] = UserDAO::isFollowing($user_id, $video["owner_id"]);
+        $video["isReacting"] = UserDAO::isReacting($user_id, $id);
         include_once "view/video.php";
     }
 

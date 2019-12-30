@@ -147,4 +147,32 @@ class UserController {
         $follower_id = $_SESSION["logged_user"]["id"];
         UserDAO::unfollowUser($follower_id, $followed_id);
     }
+
+    public function isReacting($user_id=null, $video_id=null){
+        if (isset($_GET["id"])){
+            $video_id = $_GET["id"];
+        }
+        $user_id = $_SESSION["logged_user"]["id"];
+        return UserDAO::isReacting($user_id, $video_id);
+    }
+
+    public function reactVideo($video_id=null, $status=null){
+        if (isset($_GET["id"]) && isset($_GET["status"])){
+            $video_id = $_GET["id"];
+            $status = $_GET["status"];
+        }
+        $user_id = $_SESSION["logged_user"]["id"];
+        $isReacting = $this->isReacting($user_id, $video_id);
+        if ($isReacting === false) {//if there has been no reaction
+            UserDAO::reactVideo($user_id, $video_id, $status);
+        }
+        elseif ($isReacting == $status){ //if liking liked or unliking unliked video
+            UserDAO::unreactVideo($user_id, $video_id);
+        }
+        elseif ($isReacting != $status){ //if liking disliked or disliking liked video
+            UserDAO::unreactVideo($user_id, $video_id);
+            UserDAO::reactVideo($user_id, $video_id, 1-$isReacting);
+        }
+        return "Tuka ima tekst!";
+    }
 }
