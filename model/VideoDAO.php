@@ -129,4 +129,47 @@ class VideoDAO{
         $pdo = getPDO();
         $sql = "";
     }
+
+    public static function addComment($video_id, $owner_id, $content, $date){
+        try {
+            $pdo = getPDO();
+            $sql = "INSERT INTO comments
+                (video_id, owner_id, content, date)
+                VALUES (?, ?, ?, ?);";
+            $stmt = $pdo->prepare($sql);
+            $stmt->execute(array($video_id, $owner_id, $content, $date));
+            return true;
+        }
+        catch (PDOException $e) {
+            return $e->getMessage();
+        }
+    }
+
+    public static function getComments($video_id){
+        try {
+            $pdo = getPDO();
+            $sql = "SELECT c.id, c.content, c.date, c.owner_id, u.name, u.avatar_url FROM comments AS c 
+                    JOIN users AS u ON c.owner_id = u.id
+                    WHERE c.video_id = ?;";
+            $stmt = $pdo->prepare($sql);
+            $stmt->execute(array($video_id));
+            $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            return $rows;
+        }
+        catch (PDOException $e){
+            return false;
+        }
+    }
+
+    public static function deleteComment($comment_id, $owner_id){
+        try {
+            $pdo = getPDO();
+            $sql = "DELETE FROM comments WHERE id = ? AND owner_id = ?;";
+            $stmt = $pdo->prepare($sql);
+            $stmt->execute(array($comment_id, $owner_id));
+            return true;
+        } catch (PDOException $e) {
+            return false;
+        }
+    }
 }

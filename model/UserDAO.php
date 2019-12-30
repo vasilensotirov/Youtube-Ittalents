@@ -168,4 +168,48 @@ class UserDAO
             echo "Something went wrong" . $e->getMessage();
         }
     }
+
+    public static function isReactingComment($user_id, $comment_id){
+        try{
+            $pdo = getPDO();
+            $sql = "SELECT status FROM users_react_comments WHERE user_id = ? AND comment_id = ?;";
+            $stmt = $pdo->prepare($sql);
+            $stmt->execute(array($user_id, $comment_id));
+            $row = $stmt->fetch(PDO::FETCH_ASSOC);
+            if ($row){
+                return $row["status"];
+            }
+            else {
+                return -1;
+            }
+        }
+        catch (PDOException $e){
+            return $e->getMessage();
+        }
+    }
+
+    public static function reactComment($user_id, $comment_id, $status){
+        try {
+            $pdo = getPDO();
+            $sql = "INSERT INTO users_react_comments (user_id, comment_id, status)
+                   VALUES (?, ?, ?)";
+            $stmt = $pdo->prepare($sql);
+            $stmt->execute(array($user_id, $comment_id, $status));
+            return true;
+        } catch (PDOException $e) {
+            echo "Something went wrong" . $e->getMessage();
+        }
+    }
+
+    public static function unreactComment($user_id, $comment_id){
+        try {
+            $pdo = getPDO();
+            $sql = "DELETE FROM users_react_comments WHERE user_id = ? AND comment_id = ?;";
+            $stmt = $pdo->prepare($sql);
+            $stmt->execute(array($user_id, $comment_id));
+            return true;
+        } catch (PDOException $e) {
+            echo "Something went wrong" . $e->getMessage();
+        }
+    }
 }

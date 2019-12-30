@@ -145,11 +145,43 @@ class VideoController{
         $video = VideoDAO::getById($id);
         $video["isFollowed"] = UserDAO::isFollowing($user_id, $video["owner_id"]);
         $video["isReacting"] = UserDAO::isReacting($user_id, $id);
+        $comments = VideoDAO::getComments($id);
         include_once "view/video.php";
     }
 
     public function getAll(){
         $videos = VideoDAO::getAll();
         include_once "view/main.php";
+    }
+
+    public function addComment(){
+        if (isset($_POST["comment"])){
+            $content = $_POST["content"];
+            if (!$content){
+                echo "Content is empty.";
+                return;
+            }
+            $video_id = $_POST["video_id"];
+            $owner_id = $_POST["owner_id"];
+            $date = (date("Y-m-d H:i:s"));
+            VideoDAO::addComment($video_id, $owner_id, $content, $date);
+            header("Location: index.php?target=video&action=getById&id=" . $video_id);
+        }
+        /*if (isset($_GET["ajax"])){
+            $comments = VideoDAO::getComments($video_id);
+            echo json_encode($comments);
+        }*/
+    }
+
+    public function deleteComment($comment_id=null, $owner_id=null){
+        if (isset($_GET["id"])){
+            $comment_id = $_GET["id"];
+        }
+        if (isset($_GET["video_id"])){
+            $video_id = $_GET["video_id"];
+        }
+        $owner_id = $_SESSION["logged_user"]["id"];
+        VideoDAO::deleteComment($comment_id, $owner_id);
+        header("Location: index.php?target=video&action=getById&id=" . $video_id);
     }
 }

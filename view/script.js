@@ -1,4 +1,4 @@
-function like(video_id) {
+function likeVideo(video_id) {
     var xhttp = new XMLHttpRequest();
     xhttp.onreadystatechange = function() {
         if (this.readyState == 4 && this.status == 200) {
@@ -18,7 +18,7 @@ function like(video_id) {
     xhttp.send();
 }
 
-function dislike(video_id) {
+function dislikeVideo(video_id) {
     var xhttp = new XMLHttpRequest();
     xhttp.onreadystatechange = function() {
         if (this.readyState == 4 && this.status == 200) {
@@ -35,5 +35,62 @@ function dislike(video_id) {
         }
     };
     xhttp.open("GET", "index.php?target=user&action=reactVideo&id=" + video_id + "&status=0", true);
+    xhttp.send();
+}
+/*
+function addComment() {
+    var video_id = document.getElementById("video_id");
+    var owner_id = document.getElementById("owner_id");
+    var content = document.getElementById("content");
+    var xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function() {
+        if (this.readyState == 4 && this.status == 200) {
+            document.getElementById("comments").innerHTML = this.responseText;
+        }
+    };
+    xhttp.open("POST", "index.php?target=video&action=addComment&ajax", true);
+    xhttp.send('video_id=' + video_id, 'owner_id=' + owner_id, 'content=' + content, 'comment=' + 1);
+}*/
+
+/*function deleteComment(comment_id) {
+    var xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function() {
+        if (this.readyState == 4 && this.status == 200) {
+            document.getElementById("comment").innerHTML = "";
+        }
+    };
+    xhttp.open("GET", "index.php?target=video&action=deleteComment&id=" + comment_id, true);
+    xhttp.send();
+}*/
+
+function likeComment(comment_id) {
+    var xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function() {
+        if (this.readyState == 4 && this.status == 200) {
+            if (this.responseText == 1) {
+                document.getElementById("commentreact").innerText="Liked.";
+            }
+            if (this.responseText == -1){
+                document.getElementById("commentreact").innerText="Neutral.";
+            }
+        }
+    };
+    xhttp.open("GET", "index.php?target=user&action=reactComment&id=" + comment_id + "&status=1", true);
+    xhttp.send();
+}
+
+function dislikeComment(comment_id) {
+    var xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function() {
+        if (this.readyState == 4 && this.status == 200) {
+            if (this.responseText == 0) {
+                document.getElementById("commentreact").innerText="Disliked.";
+            }
+            if (this.responseText == -1){
+                document.getElementById("commentreact").innerText="Neutral.";
+            }
+        }
+    };
+    xhttp.open("GET", "index.php?target=user&action=reactComment&id=" + comment_id + "&status=0", true);
     xhttp.send();
 }

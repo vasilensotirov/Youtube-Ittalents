@@ -175,4 +175,32 @@ class UserController {
         }
         echo $this->isReacting();
     }
+
+    public function isReactingComment($user_id=null, $comment_id=null){
+        if (isset($_GET["id"])){
+            $comment_id = $_GET["id"];
+        }
+        $user_id = $_SESSION["logged_user"]["id"];
+        return UserDAO::isReactingComment($user_id, $comment_id);
+    }
+
+    public function reactComment($comment_id=null, $status=null){
+        if (isset($_GET["id"]) && isset($_GET["status"])){
+            $comment_id = $_GET["id"];
+            $status = $_GET["status"];
+        }
+        $user_id = $_SESSION["logged_user"]["id"];
+        $isReacting = $this->isReactingComment($user_id, $comment_id);
+        if ($isReacting == -1) {//if there has been no reaction
+            UserDAO::reactComment($user_id, $comment_id, $status);
+        }
+        elseif ($isReacting == $status){ //if liking liked or unliking unliked video
+            UserDAO::unreactComment($user_id, $comment_id);
+        }
+        elseif ($isReacting != $status){ //if liking disliked or disliking liked video
+            UserDAO::unreactComment($user_id, $comment_id);
+            UserDAO::reactComment($user_id, $comment_id, 1-$isReacting);
+        }
+        echo $this->isReactingComment();
+    }
 }

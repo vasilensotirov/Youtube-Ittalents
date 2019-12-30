@@ -59,8 +59,39 @@ require_once "navigation.php";
     }
     ?>
     </p>
-<button id="like" onclick="like(<?= $video["id"]; ?>)">Like</button>
-<button id="dislike" onclick="dislike(<?= $video["id"]; ?>)">Dislike</button>
+<button id="like" onclick="likeVideo(<?= $video["id"]; ?>)">Like</button>
+<button id="dislike" onclick="dislikeVideo(<?= $video["id"]; ?>)">Dislike</button>
+    <br>
+    Write comment:
+    <form method="post" action="index.php?target=video&action=addComment">
+        <input type="hidden" id="video_id" name="video_id" value="<?= $video["id"]; ?>" required>
+        <input type="hidden" id="owner_ir" name="owner_id" value="<?= $_SESSION["logged_user"]["id"]; ?>" required>
+        <textarea rows="5" cols="50" id="content" name="content" required></textarea><br>
+        <input type="submit" name="comment" value="Post comment">
+    </form>
+    <span id="comments">
+        <table>
+        <?php
+        if (isset($comments) && $comments){
+            foreach ($comments as $comment){
+                echo "<tr>";
+                echo "<td rowspan='3'><img width='50px' src='" . $comment["avatar_url"] . "'></td>";
+                echo "<td>" . $comment["name"] . "</td><td>" . $comment["date"] . "</td></tr>";
+                echo "<td colspan='2'>" . $comment["content"] . "</td>";
+                echo "<tr><td>
+                    <button id='like' onclick='likeComment(" . $comment["id"] . ")'>Like</button>
+                    <button id='dislike' onclick='dislikeComment(" . $comment["id"] . ")'>Dislike</button> ";
+                echo "<span id='commentreact'></span>";
+                if ($comment["owner_id"] == $_SESSION["logged_user"]["id"]){
+                    echo "<button><a href='index.php?target=video&action=deleteComment&id=" . $comment["id"] .
+                        "&video_id=" . $video["id"] . "'>Delete</a></button>";
+                }
+                echo "</td></tr></tr>";
+            }
+        }
+        ?>
+        </table>
+    </span>
 </main>
 </body>
 </html>
