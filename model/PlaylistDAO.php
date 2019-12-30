@@ -11,7 +11,7 @@ class PlaylistDAO {
     public static function getAll($userid) {
         try {
             $pdo = getPDO();
-            $sql = "SELECT id, title, owner_id, date_created FROM playlists WHERE owner_id = ?;";
+            $sql = "SELECT id, playlist_title, owner_id, date_created FROM playlists WHERE owner_id = ?;";
             $stmt = $pdo->prepare($sql);
             $stmt->execute(array($userid));
             $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -27,7 +27,7 @@ class PlaylistDAO {
             $owner_id = $playlist->getOwnerId();
             $date_created = $playlist->getDateCreated();
             $pdo = getPDO();
-            $sql = "INSERT INTO playlists (title, owner_id, date_created) VALUES (?, ?, ?);";
+            $sql = "INSERT INTO playlists (playlist_title, owner_id, date_created) VALUES (?, ?, ?);";
             $params = [];
             $params[] = $title;
             $params[] = $owner_id;
@@ -55,6 +55,22 @@ class PlaylistDAO {
         return true;
         } catch(PDOException $e){
             return $e->getMessage();
+        }
+    }
+    public static function getVideosFromPlaylist($playlist_id){
+        try{
+            $pdo = getPDO();
+            $sql = "SELECT v.id, v.title, v.date_uploaded, p.playlist_title, u.username, v.thumbnail_url FROM videos AS v 
+                    JOIN users AS u ON v.owner_id = u.id
+                    JOIN added_to_playlist AS atp ON v.id = atp.video_id
+                    JOIN playlists AS p ON p.id = atp.playlist_id
+                    WHERE atp.playlist_id = ?;";
+            $stmt = $pdo->prepare($sql);
+            $stmt->execute(array($playlist_id));
+            $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            return $rows;
+        } catch(PDOException $e){
+            return false;
         }
     }
 }

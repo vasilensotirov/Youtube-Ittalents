@@ -28,13 +28,6 @@ require_once "header.php";
     <li><a href="index.php?view=watchlater"><img src="styles/images/watchlaterLogo.png" class="navPics">Watch Later</a></li>
     <li><a href="index.php?view=likedvideos"><img src="styles/images/likedLogo.png" class="navPics">Liked videos</a></li>
     <li><a href="index.php?target=playlist&action=getMyPlaylists&owner_id=<?= $user_id; ?>""><img src="styles/images/playlistLogo.png" class="navPics">Playlists</a></li>
-    <?php if(isset($playlists)){
-        foreach ($playlists as $playlist) { ?>
-        <li><?= $playlist['title']?></li>
-        <?php
-            }
-        }
-        ?>
     </ul>
 </nav>
 </body>

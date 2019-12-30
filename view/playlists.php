@@ -23,11 +23,35 @@ require_once "navigation.php";
 
 if(isset($playlists)){
     foreach ($playlists as $playlist) {
-        echo "<b>" . $playlist["title"]. "</b>" . "<br>";
+        echo "<a href='index.php?target=playlist&action=clickedPlaylist&id=" . $playlist["id"] ."'><b>" . $playlist["playlist_title"]. "</b></a>" . "<br>";
         echo $playlist["date_created"]. "<br>";
         echo "<hr>";
     }
 }
 ?>
+<table>
+<?php
+if(isset($videos)){
+    foreach($videos as $video){
+        echo "<tr><td><b>";
+        echo $video["playlist_title"];
+        echo "</b><hr>";
+        echo "<tr><td><a href='index.php?target=video&action=getById&id=" . $video["id"] . "'><img width='200px' src='";
+        echo $video["thumbnail_url"];
+        echo "'></a></td></tr>";
+        echo "<tr><td>";
+        echo $video["title"];
+        echo "</td></tr>";
+        echo "<tr><td>";
+        echo $video["date_uploaded"];
+        echo "</td></tr>";
+        echo "<tr><td>";
+        echo $video["username"];
+        echo "</td></tr>";
+    }
+}
+?>
+</table>
+
 </body>
 </html>
