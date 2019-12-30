@@ -163,7 +163,7 @@ class UserController {
         }
         $user_id = $_SESSION["logged_user"]["id"];
         $isReacting = $this->isReacting($user_id, $video_id);
-        if ($isReacting === false) {//if there has been no reaction
+        if ($isReacting == -1) {//if there has been no reaction
             UserDAO::reactVideo($user_id, $video_id, $status);
         }
         elseif ($isReacting == $status){ //if liking liked or unliking unliked video
@@ -173,6 +173,6 @@ class UserController {
             UserDAO::unreactVideo($user_id, $video_id);
             UserDAO::reactVideo($user_id, $video_id, 1-$isReacting);
         }
-        return "Tuka ima tekst!";
+        echo $this->isReacting();
     }
 }

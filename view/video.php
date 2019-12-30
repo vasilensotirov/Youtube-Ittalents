@@ -42,23 +42,17 @@ require_once "navigation.php";
             }
         }
         echo $video["description"] . "<br>";
-        ?>
-    <p id="reactstatus">
-<?php
-        if ($video["isReacting"] !== false){
-            if ($video["isReacting"] == 1){
-                echo "Liked.";
-            }
-            elseif ($video["isReacting"] == 0){
-                echo "Disliked.";
-            }
-            else {
-                echo $video["isReacting"];
-            }
-        }
-        else {
+        echo "<p id='reactstatus'>";
+        if ($video["isReacting"] == -1){
             echo "Neutral.";
         }
+        if ($video["isReacting"] == 1){
+            echo "Liked.";
+        }
+        elseif ($video["isReacting"] == 0){
+            echo "Disliked.";
+            }
+        echo "</p>";
     }
     else {
         header("Location:main.php");

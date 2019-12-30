@@ -136,7 +136,7 @@ class UserDAO
                 return $row["status"];
             }
             else {
-                return false;
+                return -1;
             }
         }
         catch (PDOException $e){
