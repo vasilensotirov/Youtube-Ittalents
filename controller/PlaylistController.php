@@ -5,6 +5,7 @@ namespace controller;
 
 use \model\Playlist;
 use \model\PlaylistDAO;
+use model\VideoDAO;
 
 class PlaylistController {
     public function create(){
