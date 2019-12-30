@@ -5,6 +5,7 @@ namespace controller;
 
 use \model\Playlist;
 use \model\PlaylistDAO;
+use model\VideoDAO;
 
 class PlaylistController {
     public function create(){
@@ -46,6 +47,13 @@ class PlaylistController {
             $owner_id = $_GET["owner_id"];
         }
         $playlists = PlaylistDAO::getAll($owner_id);
+        include_once "view/playlists.php";
+    }
+    public function clickedPlaylist(){
+        if(isset($_GET['id'])){
+            $playlist_id  = $_GET['id'];
+        }
+        $videos = PlaylistDAO::getVideosFromPlaylist($playlist_id);
         include_once "view/playlists.php";
     }
 }
