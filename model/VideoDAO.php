@@ -76,21 +76,22 @@ class VideoDAO{
         }
     }
     
-    public static function getByOwnerId($owner_id){
+    public static function getByOwnerId($owner_id, $orderby=null){
         try {
             $pdo = getPDO();
-            $sql = "SELECT v.id, v.title, v.date_uploaded, u.username, v.thumbnail_url FROM videos AS v 
-                    JOIN users AS u ON v.owner_id = u.id 
-                    WHERE owner_id = ?;";
-            $params = [];
-            $params[] = $owner_id;
+            $sql = "SELECT v.id, v.title, v.date_uploaded, u.username, v.thumbnail_url, SUM(urv.status) AS likes FROM videos AS v 
+                    JOIN users AS u ON v.owner_id = u.id
+                    LEFT JOIN users_react_videos AS urv ON urv.video_id = v.id
+                    WHERE owner_id = ?
+                    GROUP BY v.id
+                    $orderby;";
             $stmt = $pdo->prepare($sql);
-            $stmt->execute($params);
+            $stmt->execute(array($owner_id));
             $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
             return $rows;
         }
         catch (PDOException $e){
-            return false;
+            return $e->getMessage();
         }
     }
 
@@ -111,11 +112,14 @@ class VideoDAO{
         }
     }
 
-    public static function getAll(){
+    public static function getAll($orderby=null){
         try {
             $pdo = getPDO();
-            $sql = "SELECT v.id, v.title, v.date_uploaded, u.username, v.thumbnail_url FROM videos AS v 
-                    JOIN users AS u ON v.owner_id = u.id;";
+            $sql = "SELECT v.id, v.title, v.date_uploaded, u.username, v.thumbnail_url, SUM(urv.status) AS likes FROM videos AS v 
+                    JOIN users AS u ON v.owner_id = u.id
+                    LEFT JOIN users_react_videos AS urv ON urv.video_id = v.id
+                    GROUP BY v.id
+                    $orderby;";
             $stmt = $pdo->prepare($sql);
             $stmt->execute();
             $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -125,6 +129,22 @@ class VideoDAO{
             return false;
         }
     }
+
+    public static function getReactions($video_id, $status){
+        try {
+            $pdo = getPDO();
+            $sql = "SELECT COUNT(*) AS count FROM users_react_videos 
+                    WHERE video_id = ? AND status = ?;";
+            $stmt = $pdo->prepare($sql);
+            $stmt->execute(array($video_id, $status));
+            $row = $stmt->fetch(PDO::FETCH_ASSOC);
+            return $row["count"];
+        }
+        catch (PDOException $e){
+            return -1;
+        }
+    }
+
     public static function addToPlaylist(){
         $pdo = getPDO();
         $sql = "";
@@ -148,8 +168,10 @@ class VideoDAO{
     public static function getComments($video_id){
         try {
             $pdo = getPDO();
-            $sql = "SELECT c.id, c.content, c.date, c.owner_id, u.name, u.avatar_url FROM comments AS c 
+            $sql = "SELECT c.id, c.content, c.date, c.owner_id, u.name, u.avatar_url, 
+                    SUM(urc.status) AS likes, (COUNT(urc.status) - SUM(urc.status)) AS dislikes FROM comments AS c 
                     JOIN users AS u ON c.owner_id = u.id
+                    LEFT JOIN users_react_comments AS urc ON urc.comment_id = c.id
                     WHERE c.video_id = ?;";
             $stmt = $pdo->prepare($sql);
             $stmt->execute(array($video_id));

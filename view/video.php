@@ -42,7 +42,7 @@ require_once "navigation.php";
             }
         }
         echo $video["description"] . "<br>";
-        echo "<p id='reactstatus'>";
+        echo "<p id='reactstatus' hidden>";
         if ($video["isReacting"] == -1){
             echo "Neutral.";
         }
@@ -60,7 +60,9 @@ require_once "navigation.php";
     ?>
     </p>
 <button id="like" onclick="likeVideo(<?= $video["id"]; ?>)">Like</button>
+    (<?= $video["likes"]; ?>)
 <button id="dislike" onclick="dislikeVideo(<?= $video["id"]; ?>)">Dislike</button>
+    (<?= $video["dislikes"]; ?>)
     <br>
     Write comment:
     <form method="post" action="index.php?target=video&action=addComment">
@@ -74,13 +76,21 @@ require_once "navigation.php";
         <?php
         if (isset($comments) && $comments){
             foreach ($comments as $comment){
+                if (!$comment["likes"]){
+                    $comment["likes"] = 0;
+                }
+                if (!$comment["dislikes"]){
+                    $comment["dislikes"] = 0;
+                }
                 echo "<tr>";
                 echo "<td rowspan='3'><img width='50px' src='" . $comment["avatar_url"] . "'></td>";
                 echo "<td>" . $comment["name"] . "</td><td>" . $comment["date"] . "</td></tr>";
                 echo "<td colspan='2'>" . $comment["content"] . "</td>";
                 echo "<tr><td>
-                    <button id='like' onclick='likeComment(" . $comment["id"] . ")'>Like</button>
-                    <button id='dislike' onclick='dislikeComment(" . $comment["id"] . ")'>Dislike</button> ";
+                    <button id='like' onclick='likeComment(" . $comment["id"] . ")'>Like</button>(" .
+                    $comment["likes"] .
+                    ")<button id='dislike' onclick='dislikeComment(" . $comment["id"] . ")'>Dislike</button>(" .
+                    $comment["dislikes"] . ")";
                 echo "<span id='commentreact'></span>";
                 if ($comment["owner_id"] == $_SESSION["logged_user"]["id"]){
                     echo "<button><a href='index.php?target=video&action=deleteComment&id=" . $comment["id"] .

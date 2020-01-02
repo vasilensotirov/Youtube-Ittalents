@@ -20,12 +20,21 @@ require_once "header.php";
 require_once "navigation.php";
 ?>
 <main>
+    <b>Order by:</b>
+    <button><a href="index.php?target=video&action=<?= $action; ?>&orderby=date">Date ASC</a></button>
+    <button><a href="index.php?target=video&action=<?= $action; ?>&orderby=date&desc">Date DESC</a></button>
+    <button><a href="index.php?target=video&action=<?= $action; ?>&orderby=likes">Likes ASC</a></button>
+    <button><a href="index.php?target=video&action=<?= $action; ?>&orderby=likes&desc">Likes DESC</a></button>
+
 <table>
     <?php
     if (isset($videos)) {
         if($videos){
         foreach ($videos as $video) {
             echo "<tr><td><a href='index.php?target=video&action=getById&id=" . $video["id"] . "'><img width='200px' src='";
+            if (!$video["thumbnail_url"]){
+                $video["thumbnail_url"] = 'https://therisingnetwork.com/wp-content/plugins/video-thumbnails/default.jpg';
+            }
             echo $video["thumbnail_url"];
             echo "'></a></td></tr>";
             echo "<tr><td>";

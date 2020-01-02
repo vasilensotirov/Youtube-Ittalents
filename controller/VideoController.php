@@ -133,7 +133,23 @@ class VideoController{
         if (isset($_GET["owner_id"])){
             $owner_id = $_GET["owner_id"];
         }
-        $videos = VideoDAO::getByOwnerId($owner_id);
+        else {
+            $owner_id = $_SESSION["logged_user"]["id"];
+        }
+        $orderby = null;
+        if (isset($_GET["orderby"])){
+            switch ($_GET["orderby"]){
+                case "date": $orderby = "ORDER BY date_uploaded";
+                    break;
+                case "likes": $orderby = "ORDER BY likes";
+                    break;
+            }
+            if (isset($_GET["desc"]) && $orderby){
+                $orderby .= " DESC";
+            }
+        }
+        $videos = VideoDAO::getByOwnerId($owner_id, $orderby);
+        $action = "getByOwnerId";
         include_once "view/main.php";
     }
     
@@ -145,12 +161,27 @@ class VideoController{
         $video = VideoDAO::getById($id);
         $video["isFollowed"] = UserDAO::isFollowing($user_id, $video["owner_id"]);
         $video["isReacting"] = UserDAO::isReacting($user_id, $id);
+        $video["likes"] = VideoDAO::getReactions($id, 1);
+        $video["dislikes"] = VideoDAO::getReactions($id, 0);
         $comments = VideoDAO::getComments($id);
         include_once "view/video.php";
     }
 
     public function getAll(){
-        $videos = VideoDAO::getAll();
+        $orderby = null;
+        if (isset($_GET["orderby"])){
+            switch ($_GET["orderby"]){
+                case "date": $orderby = "ORDER BY date_uploaded";
+                break;
+                case "likes": $orderby = "ORDER BY likes";
+                break;
+            }
+            if (isset($_GET["desc"]) && $orderby){
+                $orderby .= " DESC";
+            }
+        }
+        $videos = VideoDAO::getAll($orderby);
+        $action = "getAll";
         include_once "view/main.php";
     }
 

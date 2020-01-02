@@ -3,12 +3,12 @@ function likeVideo(video_id) {
     xhttp.onreadystatechange = function() {
         if (this.readyState == 4 && this.status == 200) {
             if (this.responseText == 1) {
-                document.getElementById("reactstatus").innerText="Liked.";
+                document.getElementById("likesCount").stepUp();
                 document.getElementById("like").style.color = 'blue';
                 document.getElementById("dislike").style.color = 'gray';
             }
             if (this.responseText == -1){
-                document.getElementById("reactstatus").innerText="Neutral.";
+                document.getElementById("likesCount").stepDown();
                 document.getElementById("like").style.color = 'gray';
                 document.getElementById("dislike").style.color = 'gray';
             }
@@ -23,12 +23,12 @@ function dislikeVideo(video_id) {
     xhttp.onreadystatechange = function() {
         if (this.readyState == 4 && this.status == 200) {
             if (this.responseText == 0) {
-                document.getElementById("reactstatus").innerText="Disliked.";
+                document.getElementById("dislikesCount").stepUp();
                 document.getElementById("like").style.color = 'gray';
                 document.getElementById("dislike").style.color = 'blue';
             }
             if (this.responseText == -1){
-                document.getElementById("reactstatus").innerText="Neutral.";
+                document.getElementById("dislikesCount").stepDown();
                 document.getElementById("like").style.color = 'gray';
                 document.getElementById("dislike").style.color = 'gray';
             }
