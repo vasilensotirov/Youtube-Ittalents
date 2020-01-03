@@ -27,7 +27,7 @@ class SearchDAO{
     public static function getSearchedUsers($search_query){
         try{
         $pdo = getPDO();
-        $sql = "SELECT u.id, u.username, u.name, u.avatar_url FROM users AS u WHERE u.username = ?;";
+        $sql = "SELECT u.id, u.username, u.name, u.avatar_url, u.registration_date FROM users AS u WHERE u.username = ?;";
         $stmt = $pdo->prepare($sql);
         $stmt->execute(array($search_query));
         $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
