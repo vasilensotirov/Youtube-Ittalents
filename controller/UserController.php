@@ -39,7 +39,7 @@ class UserController {
                 $email = $_POST['email'];
                 $full_name = $_POST['full_name'];
                 $cpassword = $_POST['cpassword'];
-                $msg = $this->registerValidator($username, $email, $full_name, $_POST['password'], $cpassword);
+                $msg = $this->registerValidator($username, $email, $_POST['password'], $cpassword);
                 if(UserDAO::checkUser($email)){
                     echo "User with that email already exists";
                     include_once "view/register.php";
@@ -119,16 +119,13 @@ class UserController {
         exit;
     }
 
-    public function registerValidator($username, $email,$full_name, $password = null, $cpassword = null){
+    public function registerValidator($username, $email, $password = null, $cpassword = null){
         $msg = '';
         if(strlen($username) < 8){
             $msg = "Username must be atleast 8 characters! <br>";
         }
         if (!(filter_var($email, FILTER_VALIDATE_EMAIL))) {
             $msg .= " Invalid email. <br> ";
-        }
-        if (!(ctype_alpha($full_name))) {
-            $msg .= " Invalid name.<br> ";
         }
         if($password != null && $cpassword != null){
             if($password === $cpassword){

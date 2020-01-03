@@ -5,6 +5,18 @@ use PDO;
 use PDOException;
 class UserDAO
 {
+    public static function getAll() {
+        try {
+            $pdo = getPDO();
+            $sql = "SELECT id, username, email, name, registration_date FROM users";
+            $stmt = $pdo->prepare($sql);
+            $stmt->execute();
+            $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            return $rows;
+        } catch(PDOException $e){
+            return false;
+        }
+    }
     public static function checkUser($email)
     {
         try {

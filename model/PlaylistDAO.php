@@ -8,12 +8,24 @@ use PDO;
 use PDOException;
 
 class PlaylistDAO {
-    public static function getAll($userid) {
+    public static function getAllByUserId($userid) {
         try {
             $pdo = getPDO();
             $sql = "SELECT id, playlist_title, owner_id, date_created FROM playlists WHERE owner_id = ?;";
             $stmt = $pdo->prepare($sql);
             $stmt->execute(array($userid));
+            $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            return $rows;
+        } catch(PDOException $e){
+            return false;
+        }
+    }
+    public static function getAll() {
+        try {
+            $pdo = getPDO();
+            $sql = "SELECT id, playlist_title, owner_id, date_created FROM playlists WHERE owner_id = ?;";
+            $stmt = $pdo->prepare($sql);
+            $stmt->execute();
             $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
             return $rows;
         } catch(PDOException $e){

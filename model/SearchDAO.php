@@ -24,4 +24,36 @@ class SearchDAO{
             echo $e->getMessage();
         }
     }
+    public static function getSearchedUsers($search_query){
+        try{
+        $pdo = getPDO();
+        $sql = "SELECT u.id, u.username, u.name, u.avatar_url FROM users AS u WHERE u.username = ?;";
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute(array($search_query));
+        $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        if(empty($rows)){
+            return false;
+        }else{
+            return $rows;
+        }
+    } catch(PDOException $e){
+            echo $e->getMessage();
+        }
+    }
+    public static function getSearchedPlaylists($search_query){
+        try{
+            $pdo = getPDO();
+            $sql = "SELECT p.id, p.playlist_title, p.date_created FROM playlists AS p WHERE p.playlist_title = ?;";
+            $stmt = $pdo->prepare($sql);
+            $stmt->execute(array($search_query));
+            $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            if(empty($rows)){
+                return false;
+            }else{
+                return $rows;
+            }
+        }catch(PDOException $e){
+            echo $e->getMessage();
+        }
+    }
 }

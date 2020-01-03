@@ -46,7 +46,7 @@ class PlaylistController {
         if (isset($_GET["owner_id"])){
             $owner_id = $_GET["owner_id"];
         }
-        $playlists = PlaylistDAO::getAll($owner_id);
+        $playlists = PlaylistDAO::getAllByUserId($owner_id);
         include_once "view/playlists.php";
     }
     public function clickedPlaylist(){
