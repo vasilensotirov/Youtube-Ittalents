@@ -8,7 +8,6 @@ use model\VideoDAO;
 class UserController {
     public function login()
     {
-        //TODO some more validations
         if (isset($_POST['login'])) {
             if (isset($_POST['email']) && isset($_POST['password'])) {
                 $email = $_POST['email'];
@@ -34,16 +33,21 @@ class UserController {
     public function register()
     {
         if (isset($_POST['register'])) {
-            //TODO more validations
             if (isset($_POST['username']) && isset($_POST['full_name']) && isset($_POST['email'])
                 && isset($_POST['password']) && isset($_POST['cpassword'])) {
-                if(UserDAO::checkUser($_POST['email'])){
+                $username = $_POST['username'];
+                $email = $_POST['email'];
+                $full_name = $_POST['full_name'];
+                $cpassword = $_POST['cpassword'];
+                $msg = $this->registerValidator($username, $email, $full_name, $_POST['password'], $cpassword);
+                if(UserDAO::checkUser($email)){
                     echo "User with that email already exists";
                     include_once "view/register.php";
-                }else{
-                    $username = $_POST['username'];
-                    $email = $_POST['email'];
-                    $full_name = $_POST['full_name'];
+                }    elseif($msg != '') {
+                    echo $msg;
+                    include_once "view/register.php";
+                }
+                else{
                     $password = password_hash($_POST['password'], PASSWORD_BCRYPT);
                     $registration_date = date("Y-m-d H:i:s");
                     $avatar_url = $this->uploadFile("avatar", $_POST['username']);
@@ -113,6 +117,30 @@ class UserController {
         session_destroy();
         header("Location: index.php?view=login");
         exit;
+    }
+
+    public function registerValidator($username, $email,$full_name, $password = null, $cpassword = null){
+        $msg = '';
+        if(strlen($username) < 8){
+            $msg = "Username must be atleast 8 characters! <br>";
+        }
+        if (!(filter_var($email, FILTER_VALIDATE_EMAIL))) {
+            $msg .= " Invalid email. <br> ";
+        }
+        if (!(ctype_alpha($full_name))) {
+            $msg .= " Invalid name.<br> ";
+        }
+        if($password != null && $cpassword != null){
+            if($password === $cpassword){
+                if (!(preg_match("#.*^(?=.{8,20})(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*\W).*$#", $password))) {
+                    $msg .= " Wrong password input. Password should be at least 8 characters <br>";
+                }
+            }else{
+                $msg .= "Passwords not matching! <br>";
+            }
+        }
+
+        return $msg;
     }
 
     public function getById($id=null){
