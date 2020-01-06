@@ -1,41 +1,45 @@
 <?php
 namespace model;
-include_once "BaseDao.php";
 use PDO;
 use PDOException;
-class UserDAO
-{
-    public static function getAll() {
-        try {
-            $pdo = getPDO();
-            $sql = "SELECT id, username, email, name, registration_date FROM users";
-            $stmt = $pdo->prepare($sql);
-            $stmt->execute();
-            $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
-            return $rows;
-        } catch(PDOException $e){
+class UserDAO extends BaseDao {
+    private static $instance;
+
+    private function __construct()
+    {
+    }
+
+    public static function getInstance(){
+        if (self::$instance == null){
+            self::$instance = new UserDAO();
+        }
+        return self::$instance;
+    }
+
+    public function getAll() {
+        $pdo = $this->getPDO();
+        $sql = "SELECT id, username, email, name, registration_date FROM users";
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute();
+        $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        return $rows;
+    }
+    public function checkUser($email)
+    {
+        $pdo = $this->getPDO();
+        $sql = "SELECT * FROM users WHERE email = ?";
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute(array($email));
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+        if (empty($row)) {
             return false;
         }
-    }
-    public static function checkUser($email)
-    {
-        try {
-            $pdo = getPDO();
-            $sql = "SELECT * FROM users WHERE email = ?";
-            $stmt = $pdo->prepare($sql);
-            $stmt->execute(array($email));
-            $row = $stmt->fetch(PDO::FETCH_ASSOC);
-            if (empty($row)) {
-                return false;
-            } else {
-                return $row;
-            }
-        } catch (PDOException $e) {
-            echo "Something went wrong" . $e->getMessage();
+        else {
+            return $row;
         }
     }
 
-    public static function registerUser(User $user)
+    public function registerUser(User $user)
     {
         $username = $user->getUsername();
         $email = $user->getEmail();
@@ -43,185 +47,127 @@ class UserDAO
         $full_name = $user->getFullName();
         $date = $user->getRegistrationDate();
         $avatar_url = $user->getAvatarUrl();
-        try {
-            $pdo = getPDO();
-            $sql = "INSERT INTO users (username,  email, password, name, registration_date, avatar_url)
-                   VALUES (?, ?, ?, ?, ?, ?)";
-            $stmt = $pdo->prepare($sql);
-            $stmt->execute(array($username, $email, $password, $full_name, $date, $avatar_url));
-            $user->setId($pdo->lastInsertId());
-            if ($pdo->lastInsertId() > 0) {
-                return true;
-            } else {
-                return false;
-            }
-        } catch (PDOException $e) {
-            echo "Something went wrong" . $e->getMessage();
+        $pdo = $this->getPDO();
+        $sql = "INSERT INTO users (username,  email, password, name, registration_date, avatar_url)
+                VALUES (?, ?, ?, ?, ?, ?)";
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute(array($username, $email, $password, $full_name, $date, $avatar_url));
+        $user->setId($pdo->lastInsertId());
+        if ($pdo->lastInsertId() > 0) {
+            return true;
         }
-    }
-
-    public static function getById($id){
-        try{
-            $pdo = getPDO();
-            $sql = "SELECT username, name, registration_date, avatar_url FROM users WHERE id = ?;";
-            $stmt = $pdo->prepare($sql);
-            $stmt->execute(array($id));
-            $rows = $stmt->fetch(PDO::FETCH_ASSOC);
-            return $rows;
-        }
-        catch (PDOException $e){
+        else {
             return false;
         }
     }
-    public static function editUser(User $user)
+
+    public function getById($id){
+        $pdo = $this->getPDO();
+        $sql = "SELECT username, name, registration_date, avatar_url FROM users WHERE id = ?;";
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute(array($id));
+        $rows = $stmt->fetch(PDO::FETCH_ASSOC);
+        return $rows;
+    }
+
+    public function editUser(User $user)
     {
-        try {
-            $username = $user->getUsername();
-            $email  = $user->getEmail();
-            $password   = $user->getPassword();
-            $full_name = $user->getFullName();
-            $avatar_url = $user->getAvatarUrl();
-            $id = $user->getId();
-            $pdo = getPDO();
-            $sql = "UPDATE users SET username = ? , email = ?, password = ?, name = ?, avatar_url = ? WHERE id=?;";
-            $stmt = $pdo->prepare($sql);
-            $stmt->execute(array($username, $email, $password, $full_name, $avatar_url, $id));
+        $username = $user->getUsername();
+        $email  = $user->getEmail();
+        $password   = $user->getPassword();
+        $full_name = $user->getFullName();
+        $avatar_url = $user->getAvatarUrl();
+        $id = $user->getId();
+        $pdo = $this->getPDO();
+        $sql = "UPDATE users SET username = ? , email = ?, password = ?, name = ?, avatar_url = ? WHERE id=?;";
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute(array($username, $email, $password, $full_name, $avatar_url, $id));
+    }
+
+    public function followUser($follower_id, $followed_id){
+        $pdo = $this->getPDO();
+        $sql = "INSERT INTO users_follow_users (follower_id, followed_id)
+                VALUES (?, ?);";
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute(array($follower_id, $followed_id));
+    }
+
+    public function unfollowUser($follower_id, $followed_id){
+        $pdo = $this->getPDO();
+        $sql = "DELETE FROM users_follow_users WHERE follower_id = ? AND followed_id = ?;";
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute(array($follower_id, $followed_id));
+    }
+
+    public function isFollowing($follower_id, $followed_id){
+        $pdo = $this->getPDO();
+        $sql = "SELECT followed_id FROM users_follow_users WHERE follower_id = ? AND followed_id = ?;";
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute(array($follower_id, $followed_id));
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+        if ($row){
             return true;
-        } catch (PDOException $e) {
-            echo $e->getMessage();
+        }
+        else {
             return false;
         }
     }
 
-    public static function followUser($follower_id, $followed_id){
-        try {
-            $pdo = getPDO();
-            $sql = "INSERT INTO users_follow_users (follower_id, followed_id)
-                   VALUES (?, ?)";
-            $stmt = $pdo->prepare($sql);
-            $stmt->execute(array($follower_id, $followed_id));
-                return true;
-        } catch (PDOException $e) {
-            echo "Something went wrong" . $e->getMessage();
+    public function isReacting($user_id, $video_id){
+        $pdo = $this->getPDO();
+        $sql = "SELECT status FROM users_react_videos WHERE user_id = ? AND video_id = ?;";
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute(array($user_id, $video_id));
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+        if ($row){
+            return $row["status"];
+        }
+        else {
+            return -1;
         }
     }
 
-    public static function unfollowUser($follower_id, $followed_id){
-        try {
-            $pdo = getPDO();
-            $sql = "DELETE FROM users_follow_users WHERE follower_id = ? AND followed_id = ?;";
-            $stmt = $pdo->prepare($sql);
-            $stmt->execute(array($follower_id, $followed_id));
-            return true;
-        } catch (PDOException $e) {
-            echo "Something went wrong" . $e->getMessage();
+    public function reactVideo($user_id, $video_id, $status){
+        $pdo = $this->getPDO();
+        $sql = "INSERT INTO users_react_videos (user_id, video_id, status)
+                VALUES (?, ?, ?)";
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute(array($user_id, $video_id, $status));
+    }
+
+    public function unreactVideo($user_id, $video_id){
+        $pdo = $this->getPDO();
+        $sql = "DELETE FROM users_react_videos WHERE user_id = ? AND video_id = ?;";
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute(array($user_id, $video_id));
+    }
+
+    public function isReactingComment($user_id, $comment_id){
+        $pdo = $this->getPDO();
+        $sql = "SELECT status FROM users_react_comments WHERE user_id = ? AND comment_id = ?;";
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute(array($user_id, $comment_id));
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+        if ($row){
+            return $row["status"];
+        }
+        else {
+            return -1;
         }
     }
 
-    public static function isFollowing($follower_id, $followed_id){
-        try{
-            $pdo = getPDO();
-            $sql = "SELECT followed_id FROM users_follow_users WHERE follower_id = ? AND followed_id = ?;";
-            $stmt = $pdo->prepare($sql);
-            $stmt->execute(array($follower_id, $followed_id));
-            $row = $stmt->fetch(PDO::FETCH_ASSOC);
-            if ($row){
-                return true;
-            }
-            else {
-                return false;
-            }
-        }
-        catch (PDOException $e){
-            return $e->getMessage();
-        }
+    public function reactComment($user_id, $comment_id, $status){
+        $pdo = $this->getPDO();
+        $sql = "INSERT INTO users_react_comments (user_id, comment_id, status)
+                VALUES (?, ?, ?)";
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute(array($user_id, $comment_id, $status));
     }
 
-    public static function isReacting($user_id, $video_id){
-        try{
-            $pdo = getPDO();
-            $sql = "SELECT status FROM users_react_videos WHERE user_id = ? AND video_id = ?;";
-            $stmt = $pdo->prepare($sql);
-            $stmt->execute(array($user_id, $video_id));
-            $row = $stmt->fetch(PDO::FETCH_ASSOC);
-            if ($row){
-                return $row["status"];
-            }
-            else {
-                return -1;
-            }
-        }
-        catch (PDOException $e){
-            return $e->getMessage();
-        }
-    }
-
-    public static function reactVideo($user_id, $video_id, $status){
-        try {
-            $pdo = getPDO();
-            $sql = "INSERT INTO users_react_videos (user_id, video_id, status)
-                   VALUES (?, ?, ?)";
-            $stmt = $pdo->prepare($sql);
-            $stmt->execute(array($user_id, $video_id, $status));
-            return true;
-        } catch (PDOException $e) {
-            echo "Something went wrong" . $e->getMessage();
-        }
-    }
-
-    public static function unreactVideo($user_id, $video_id){
-        try {
-            $pdo = getPDO();
-            $sql = "DELETE FROM users_react_videos WHERE user_id = ? AND video_id = ?;";
-            $stmt = $pdo->prepare($sql);
-            $stmt->execute(array($user_id, $video_id));
-            return true;
-        } catch (PDOException $e) {
-            echo "Something went wrong" . $e->getMessage();
-        }
-    }
-
-    public static function isReactingComment($user_id, $comment_id){
-        try{
-            $pdo = getPDO();
-            $sql = "SELECT status FROM users_react_comments WHERE user_id = ? AND comment_id = ?;";
-            $stmt = $pdo->prepare($sql);
-            $stmt->execute(array($user_id, $comment_id));
-            $row = $stmt->fetch(PDO::FETCH_ASSOC);
-            if ($row){
-                return $row["status"];
-            }
-            else {
-                return -1;
-            }
-        }
-        catch (PDOException $e){
-            return $e->getMessage();
-        }
-    }
-
-    public static function reactComment($user_id, $comment_id, $status){
-        try {
-            $pdo = getPDO();
-            $sql = "INSERT INTO users_react_comments (user_id, comment_id, status)
-                   VALUES (?, ?, ?)";
-            $stmt = $pdo->prepare($sql);
-            $stmt->execute(array($user_id, $comment_id, $status));
-            return true;
-        } catch (PDOException $e) {
-            echo "Something went wrong" . $e->getMessage();
-        }
-    }
-
-    public static function unreactComment($user_id, $comment_id){
-        try {
-            $pdo = getPDO();
-            $sql = "DELETE FROM users_react_comments WHERE user_id = ? AND comment_id = ?;";
-            $stmt = $pdo->prepare($sql);
-            $stmt->execute(array($user_id, $comment_id));
-            return true;
-        } catch (PDOException $e) {
-            echo "Something went wrong" . $e->getMessage();
-        }
+    public function unreactComment($user_id, $comment_id){
+        $pdo = $this->getPDO();
+        $sql = "DELETE FROM users_react_comments WHERE user_id = ? AND comment_id = ?;";
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute(array($user_id, $comment_id));
     }
 }

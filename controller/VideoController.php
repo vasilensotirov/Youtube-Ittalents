@@ -45,13 +45,15 @@ class VideoController{
                 $video->setDuration(0);
                 $video->setVideoUrl(uploadFile("video", $_SESSION["logged_user"]["username"]));
                 $video->setThumbnailUrl(uploadFile("thumbnail", $_SESSION["logged_user"]["username"]));
-                if(VideoDAO::add($video) === true){
+                try {
+                    $dao = VideoDAO::getInstance();
+                    $dao->add($video);
                     include_once "view/main.php";
                     echo "Upload successfull.";
                 }
-                else {
+                catch (\PDOException $e) {
                     include_once "view/upload.php";
-                    echo "File handling error";
+                    echo "Error uploading video!";
                 }
             }
         }
@@ -61,8 +63,15 @@ class VideoController{
         if (isset($_GET["id"])){
             $id = $_GET["id"];
         }
-        $video = VideoDAO::getById($id);
-        include_once "view/editVideo.php";
+        try {
+            $dao = VideoDAO::getInstance();
+            $video = $dao->getById($id);
+            include_once "view/editVideo.php";
+        }
+        catch (\PDOException $e){
+            include_once "index.php";
+            echo "Error!";
+        }
     }
 
     public function edit($id=null){
@@ -101,17 +110,18 @@ class VideoController{
                 if ($video->getThumbnailUrl() == false) {
                     $video->setThumbnailUrl($_POST["thumbnail_url"]);
                 }
-                if (VideoDAO::edit($video) === true){
+                try {
+                    $dao = VideoDAO::getInstance();
+                    $dao->edit($video);
                     echo "Edit successfull.";
                     include_once "view/main.php";
                 }
-                else {
-                    echo "Error";
+                catch (\PDOException $e) {
                     include_once "view/editVideo.php";
+                    echo "Error editing video!";
                 }
             }
         }
-        include_once "view/main.php";
     }
 
     public function delete($id=null){
@@ -119,13 +129,15 @@ class VideoController{
             $id = $_GET["id"];
         }
         $user_id = $_SESSION["logged_user"]["id"];
-        if (VideoDAO::delete($id, $user_id)){
+        try {
+            $dao = VideoDAO::getInstance();
+            $dao->delete($id, $user_id);
             include_once "view/main.php";
             echo "Delete successful.";
         }
-        else {
+        catch (\PDOException $e) {
             include_once "view/main.php";
-            echo "Error!";
+            echo "Error deleting video!";
         }
     }
 
@@ -148,9 +160,16 @@ class VideoController{
                 $orderby .= " DESC";
             }
         }
-        $videos = VideoDAO::getByOwnerId($owner_id, $orderby);
-        $action = "getByOwnerId";
-        include_once "view/main.php";
+        try {
+            $dao = VideoDAO::getInstance();
+            $videos = $dao->getByOwnerId($owner_id, $orderby);
+            $action = "getByOwnerId";
+            include_once "view/main.php";
+        }
+        catch (\PDOException $e){
+            include_once "view/main.php";
+            echo "Error!";
+        }
     }
     
     public function getById($id=null){
@@ -158,13 +177,21 @@ class VideoController{
             $id = $_GET["id"];
         }
         $user_id = $_SESSION["logged_user"]["id"];
-        $video = VideoDAO::getById($id);
-        $video["isFollowed"] = UserDAO::isFollowing($user_id, $video["owner_id"]);
-        $video["isReacting"] = UserDAO::isReacting($user_id, $id);
-        $video["likes"] = VideoDAO::getReactions($id, 1);
-        $video["dislikes"] = VideoDAO::getReactions($id, 0);
-        $comments = VideoDAO::getComments($id);
-        include_once "view/video.php";
+        try {
+            $videodao = VideoDAO::getInstance();
+            $userdao = UserDAO::getInstance();
+            $video = $videodao->getById($id);
+            $video["isFollowed"] = $userdao->isFollowing($user_id, $video["owner_id"]);
+            $video["isReacting"] = $userdao->isReacting($user_id, $id);
+            $video["likes"] = $videodao->getReactions($id, 1);
+            $video["dislikes"] = $videodao->getReactions($id, 0);
+            $comments = $videodao->getComments($id);
+            include_once "view/video.php";
+        }
+        catch (\PDOException $e){
+            include_once "view/main.php";
+            echo "Error!";
+        }
     }
 
     public function getAll(){
@@ -180,7 +207,8 @@ class VideoController{
                 $orderby .= " DESC";
             }
         }
-        $videos = VideoDAO::getAll($orderby);
+        $dao = VideoDAO::getInstance();
+        $videos = $dao->getAll($orderby);
         $action = "getAll";
         include_once "view/main.php";
     }
@@ -195,13 +223,16 @@ class VideoController{
             $video_id = $_POST["video_id"];
             $owner_id = $_POST["owner_id"];
             $date = (date("Y-m-d H:i:s"));
-            VideoDAO::addComment($video_id, $owner_id, $content, $date);
-            header("Location: index.php?target=video&action=getById&id=" . $video_id);
+            try {
+                $dao = VideoDAO::getInstance();
+                $dao->addComment($video_id, $owner_id, $content, $date);
+                header("Location: index.php?target=video&action=getById&id=" . $video_id);
+            }
+            catch (\PDOException $e){
+                header("Location: index.php?target=video&action=getById&id=" . $video_id);
+                echo "Error posting comment!";
+            }
         }
-        /*if (isset($_GET["ajax"])){
-            $comments = VideoDAO::getComments($video_id);
-            echo json_encode($comments);
-        }*/
     }
 
     public function deleteComment($comment_id=null, $owner_id=null){
@@ -212,7 +243,14 @@ class VideoController{
             $video_id = $_GET["video_id"];
         }
         $owner_id = $_SESSION["logged_user"]["id"];
-        VideoDAO::deleteComment($comment_id, $owner_id);
-        header("Location: index.php?target=video&action=getById&id=" . $video_id);
+        try {
+            $dao = VideoDAO::getInstance();
+            $dao->deleteComment($comment_id, $owner_id);
+            header("Location: index.php?target=video&action=getById&id=" . $video_id);
+        }
+        catch (\PDOException $e){
+            header("Location: index.php?target=video&action=getById&id=" . $video_id);
+            echo "Error deleting comment!";
+        }
     }
 }

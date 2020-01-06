@@ -1,10 +1,23 @@
 <?php
 namespace model;
-include_once "BaseDao.php";
 use PDO;
 use PDOException;
-class VideoDAO{
-    public static function add(Video $video){
+class VideoDAO extends BaseDao {
+    private static $instance;
+
+    private function __construct()
+    {
+    }
+
+    public static function getInstance(){
+        if (self::$instance == null){
+            self::$instance = new VideoDAO();
+        }
+        return self::$instance;
+    }
+
+    public function add(Video $video)
+    {
         $title = $video->getTitle();
         $description = $video->getDescription();
         $date_uploaded = $video->getDateUploaded();
@@ -13,185 +26,143 @@ class VideoDAO{
         $video_url = $video->getVideoUrl();
         $duration = $video->getDuration();
         $thumbnail_url = $video->getThumbnailUrl();
-        try {
-            $pdo = getPDO();
-            $sql = "INSERT INTO videos
+        $pdo = $this->getPDO();
+        $sql = "INSERT INTO videos
                 (title, description, date_uploaded, owner_id, category_id, video_url, duration, thumbnail_url)
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?);";
-            $params = [];
-            $params[] = $title;
-            $params[] = $description;
-            $params[] = $date_uploaded;
-            $params[] = $owner_id;
-            $params[] = $category_id;
-            $params[] = $video_url;
-            $params[] = $duration;
-            $params[] = $thumbnail_url;
-            $stmt = $pdo->prepare($sql);
-            $stmt->execute($params);
-            $video_id = $pdo->lastInsertId();
-            $video->setId($video_id);
-            return true;
-        }
-        catch (PDOException $e) {
-            return $e->getMessage();
-        }
+        $params = array($title, $description, $date_uploaded, $owner_id, $category_id, $video_url, $duration, $thumbnail_url);
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute($params);
+        $video_id = $pdo->lastInsertId();
+        $video->setId($video_id);
     }
 
-    public static function edit(Video $video){
+    public function edit(Video $video)
+    {
         $title = $video->getTitle();
         $description = $video->getDescription();
         $category_id = $video->getCategoryId();
         $thumbnail_url = $video->getThumbnailUrl();
         $id = $video->getId();
-        try {
-            $pdo = getPDO();
-            $sql = "UPDATE videos
+        $pdo = $this->getPDO();
+        $sql = "UPDATE videos
                 SET title = ?, description = ?, category_id = ?, thumbnail_url = ?
                 WHERE id = ?;";
-            $params = [];
-            $params[] = $title;
-            $params[] = $description;
-            $params[] = $category_id;
-            $params[] = $thumbnail_url;
-            $params[] = $id;
-            $stmt = $pdo->prepare($sql);
-            $stmt->execute($params);
-            return true;
-        }
-        catch (PDOException $e) {
-            return $e->getMessage();
-        }
+        $params = array($title, $description, $category_id, $thumbnail_url, $id);
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute($params);
     }
 
-    public static function delete($id, $owner_id){
-        try {
-            $pdo = getPDO();
-            $sql = "DELETE FROM videos WHERE id = ? AND owner_id = ?;";
-            $stmt = $pdo->prepare($sql);
-            $stmt->execute(array($id, $owner_id));
-            return true;
-        } catch (PDOException $e) {
-            return false;
-        }
-    }
-    
-    public static function getByOwnerId($owner_id, $orderby=null){
-        try {
-            $pdo = getPDO();
-            $sql = "SELECT v.id, v.title, v.date_uploaded, u.username, v.thumbnail_url, SUM(urv.status) AS likes FROM videos AS v 
-                    JOIN users AS u ON v.owner_id = u.id
-                    LEFT JOIN users_react_videos AS urv ON urv.video_id = v.id
-                    WHERE owner_id = ?
-                    GROUP BY v.id
-                    $orderby;";
-            $stmt = $pdo->prepare($sql);
-            $stmt->execute(array($owner_id));
-            $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
-            return $rows;
-        }
-        catch (PDOException $e){
-            return $e->getMessage();
-        }
+    public function delete($id, $owner_id)
+    {
+        $pdo = $this->getPDO();
+        $sql = "DELETE FROM videos WHERE id = ? AND owner_id = ?;";
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute(array($id, $owner_id));
     }
 
-    public static function getById($id){
-        try{
-            $pdo = getPDO();
-            $sql = "SELECT v.id, v.title, v.description, v.date_uploaded, v.owner_id, v.category_id, v.video_url, v.duration, v.thumbnail_url, 
-                    u.id AS user_id, u.username, u.name FROM videos AS v
-                    JOIN users AS u ON v.owner_id = u.id
-                    WHERE v.id = ?;";
-            $stmt = $pdo->prepare($sql);
-            $stmt->execute(array($id));
-            $row = $stmt->fetch(PDO::FETCH_ASSOC);
-            return $row;
-        }
-        catch (PDOException $e){
-            return false;
-        }
+    public function getCategories()
+    {
+        $pdo = $this->getPDO();
+        $sql = "SELECT id, name FROM categories;";
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute();
+        $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        return $rows;
     }
 
-    public static function getAll($orderby=null){
-        try {
-            $pdo = getPDO();
-            $sql = "SELECT v.id, v.title, v.date_uploaded, u.username, v.thumbnail_url, SUM(urv.status) AS likes FROM videos AS v 
-                    JOIN users AS u ON v.owner_id = u.id
-                    LEFT JOIN users_react_videos AS urv ON urv.video_id = v.id
-                    GROUP BY v.id
-                    $orderby;";
-            $stmt = $pdo->prepare($sql);
-            $stmt->execute();
-            $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
-            return $rows;
-        }
-        catch (PDOException $e){
-            return false;
-        }
+    public function getByOwnerId($owner_id, $orderby = null)
+    {
+        $pdo = $this->getPDO();
+        $sql = "SELECT v.id, v.title, v.date_uploaded, u.username, v.thumbnail_url, SUM(urv.status) AS likes FROM videos AS v 
+                JOIN users AS u ON v.owner_id = u.id
+                LEFT JOIN users_react_videos AS urv ON urv.video_id = v.id
+                WHERE owner_id = ?
+                GROUP BY v.id
+                $orderby;";
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute(array($owner_id));
+        $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        return $rows;
     }
 
-    public static function getReactions($video_id, $status){
-        try {
-            $pdo = getPDO();
-            $sql = "SELECT COUNT(*) AS count FROM users_react_videos 
-                    WHERE video_id = ? AND status = ?;";
-            $stmt = $pdo->prepare($sql);
-            $stmt->execute(array($video_id, $status));
-            $row = $stmt->fetch(PDO::FETCH_ASSOC);
+    public function getById($id)
+    {
+        $pdo = $this->getPDO();
+        $sql = "SELECT v.id, v.title, v.description, v.date_uploaded, v.owner_id, v.category_id, v.video_url, v.duration, v.thumbnail_url, 
+                u.id AS user_id, u.username, u.name FROM videos AS v
+                JOIN users AS u ON v.owner_id = u.id
+                WHERE v.id = ?;";
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute(array($id));
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+        return $row;
+    }
+
+    public function getAll($orderby = null)
+    {
+        $pdo = $this->getPDO();
+        $sql = "SELECT v.id, v.title, v.date_uploaded, u.username, v.thumbnail_url, SUM(urv.status) AS likes FROM videos AS v 
+                JOIN users AS u ON v.owner_id = u.id
+                LEFT JOIN users_react_videos AS urv ON urv.video_id = v.id
+                GROUP BY v.id
+                $orderby;";
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute();
+        $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        return $rows;
+    }
+
+    public function getReactions($video_id, $status)
+    {
+        $pdo = $this->getPDO();
+        $sql = "SELECT COUNT(*) AS count FROM users_react_videos 
+                WHERE video_id = ? AND status = ?;";
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute(array($video_id, $status));
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+        if ($row) {
             return $row["count"];
-        }
-        catch (PDOException $e){
-            return -1;
+        } else {
+            return 0;
         }
     }
 
-    public static function addToPlaylist(){
-        $pdo = getPDO();
+    public function addToPlaylist()
+    {
+        $pdo = $this->getPDO();
         $sql = "";
     }
 
-    public static function addComment($video_id, $owner_id, $content, $date){
-        try {
-            $pdo = getPDO();
-            $sql = "INSERT INTO comments
+    public function addComment($video_id, $owner_id, $content, $date)
+    {
+        $pdo = $this->getPDO();
+        $sql = "INSERT INTO comments
                 (video_id, owner_id, content, date)
                 VALUES (?, ?, ?, ?);";
-            $stmt = $pdo->prepare($sql);
-            $stmt->execute(array($video_id, $owner_id, $content, $date));
-            return true;
-        }
-        catch (PDOException $e) {
-            return $e->getMessage();
-        }
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute(array($video_id, $owner_id, $content, $date));
     }
 
-    public static function getComments($video_id){
-        try {
-            $pdo = getPDO();
-            $sql = "SELECT c.id, c.content, c.date, c.owner_id, u.name, u.avatar_url, 
-                    SUM(urc.status) AS likes, (COUNT(urc.status) - SUM(urc.status)) AS dislikes FROM comments AS c 
-                    JOIN users AS u ON c.owner_id = u.id
-                    LEFT JOIN users_react_comments AS urc ON urc.comment_id = c.id
-                    WHERE c.video_id = ?;";
-            $stmt = $pdo->prepare($sql);
-            $stmt->execute(array($video_id));
-            $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
-            return $rows;
-        }
-        catch (PDOException $e){
-            return false;
-        }
+    public function getComments($video_id)
+    {
+        $pdo = $this->getPDO();
+        $sql = "SELECT c.id, c.content, c.date, c.owner_id, u.name, u.avatar_url, 
+                SUM(urc.status) AS likes, (COUNT(urc.status) - SUM(urc.status)) AS dislikes FROM comments AS c 
+                JOIN users AS u ON c.owner_id = u.id
+                LEFT JOIN users_react_comments AS urc ON urc.comment_id = c.id
+                WHERE c.video_id = ?;";
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute(array($video_id));
+        $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        return $rows;
     }
 
-    public static function deleteComment($comment_id, $owner_id){
-        try {
-            $pdo = getPDO();
-            $sql = "DELETE FROM comments WHERE id = ? AND owner_id = ?;";
-            $stmt = $pdo->prepare($sql);
-            $stmt->execute(array($comment_id, $owner_id));
-            return true;
-        } catch (PDOException $e) {
-            return false;
-        }
+    public function deleteComment($comment_id, $owner_id)
+    {
+        $pdo = $this->getPDO();
+        $sql = "DELETE FROM comments WHERE id = ? AND owner_id = ?;";
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute(array($comment_id, $owner_id));
     }
 }

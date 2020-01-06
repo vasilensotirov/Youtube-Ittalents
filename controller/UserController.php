@@ -12,7 +12,9 @@ class UserController {
             if (isset($_POST['email']) && isset($_POST['password'])) {
                 $email = $_POST['email'];
                 $password = $_POST['password'];
-                $user = UserDAO::checkUser($email);
+                try {
+                    $dao = UserDAO::getInstance();
+                    $user = $dao->checkUser($email);
                 if (!$user) {
                     echo "Invalid password or email! Try again.";
                     include_once "view/login.php";
@@ -28,8 +30,14 @@ class UserController {
                     }
                 }
             }
+            catch (\PDOException $e){
+                include_once "view/main.php";
+                echo "Error!";
+                }
+            }
         }
-}
+    }
+
     public function register()
     {
         if (isset($_POST['register'])) {
@@ -40,10 +48,19 @@ class UserController {
                 $full_name = $_POST['full_name'];
                 $cpassword = $_POST['cpassword'];
                 $msg = $this->registerValidator($username, $email, $_POST['password'], $cpassword);
-                if(UserDAO::checkUser($email)){
-                    echo "User with that email already exists";
+                try {
+                    $dao = UserDAO::getInstance();
+                    $user = $dao->checkUser($email);
+                }
+                catch (\PDOException $e){
                     include_once "view/register.php";
-                }    elseif($msg != '') {
+                    echo "Error!";
+                }
+                if ($user) {
+                    echo "User with that email already exists";
+                    include_once "view/login.php";
+                }
+                elseif ($msg != '') {
                     echo $msg;
                     include_once "view/register.php";
                 }
@@ -52,54 +69,71 @@ class UserController {
                     $registration_date = date("Y-m-d H:i:s");
                     $avatar_url = $this->uploadFile("avatar", $_POST['username']);
                     $user = new User($username, $email, $password, $full_name, $registration_date, $avatar_url);
-                    UserDAO::registerUser($user);
-                    $arrayUser = [];
-                    $arrayUser['username'] = $user->getUsername();
-                    $arrayUser['full_name'] = $user->getFullName();
-                    $arrayUser['password'] = $user->getPassword();
-                    $arrayUser['email'] = $user->getEmail();
-                    $arrayUser['id'] = $user->getId();
-                    $_SESSION['logged_user'] = $arrayUser;
-                    include_once "view/main.php";
-                    echo "Successful registration!<br>";
+                    try {
+                        $dao = UserDAO::getInstance();
+                        $dao->registerUser($user);
+                        $arrayUser = [];
+                        $arrayUser['username'] = $user->getUsername();
+                        $arrayUser['full_name'] = $user->getFullName();
+                        $arrayUser['password'] = $user->getPassword();
+                        $arrayUser['email'] = $user->getEmail();
+                        $arrayUser['id'] = $user->getId();
+                        $_SESSION['logged_user'] = $arrayUser;
+                        include_once "view/main.php";
+                        echo "Successful registration!<br>";
+                    }
+                    catch (\PDOException $e){
+                        include_once "view/register.php";
+                        echo "Error!";
+                    }
                 }
 
             }
         }
     }
+
     public function edit(){
         if(isset($_POST['edit'])){
-        if (!isset($_SESSION["logged_user"])) {
-            header("Location: index.php");
-        }
-        if(isset($_POST['username']) && isset($_POST['email']) && isset($_POST['full_name'])){
-            $password = $_SESSION['logged_user']['password'];
-            if(isset($_POST['password']) && !empty($_POST['password'])){
-                if(password_verify($_POST['password'], $password)){
-                    if(isset($_POST['new_password']) && isset($_POST['cpassword'])){
-                        $newAvatar = $this->uploadFile("avatar", $_POST['username']);
-                        $password = password_hash($_POST['new_password'], PASSWORD_BCRYPT);
-                        $email = $_SESSION['logged_user']['email'];
-                        $user = new User($_POST['username'], $email, $password, $_POST['full_name'],null, $newAvatar);
-                        $user->setId($_SESSION['logged_user']['id']);
-                        UserDAO::editUser($user);
-                        $userArray['username'] = $user->getUsername();
-                        $userArray['email'] = $user->getEmail();
-                        $userArray['password'] = $user->getPassword();
-                        $userArray['full_name'] = $user->getFullName();
-                        $userArray['id'] = $user->getId();
-                        $_SESSION['logged_user'] = $userArray;
-                        include_once "view/main.php";
-                        echo "Profile is changed successfully!";
+            if (!isset($_SESSION["logged_user"])) {
+                header("Location: index.php");
+            }
+            if(isset($_POST['username']) && isset($_POST['email']) && isset($_POST['full_name'])){
+                $password = $_SESSION['logged_user']['password'];
+                if(isset($_POST['password']) && !empty($_POST['password'])){
+                    if(password_verify($_POST['password'], $password)){
+                        if(isset($_POST['new_password']) && isset($_POST['cpassword'])) {
+                            $newAvatar = $this->uploadFile("avatar", $_POST['username']);
+                            $password = password_hash($_POST['new_password'], PASSWORD_BCRYPT);
+                            $email = $_SESSION['logged_user']['email'];
+                            $user = new User($_POST['username'], $email, $password, $_POST['full_name'], null, $newAvatar);
+                            $user->setId($_SESSION['logged_user']['id']);
+                            try {
+                                $dao = UserDAO::getInstance();
+                                $dao->editUser($user);
+                                $userArray['username'] = $user->getUsername();
+                                $userArray['email'] = $user->getEmail();
+                                $userArray['password'] = $user->getPassword();
+                                $userArray['full_name'] = $user->getFullName();
+                                $userArray['id'] = $user->getId();
+                                $_SESSION['logged_user'] = $userArray;
+                                include_once "view/main.php";
+                                echo "Profile is changed successfully!";
+                            }
+                            catch (\PDOException $e){
+                                include_once "view/main.php";
+                                echo "Error editing user profile!";
+                            }
+                        }
                     }
-                }else{
-                    include_once "view/main.php";
-                    echo "The password is incorrect!";
+                    else {
+                        include_once "view/main.php";
+                        echo "The password is incorrect!";
                     }
                 }
             }
         }
     }
+
     public function uploadFile($file, $username){
         if (is_uploaded_file($_FILES[$file]["tmp_name"])) {
             $file_name_parts = explode(".", $_FILES[$file]["name"]);
@@ -112,10 +146,11 @@ class UserController {
         }
         return false;
     }
+
     public function logout(){
         unset($_SESSION);
         session_destroy();
-        header("Location: index.php?view=login");
+        header("Location:index.php?view=login");
         exit;
     }
 
@@ -136,7 +171,6 @@ class UserController {
                 $msg .= "Passwords not matching! <br>";
             }
         }
-
         return $msg;
     }
 
@@ -144,9 +178,17 @@ class UserController {
         if (isset($_GET["id"])) {
             $id = $_GET["id"];
         }
-        $user = UserDAO::getById($id);
-        $videos = VideoDAO::getByOwnerId($id);
-        include_once "view/profile.php";
+        try {
+            $userdao = UserDAO::getInstance();
+            $videodao = VideoDAO::getInstance();
+            $user = $userdao->getById($id);
+            $videos = $videodao->getByOwnerId($id);
+            include_once "view/profile.php";
+        }
+        catch (\PDOException $e){
+            include_once "view/main.php";
+            echo "Error!";
+        }
     }
 
     public function isFollowing($followed_id=null){
@@ -154,7 +196,14 @@ class UserController {
             $followed_id = $_GET["id"];
         }
         $follower_id = $_SESSION["logged_user"]["id"];
-        return UserDAO::isFollowing($follower_id, $followed_id);
+        try {
+            $dao = UserDAO::getInstance();
+            return $dao->isFollowing($follower_id, $followed_id);
+        }
+        catch (\PDOException $e){
+            include_once "view/main.php";
+            echo "Error!";
+        }
     }
 
     public function follow($followed_id=null){
@@ -162,7 +211,13 @@ class UserController {
             $followed_id = $_GET["id"];
         }
         $follower_id = $_SESSION["logged_user"]["id"];
-        UserDAO::followUser($follower_id, $followed_id);
+        try {
+            $dao = UserDAO::getInstance();
+            $dao->followUser($follower_id, $followed_id);
+        }
+        catch (\PDOException $e){
+            echo "Error following user!";
+        }
     }
 
     public function unfollow($followed_id=null){
@@ -170,7 +225,13 @@ class UserController {
             $followed_id = $_GET["id"];
         }
         $follower_id = $_SESSION["logged_user"]["id"];
-        UserDAO::unfollowUser($follower_id, $followed_id);
+        try {
+            $dao = UserDAO::getInstance();
+            $dao->unfollowUser($follower_id, $followed_id);
+        }
+        catch (\PDOException $e){
+            echo "Error unfollowing user!";
+        }
     }
 
     public function isReacting($user_id=null, $video_id=null){
@@ -178,7 +239,13 @@ class UserController {
             $video_id = $_GET["id"];
         }
         $user_id = $_SESSION["logged_user"]["id"];
-        return UserDAO::isReacting($user_id, $video_id);
+        try {
+            $dao = UserDAO::getInstance();
+            return $dao->isReacting($user_id, $video_id);
+        }
+        catch (\PDOException $e){
+            echo "Error!";
+        }
     }
 
     public function reactVideo($video_id=null, $status=null){
@@ -188,17 +255,21 @@ class UserController {
         }
         $user_id = $_SESSION["logged_user"]["id"];
         $isReacting = $this->isReacting($user_id, $video_id);
-        if ($isReacting == -1) {//if there has been no reaction
-            UserDAO::reactVideo($user_id, $video_id, $status);
+        try {
+            $dao = UserDAO::getInstance();
+            if ($isReacting == -1) {//if there has been no reaction
+                $dao->reactVideo($user_id, $video_id, $status);
+            } elseif ($isReacting == $status) { //if liking liked or unliking unliked video
+                $dao->unreactVideo($user_id, $video_id);
+            } elseif ($isReacting != $status) { //if liking disliked or disliking liked video
+                $dao->unreactVideo($user_id, $video_id);
+                $dao->reactVideo($user_id, $video_id, 1 - $isReacting);
+            }
+            echo $this->isReacting();
         }
-        elseif ($isReacting == $status){ //if liking liked or unliking unliked video
-            UserDAO::unreactVideo($user_id, $video_id);
+        catch (\PDOException $e){
+            echo "Error!";
         }
-        elseif ($isReacting != $status){ //if liking disliked or disliking liked video
-            UserDAO::unreactVideo($user_id, $video_id);
-            UserDAO::reactVideo($user_id, $video_id, 1-$isReacting);
-        }
-        echo $this->isReacting();
     }
 
     public function isReactingComment($user_id=null, $comment_id=null){
@@ -206,7 +277,13 @@ class UserController {
             $comment_id = $_GET["id"];
         }
         $user_id = $_SESSION["logged_user"]["id"];
-        return UserDAO::isReactingComment($user_id, $comment_id);
+        try {
+            $dao = UserDAO::getInstance();
+            return $dao->isReactingComment($user_id, $comment_id);
+        }
+        catch (\PDOException $e){
+            echo "Error!";
+        }
     }
 
     public function reactComment($comment_id=null, $status=null){
@@ -216,16 +293,20 @@ class UserController {
         }
         $user_id = $_SESSION["logged_user"]["id"];
         $isReacting = $this->isReactingComment($user_id, $comment_id);
-        if ($isReacting == -1) {//if there has been no reaction
-            UserDAO::reactComment($user_id, $comment_id, $status);
+        try {
+            $dao = UserDAO::getInstance();
+            if ($isReacting == -1) {//if there has been no reaction
+                $dao->reactComment($user_id, $comment_id, $status);
+            } elseif ($isReacting == $status) { //if liking liked or unliking unliked video
+                $dao->unreactComment($user_id, $comment_id);
+            } elseif ($isReacting != $status) { //if liking disliked or disliking liked video
+                $dao->unreactComment($user_id, $comment_id);
+                $dao->reactComment($user_id, $comment_id, 1 - $isReacting);
+            }
+            echo $this->isReactingComment();
         }
-        elseif ($isReacting == $status){ //if liking liked or unliking unliked video
-            UserDAO::unreactComment($user_id, $comment_id);
+        catch (\PDOException $e){
+            echo "Error!";
         }
-        elseif ($isReacting != $status){ //if liking disliked or disliking liked video
-            UserDAO::unreactComment($user_id, $comment_id);
-            UserDAO::reactComment($user_id, $comment_id, 1-$isReacting);
-        }
-        echo $this->isReactingComment();
     }
 }
