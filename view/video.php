@@ -23,7 +23,7 @@ require_once "navigation.php";
 <main>
     <?php
     if (isset($video)) {
-        echo "<video width='470' height='255' controls>
+        echo "<video width='854' height='480' controls autoplay>
         <source src='" . $video["video_url"] . "' type='video/mp4'></video><br>";
         echo $video["title"] . "<br>";
         echo $video["date_uploaded"] . "<br>";

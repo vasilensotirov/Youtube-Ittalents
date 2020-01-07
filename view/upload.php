@@ -10,6 +10,9 @@
 </head>
 <body>
 <?php
+if (!isset($categories)){
+    header("Location:index.php");
+}
 require_once "header.php";
 require_once "navigation.php";
 ?>
@@ -28,18 +31,11 @@ require_once "navigation.php";
         <tr>
             <td><label for="category_id"><b>Category:</b></label></td>
             <td><select id="category_id" name="category_id" required>
-                    <option value="1">Film & Animation</option>
-                    <option value="2">Autos & Vehicles</option>
-                    <option value="3">Music</option>
-                    <option value="4">Pets & Animals</option>
-                    <option value="5">Sports</option>
-                    <option value="6">Travel & Events</option>
-                    <option value="7">Gaming</option>
-                    <option value="8">People & Blogs</option>
-                    <option value="9">Entertainment</option>
-                    <option value="10">News & Politics</option>
-                    <option value="11">Education</option>
-                    <option value="12">Science & Technology</option>
+                    <?php
+                    foreach ($categories as $category){
+                        echo "<option value='". $category["id"] . "'>" . $category["name"] . "</option>";
+                    }
+                    ?>
                 </select></td>
         </tr>
         <tr>

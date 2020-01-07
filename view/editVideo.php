@@ -4,11 +4,10 @@ require_once "navigation.php";
 if (!isset($_SESSION["logged_user"])){
     header("Location:login.php");
 }
-if (!isset($video)){
+if (!isset($video) || !isset($categories)){
     header("Location:main.php");
 }
 ?>
-<!--<button><a href="index.php">Home</a></button>-->
 <form action="index.php?target=video&action=edit" method="post" enctype="multipart/form-data">
     <table>
         <input type="hidden" name="id" value="<?= $video["id"]; ?>"
@@ -24,18 +23,15 @@ if (!isset($video)){
         <tr>
             <td><label for="category_id"><b>Category:</b></label></td>
             <td><select id="category_id" name="category_id" required>
-                    <option value="1" <?php if ($video["category_id"] == 1) { echo "selected"; } ?>>Film & Animation</option>
-                    <option value="2"<?php if ($video["category_id"] == 2) {echo "selected"; } ?>>Autos & Vehicles</option>
-                    <option value="3"<?php if ($video["category_id"] == 3) {echo "selected"; } ?>>Music</option>
-                    <option value="4"<?php if ($video["category_id"] == 4) {echo "selected"; } ?>>Pets & Animals</option>
-                    <option value="5"<?php if ($video["category_id"] == 5) {echo "selected"; } ?>>Sports</option>
-                    <option value="6"<?php if ($video["category_id"] == 6) {echo "selected"; } ?>>Travel & Events</option>
-                    <option value="7"<?php if ($video["category_id"] == 7) {echo "selected"; } ?>>Gaming</option>
-                    <option value="8"<?php if ($video["category_id"] == 8) {echo "selected"; } ?>>People & Blogs</option>
-                    <option value="9"<?php if ($video["category_id"] == 9) {echo "selected"; } ?>>Entertainment</option>
-                    <option value="10"<?php if ($video["category_id"] == 10) {echo "selected"; } ?>>News & Politics</option>
-                    <option value="11"<?php if ($video["category_id"] == 11) {echo "selected"; } ?>>Education</option>
-                    <option value="12"<?php if ($video["category_id"] == 12) {echo "selected"; } ?>>Science & Technology</option>
+                    <?php
+                    foreach ($categories as $category){
+                        echo "<option value='". $category["id"] . "'";
+                        if ($category["id"] == $video["category_id"]){
+                            echo " selected";
+                        }
+                        echo ">" . $category["name"] . "</option>";
+                    }
+                    ?>
                 </select></td>
         </tr>
         <tr>

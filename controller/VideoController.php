@@ -66,6 +66,7 @@ class VideoController{
         try {
             $dao = VideoDAO::getInstance();
             $video = $dao->getById($id);
+            $categories = $dao->getCategories();
             include_once "view/editVideo.php";
         }
         catch (\PDOException $e){
