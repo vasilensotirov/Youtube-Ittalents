@@ -171,4 +171,15 @@ class VideoDAO extends BaseDao {
         $stmt = $pdo->prepare($sql);
         $stmt->execute(array($video_id));
     }
+    public function getMostWatched(){
+        $pdo = $this->getPDO();
+        $sql = "SELECT v.id, v.title, v.description, v.date_uploaded, v.owner_id, v.views, v.category_id, v.video_url, v.duration, v.thumbnail_url, 
+                u.id AS user_id, u.username, u.name FROM videos AS v
+                JOIN users AS u ON v.owner_id = u.id
+                ORDER BY views DESC LIMIT 5;";
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute();
+        $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        return $rows;
+    }
 }

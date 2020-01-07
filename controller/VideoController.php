@@ -256,4 +256,9 @@ class VideoController{
             echo "Error deleting comment!";
         }
     }
+    public function trending(){
+        $dao = VideoDAO::getInstance();
+        $mostWatchedVideos = $dao->getMostWatched();
+        include_once "view/trending.php";
+    }
 }
