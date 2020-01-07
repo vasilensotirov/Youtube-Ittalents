@@ -94,3 +94,31 @@ function dislikeComment(comment_id) {
     xhttp.open("GET", "index.php?target=user&action=reactComment&id=" + comment_id + "&status=0", true);
     xhttp.send();
 }
+
+function followUser(user_id) {
+    var xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function() {
+        if (this.readyState == 4 && this.status == 200) {
+            document.getElementById("follow-button").innerText="Unfollow";
+            document.getElementById("follow-button").onclick = function () {
+                unfollowUser(user_id);
+            };
+        }
+    };
+    xhttp.open("GET", "index.php?target=user&action=follow&id=" + user_id, true);
+    xhttp.send();
+}
+
+function unfollowUser(user_id) {
+    var xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function() {
+        if (this.readyState == 4 && this.status == 200) {
+            document.getElementById("follow-button").innerText="Follow";
+            document.getElementById("follow-button").onclick = function () {
+                followUser(user_id);
+            };
+        }
+    };
+    xhttp.open("GET", "index.php?target=user&action=unfollow&id=" + user_id, true);
+    xhttp.send();
+}

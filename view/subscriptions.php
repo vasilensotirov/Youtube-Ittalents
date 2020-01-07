@@ -17,7 +17,7 @@ require_once "navigation.php";
 ?>
 <table>
     <?php
-    if(isset($subscriptions)){
+    if(!empty($subscriptions)){
         foreach ($subscriptions as $subscription) {
             echo "<tr><td rowspan='2'><img style='border-radius: 50%;' alt='No photo' width='100px' src='";
             echo $subscription['avatar_url'];

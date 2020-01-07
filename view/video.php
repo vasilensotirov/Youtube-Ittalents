@@ -27,19 +27,19 @@ require_once "navigation.php";
         <source src='" . $video["video_url"] . "' type='video/mp4'></video><br>";
         echo $video["title"] . "<br>";
         echo $video["date_uploaded"] . "<br>";
+        echo "<h3>Views: " . $video['views'] . "</h3><br>";
         echo $video["name"] . "<br>";
         echo "<a href='index.php?target=user&action=getById&id=" . $video["user_id"] . "'>" . $video["username"] . "</a><br>";
-        echo "<h3>Views: " . $video['views'] . "</h3><br>";
         if ($video["owner_id"] == $_SESSION["logged_user"]["id"]){
             echo "<a href='index.php?target=video&action=loadEdit&id=" . $video["id"] . "'><button>Edit video</button></a><br>";
             echo "<a href='index.php?target=video&action=delete&id=" . $video["id"] . "'><button>Delete video</button></a><br>";
         }
         else {
             if ($video["isFollowed"]) {
-                echo "<a href='index.php?target=user&action=unfollow&id=" . $video["user_id"] . "'><button>Unfollow user</button></a><br>";
+                echo "<button id='follow-button' onclick='followUser(" . $video["user_id"] . ")'>Follow</button><br>";
             }
             else {
-                echo "<a href='index.php?target=user&action=follow&id=" . $video["user_id"] . "'><button>Follow user</button></a><br>";
+                echo "<button id='follow-button' onclick='unfollowUser(" . $video["user_id"] . ")'>Unfollow</button><br>";
             }
         }
         echo $video["description"] . "<br>";
