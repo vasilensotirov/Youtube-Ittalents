@@ -89,7 +89,7 @@ class VideoDAO extends BaseDao {
     public function getById($id)
     {
         $pdo = $this->getPDO();
-        $sql = "SELECT v.id, v.title, v.description, v.date_uploaded, v.owner_id, v.category_id, v.video_url, v.duration, v.thumbnail_url, 
+        $sql = "SELECT v.id, v.title, v.description, v.date_uploaded, v.owner_id, v.views, v.category_id, v.video_url, v.duration, v.thumbnail_url, 
                 u.id AS user_id, u.username, u.name FROM videos AS v
                 JOIN users AS u ON v.owner_id = u.id
                 WHERE v.id = ?;";
@@ -164,5 +164,11 @@ class VideoDAO extends BaseDao {
         $sql = "DELETE FROM comments WHERE id = ? AND owner_id = ?;";
         $stmt = $pdo->prepare($sql);
         $stmt->execute(array($comment_id, $owner_id));
+    }
+    public function updateViews($video_id){
+        $pdo = $this->getPDO();
+        $sql = "UPDATE videos SET views = views + 1 WHERE id = ?";
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute(array($video_id));
     }
 }

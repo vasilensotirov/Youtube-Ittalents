@@ -11,7 +11,15 @@ class Video{
     private $video_url;
     private $duration;
     private $thumbnail_url;
+    private $views;
 
+    /**
+     * @return mixed
+     */
+    public function getViews()
+    {
+        return $this->views;
+    }
     /**
      * @return mixed
      */

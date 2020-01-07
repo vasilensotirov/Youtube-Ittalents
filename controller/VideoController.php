@@ -181,6 +181,7 @@ class VideoController{
         try {
             $videodao = VideoDAO::getInstance();
             $userdao = UserDAO::getInstance();
+            $videodao->updateViews($id);
             $video = $videodao->getById($id);
             $video["isFollowed"] = $userdao->isFollowing($user_id, $video["owner_id"]);
             $video["isReacting"] = $userdao->isReacting($user_id, $id);
@@ -191,7 +192,8 @@ class VideoController{
         }
         catch (\PDOException $e){
             include_once "view/main.php";
-            echo "Error!";
+            echo "<br>Error!" . $e->getMessage();
+
         }
     }
 
