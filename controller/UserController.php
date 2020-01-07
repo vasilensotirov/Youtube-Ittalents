@@ -2,7 +2,7 @@
 namespace controller;
 
 use \model\User;
-use \model\UserDAO;
+use model\UserDAO;
 use model\VideoDAO;
 
 class UserController {
@@ -307,6 +307,31 @@ class UserController {
         }
         catch (\PDOException $e){
             echo "Error!";
+        }
+    }
+    public function subscriptions($user_id = null){
+        if(isset($_GET['user_id'])){
+            $user_id = $_GET['user_id'];
+        }
+        try{
+        $dao = UserDAO::getInstance();
+        $subscriptions = $dao->getSubscriptions($user_id);
+        include_once "view/subscriptions.php";
+        }catch(\PDOException $e){
+            echo "Error!" . $e->getMessage();
+        }
+
+    }
+    public function clickedUser(){
+        if(isset($_GET['id'])){
+            $followed_id = $_GET['id'];
+        }
+        try{
+            $dao = UserDAO::getInstance();
+            $user = $dao->getFollowedUser($followed_id);
+            include_once "view/subscriptions.php";
+        } catch (\PDOException $e){
+            echo "Error!" . $e->getMessage();
         }
     }
 }

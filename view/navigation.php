@@ -21,7 +21,7 @@ require_once "header.php";
     <ul>
     <li><a href="index.php"><img src="styles/images/homeLogo.png" class="navPics">Home</a></li>
     <li><a href="index.php?view=trending"><img src="styles/images/trendingLogo.png" class="navPics"">Trending</a></li>
-    <li><a href="index.php?view=subscriptions"><img src="styles/images/subscriptionsLogo.png" class="navPics">Subscriptions</a></li>
+    <li><a href="index.php?target=user&action=subscriptions&user_id=<?= $user_id ?>"><img src="styles/images/subscriptionsLogo.png" class="navPics">Subscriptions</a></li>
     <hr>
     <li><a href="index.php?view=library"><img src="styles/images/libraryLogo.png" class="navPics">Library</a></li>
     <li><a href="index.php?view=history"><img src="styles/images/historyLogo.png" class="navPics">History</a></li>

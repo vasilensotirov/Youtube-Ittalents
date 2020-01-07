@@ -170,4 +170,28 @@ class UserDAO extends BaseDao {
         $stmt = $pdo->prepare($sql);
         $stmt->execute(array($user_id, $comment_id));
     }
+    public function getSubscriptions($logged_user){
+        $pdo = $this->getPDO();
+        $sql = "SELECT u.username, u.avatar_url, u.name, ufu.followed_id FROM users_follow_users AS ufu
+                JOIN users AS u ON u.id = ufu.followed_id WHERE ufu.follower_id = ?;";
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute(array($logged_user));
+        $row = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        if($row){
+            return $row;
+        }else{
+            return false;
+        }
+    }
+    public function getFollowedUser($followed_id){
+        $pdo = $this->getPDO();
+        $sql = "SELECT u.username, u.avatar_url, u.name,p.id, p.playlist_title, p.date_created, v.title,
+                v.date_uploaded,v.id AS video_id, v.thumbnail_url FROM users AS u
+                JOIN playlists AS p ON p.owner_id = u.id
+                JOIN videos AS v ON v.owner_id = u.id WHERE u.id = ?;";
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute(array($followed_id));
+        $row = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        return $row;
+    }
 }

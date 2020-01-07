@@ -1,5 +1,5 @@
 <?php
-include_once "main.php";
+//include_once "main.php";
 $user = $_SESSION['logged_user'];
 ?>
 

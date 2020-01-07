@@ -2,7 +2,7 @@
 if (!isset($_SESSION["logged_user"])){
     header("Location:login.php");
 }
-echo "Hello " .$_SESSION['logged_user']['username'].", you are in the main page";
+//echo "Hello " .$_SESSION['logged_user']['username'].", you are in the main page";
 $user_id = $_SESSION["logged_user"]["id"];
 ?>
 <!doctype html>
