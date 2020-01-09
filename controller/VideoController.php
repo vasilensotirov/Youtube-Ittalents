@@ -293,20 +293,8 @@ class VideoController{
     public function getWatchLater() {
         if (isset($_SESSION["logged_user"]["id"])){
             $user_id = $_SESSION["logged_user"]["id"];
-            $orderby = null;
-            if (isset($_GET["orderby"])){
-                switch ($_GET["orderby"]){
-                    case "date": $orderby = "ORDER BY date_uploaded";
-                        break;
-                    case "likes": $orderby = "ORDER BY likes";
-                        break;
-                }
-                if (isset($_GET["desc"]) && $orderby){
-                    $orderby .= " DESC";
-                }
-            }
             $dao = PlaylistDAO::getInstance();
-            $videos = $dao->getWatchLater($user_id, $orderby);
+            $videos = $dao->getWatchLater($user_id);
         }
         else {
             echo "<h3>Login to save videos for watching later!</h3>";

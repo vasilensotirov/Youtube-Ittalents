@@ -1,6 +1,8 @@
 <?php
 namespace controller;
 
+use model\Playlist;
+use model\PlaylistDAO;
 use \model\User;
 use model\UserDAO;
 use model\VideoDAO;
@@ -72,6 +74,7 @@ class UserController {
                     try {
                         $dao = UserDAO::getInstance();
                         $dao->registerUser($user);
+                        $this->createWatchLater($user->getId());
                         $arrayUser = [];
                         $arrayUser['username'] = $user->getUsername();
                         $arrayUser['full_name'] = $user->getFullName();
@@ -172,6 +175,25 @@ class UserController {
             }
         }
         return $msg;
+    }
+
+    public function createWatchLater($owner_id=null){
+        if (isset($_SESSION["logged_user"]["id"])){
+            $owner_id = $_SESSION["logged_user"]["id"];
+        }
+        $playlist = new Playlist();
+        $title = "Watch Later";
+        $date_created = date("Y-m-d H:i:s");
+        $playlist->setTitle($title);
+        $playlist->setOwnerId($owner_id);
+        $playlist->setDateCreated($date_created);
+        try {
+            $dao = PlaylistDAO::getInstance();
+            $dao->create($playlist);
+        }
+        catch (\PDOException $e){
+            echo "Error creating playlist!";
+        }
     }
 
     public function getById($id=null){
