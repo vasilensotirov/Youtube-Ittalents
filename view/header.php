@@ -15,14 +15,12 @@ if(isset($_SESSION['logged_user'])){
 </head>
 <body>
 <header>
-    <a href="index.php"><img class="youtubeLogo" src="styles/images/youtube_PNG5.png" alt="youtube logo"></a>
+    <a href="index.php?target=video&action=getAll"><img class="youtubeLogo" src="styles/images/youtube_PNG5.png" alt="youtube logo"></a>
     <form id="searchForm" action="index.php?target=search&action=search" method="post">
         <input  type="text" placeholder="Search" name="search_query">
         <input  type="submit" name="search" value="Search">
     </form>
     <a href="index.php?target=view&action=viewRouter&view=upload"><button class="headerButtons">Upload video</button></a>
-    <a href="index.php?target=video&action=getAll"><button class="headerButtons">Show all videos</button></a>
-    <a href="index.php?target=video&action=getByOwnerId&owner_id=<?= $user_id; ?>"><button class="headerButtons">Show my videos</button></a>
     <a href="index.php?view=editProfile"><button class="headerButtons">Edit profile</button></a>
     <a href="index.php?view=createPlaylist"><button class="headerButtons">Create playlist</button></a>
     <a href="index.php?target=user&action=logout"><button class="headerButtons">Logout</button></a>

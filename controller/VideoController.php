@@ -2,6 +2,7 @@
 namespace controller;
 include_once "fileHandler.php";
 
+use model\PlaylistDAO;
 use model\UserDAO;
 use model\Video;
 use model\VideoDAO;
@@ -177,24 +178,25 @@ class VideoController{
         if (isset ($_GET["id"])){
             $id = $_GET["id"];
         }
-        $user_id = $_SESSION["logged_user"]["id"];
         try {
             $videodao = VideoDAO::getInstance();
             $userdao = UserDAO::getInstance();
             $videodao->updateViews($id);
             $video = $videodao->getById($id);
-            $video["isFollowed"] = $userdao->isFollowing($user_id, $video["owner_id"]);
-            $video["isReacting"] = $userdao->isReacting($user_id, $id);
             $video["likes"] = $videodao->getReactions($id, 1);
             $video["dislikes"] = $videodao->getReactions($id, 0);
             $comments = $videodao->getComments($id);
-            include_once "view/video.php";
+            if (isset($_SESSION["logged_user"]["id"])) {
+                $user_id = $_SESSION["logged_user"]["id"];
+                $userdao->addToHistory($id, $user_id, date("Y-m-d H:i:s"));
+                $video["isFollowed"] = $userdao->isFollowing($user_id, $video["owner_id"]);
+                $video["isReacting"] = $userdao->isReacting($user_id, $id);
+            }
         }
         catch (\PDOException $e){
-            include_once "view/main.php";
             echo "<br>Error!" . $e->getMessage();
-
         }
+        include_once "view/video.php";
     }
 
     public function getAll(){
@@ -256,9 +258,85 @@ class VideoController{
             echo "Error deleting comment!";
         }
     }
+
     public function trending(){
         $dao = VideoDAO::getInstance();
         $mostWatchedVideos = $dao->getMostWatched();
         include_once "view/trending.php";
+    }
+
+    public function getHistory() {
+        if (isset($_SESSION["logged_user"]["id"])){
+            $user_id = $_SESSION["logged_user"]["id"];
+            $orderby = null;
+            if (isset($_GET["orderby"])){
+                switch ($_GET["orderby"]){
+                    case "date": $orderby = "ORDER BY date_uploaded";
+                        break;
+                    case "likes": $orderby = "ORDER BY likes";
+                        break;
+                }
+                if (isset($_GET["desc"]) && $orderby){
+                    $orderby .= " DESC";
+                }
+            }
+            $dao = VideoDAO::getInstance();
+            $videos = $dao->getHistory($user_id, $orderby);
+        }
+        else {
+            echo "<h3>Login to record history!</h3>";
+        }
+        $action = "getHistory";
+        include_once "view/main.php";
+    }
+
+    public function getWatchLater() {
+        if (isset($_SESSION["logged_user"]["id"])){
+            $user_id = $_SESSION["logged_user"]["id"];
+            $orderby = null;
+            if (isset($_GET["orderby"])){
+                switch ($_GET["orderby"]){
+                    case "date": $orderby = "ORDER BY date_uploaded";
+                        break;
+                    case "likes": $orderby = "ORDER BY likes";
+                        break;
+                }
+                if (isset($_GET["desc"]) && $orderby){
+                    $orderby .= " DESC";
+                }
+            }
+            $dao = PlaylistDAO::getInstance();
+            $videos = $dao->getWatchLater($user_id, $orderby);
+        }
+        else {
+            echo "<h3>Login to save videos for watching later!</h3>";
+        }
+        $action = "getWatchLater";
+        include_once "view/main.php";
+    }
+
+    public function getLikedVideos() {
+        if (isset($_SESSION["logged_user"]["id"])){
+            $user_id = $_SESSION["logged_user"]["id"];
+            $orderby = null;
+            if (isset($_GET["orderby"])){
+                switch ($_GET["orderby"]){
+                    case "date": $orderby = "ORDER BY date_uploaded";
+                        break;
+                    case "likes": $orderby = "ORDER BY likes";
+                        break;
+                }
+                if (isset($_GET["desc"]) && $orderby){
+                    $orderby .= " DESC";
+                }
+            }
+            $dao = VideoDAO::getInstance();
+            $videos = $dao->getLikedVideos($user_id, $orderby);
+        }
+        else {
+            echo "<h3>Login to like videos!</h3>";
+        }
+        $action = "getLikedVideos";
+        include_once "view/main.php";
     }
 }

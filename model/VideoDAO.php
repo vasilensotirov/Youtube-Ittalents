@@ -1,5 +1,6 @@
 <?php
 namespace model;
+use http\Exception\BadUrlException;
 use PDO;
 use PDOException;
 class VideoDAO extends BaseDao {
@@ -109,6 +110,35 @@ class VideoDAO extends BaseDao {
                 $orderby;";
         $stmt = $pdo->prepare($sql);
         $stmt->execute();
+        $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        return $rows;
+    }
+
+    public function getHistory ($user_id, $orderby=null){
+        $pdo = $this->getPDO();
+        $sql = "SELECT v.id, v.title, v.date_uploaded, u.username, v.thumbnail_url, SUM(urv.status) AS likes FROM videos AS v 
+                JOIN users AS u ON v.owner_id = u.id
+                LEFT JOIN users_react_videos AS urv ON urv.video_id = v.id
+                LEFT JOIN users_watch_videos AS uwv ON uwv.video_id = v.id
+                WHERE uwv.user_id = ?
+                GROUP BY v.id
+                $orderby;";
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute(array($user_id));
+        $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        return $rows;
+    }
+
+    public function getLikedVideos($user_id, $orderby=null){
+        $pdo = $this->getPDO();
+        $sql = "SELECT v.id, v.title, v.date_uploaded, u.username, v.thumbnail_url, SUM(urv.status) AS likes FROM videos AS v 
+                JOIN users AS u ON v.owner_id = u.id
+                LEFT JOIN users_react_videos AS urv ON urv.video_id = v.id
+                WHERE urv.user_id = ? AND urv.status = 1
+                GROUP BY v.id
+                $orderby;";
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute(array($user_id));
         $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
         return $rows;
     }
