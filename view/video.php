@@ -43,27 +43,18 @@ require_once "navigation.php";
             }
         }
         echo $video["description"] . "<br>";
-        echo "<p id='reactstatus' hidden>";
-        if ($video["isReacting"] == -1){
-            echo "Neutral.";
-        }
-        if ($video["isReacting"] == 1){
-            echo "Liked.";
-        }
-        elseif ($video["isReacting"] == 0){
-            echo "Disliked.";
-            }
-        echo "</p>";
     }
     else {
         header("Location:main.php");
     }
     ?>
     </p>
-<button id="like" onclick="likeVideo(<?= $video["id"]; ?>)">Like</button>
-    (<?= $video["likes"]; ?>)
-<button id="dislike" onclick="dislikeVideo(<?= $video["id"]; ?>)">Dislike</button>
-    (<?= $video["dislikes"]; ?>)
+<button id="like" <?php if ($video["isReacting"] == 1) { echo " style='color:blue' "; } else { echo " style='color:gray' "; }?>
+        onclick="likeVideo(<?= $video["id"]; ?>)">Like</button>
+    (<span id="likes-count"><?= $video["likes"]; ?></span>)
+<button id="dislike"  <?php if ($video["isReacting"] == 0) { echo " style='color:blue' "; } else { echo " style='color:gray' "; }?>
+        onclick="dislikeVideo(<?= $video["id"]; ?>)">Dislike</button>
+    (<span id="dislikes-count"><?= $video["dislikes"]; ?></span>)
     <br>
     Write comment:
     <form method="post" action="index.php?target=video&action=addComment">
@@ -88,11 +79,10 @@ require_once "navigation.php";
                 echo "<td>" . $comment["name"] . "</td><td>" . $comment["date"] . "</td></tr>";
                 echo "<td colspan='2'>" . $comment["content"] . "</td>";
                 echo "<tr><td>
-                    <button id='like' onclick='likeComment(" . $comment["id"] . ")'>Like</button>(" .
+                    <button id='like-comment' onclick='likeComment(" . $comment["id"] . ")'>Like</button>(<span id='comment-likes'>" .
                     $comment["likes"] .
-                    ")<button id='dislike' onclick='dislikeComment(" . $comment["id"] . ")'>Dislike</button>(" .
-                    $comment["dislikes"] . ")";
-                echo "<span id='commentreact'></span>";
+                    "</span>)<button id='dislike-comment' onclick='dislikeComment(" . $comment["id"] . ")'>Dislike</button>(<span id='comment-dislikes'>" .
+                    $comment["dislikes"] . "</span>)";
                 if ($comment["owner_id"] == $_SESSION["logged_user"]["id"]){
                     echo "<button><a href='index.php?target=video&action=deleteComment&id=" . $comment["id"] .
                         "&video_id=" . $video["id"] . "'>Delete</a></button>";

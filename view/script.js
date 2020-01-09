@@ -2,13 +2,14 @@ function likeVideo(video_id) {
     var xhttp = new XMLHttpRequest();
     xhttp.onreadystatechange = function() {
         if (this.readyState == 4 && this.status == 200) {
-            if (this.responseText == 1) {
-                document.getElementById("likesCount").stepUp();
+            var res = JSON.parse(this.response);
+            document.getElementById("likes-count").innerText = res.likes;
+            document.getElementById("dislikes-count").innerText = res.dislikes;
+            if (res.stat == 1) {
                 document.getElementById("like").style.color = 'blue';
                 document.getElementById("dislike").style.color = 'gray';
             }
-            if (this.responseText == -1){
-                document.getElementById("likesCount").stepDown();
+            if (res.stat == -1){
                 document.getElementById("like").style.color = 'gray';
                 document.getElementById("dislike").style.color = 'gray';
             }
@@ -22,13 +23,14 @@ function dislikeVideo(video_id) {
     var xhttp = new XMLHttpRequest();
     xhttp.onreadystatechange = function() {
         if (this.readyState == 4 && this.status == 200) {
-            if (this.responseText == 0) {
-                document.getElementById("dislikesCount").stepUp();
+            var res = JSON.parse(this.response);
+            document.getElementById("likes-count").innerText = res.likes;
+            document.getElementById("dislikes-count").innerText = res.dislikes;
+            if (res.stat == 0) {
                 document.getElementById("like").style.color = 'gray';
                 document.getElementById("dislike").style.color = 'blue';
             }
-            if (this.responseText == -1){
-                document.getElementById("dislikesCount").stepDown();
+            if (res.stat == -1){
                 document.getElementById("like").style.color = 'gray';
                 document.getElementById("dislike").style.color = 'gray';
             }
@@ -67,11 +69,16 @@ function likeComment(comment_id) {
     var xhttp = new XMLHttpRequest();
     xhttp.onreadystatechange = function() {
         if (this.readyState == 4 && this.status == 200) {
-            if (this.responseText == 1) {
-                document.getElementById("commentreact").innerText="Liked.";
+            var res = JSON.parse(this.response);
+            document.getElementById("comment-likes").innerText = res.likes;
+            document.getElementById("comment-dislikes").innerText = res.dislikes;
+            if (res.stat == 1) {
+                document.getElementById("like-comment").style.color = 'blue';
+                document.getElementById("dislike-comment").style.color = 'gray';
             }
-            if (this.responseText == -1){
-                document.getElementById("commentreact").innerText="Neutral.";
+            if (res.stat == -1){
+                document.getElementById("like-comment").style.color = 'gray';
+                document.getElementById("dislike-comment").style.color = 'gray';
             }
         }
     };
@@ -83,11 +90,16 @@ function dislikeComment(comment_id) {
     var xhttp = new XMLHttpRequest();
     xhttp.onreadystatechange = function() {
         if (this.readyState == 4 && this.status == 200) {
-            if (this.responseText == 0) {
-                document.getElementById("commentreact").innerText="Disliked.";
+            var res = JSON.parse(this.response);
+            document.getElementById("comment-likes").innerText = res.likes;
+            document.getElementById("comment-dislikes").innerText = res.dislikes;
+            if (res.stat == 0) {
+                document.getElementById("like-comment").style.color = 'gray';
+                document.getElementById("dislike-comment").style.color = 'blue';
             }
-            if (this.responseText == -1){
-                document.getElementById("commentreact").innerText="Neutral.";
+            if (res.stat == -1){
+                document.getElementById("like-comment").style.color = 'gray';
+                document.getElementById("dislike-comment").style.color = 'gray';
             }
         }
     };

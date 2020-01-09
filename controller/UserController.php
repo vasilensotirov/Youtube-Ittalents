@@ -279,16 +279,21 @@ class UserController {
         $user_id = $_SESSION["logged_user"]["id"];
         $isReacting = $this->isReacting($user_id, $video_id);
         try {
-            $dao = UserDAO::getInstance();
+            $userdao = UserDAO::getInstance();
+            $videodao = VideoDAO::getInstance();
             if ($isReacting == -1) {//if there has been no reaction
-                $dao->reactVideo($user_id, $video_id, $status);
+                $userdao->reactVideo($user_id, $video_id, $status);
             } elseif ($isReacting == $status) { //if liking liked or unliking unliked video
-                $dao->unreactVideo($user_id, $video_id);
+                $userdao->unreactVideo($user_id, $video_id);
             } elseif ($isReacting != $status) { //if liking disliked or disliking liked video
-                $dao->unreactVideo($user_id, $video_id);
-                $dao->reactVideo($user_id, $video_id, 1 - $isReacting);
+                $userdao->unreactVideo($user_id, $video_id);
+                $userdao->reactVideo($user_id, $video_id, 1 - $isReacting);
             }
-            echo $this->isReacting();
+            $arr = [];
+            $arr["stat"] = $this->isReacting();
+            $arr["likes"] = $videodao->getReactions($video_id, 1);
+            $arr["dislikes"] = $videodao->getReactions($video_id, 0);
+            echo json_encode($arr);
         }
         catch (\PDOException $e){
             echo "Error!";
@@ -326,7 +331,11 @@ class UserController {
                 $dao->unreactComment($user_id, $comment_id);
                 $dao->reactComment($user_id, $comment_id, 1 - $isReacting);
             }
-            echo $this->isReactingComment();
+            $arr = [];
+            $arr["stat"] = $this->isReactingComment();
+            $arr["likes"] = $dao->getCommentReactions($comment_id, 1);
+            $arr["dislikes"] = $dao->getCommentReactions($comment_id, 0);
+            echo json_encode($arr);
         }
         catch (\PDOException $e){
             echo "Error!";

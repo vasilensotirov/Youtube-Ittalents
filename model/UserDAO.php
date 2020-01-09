@@ -171,6 +171,20 @@ class UserDAO extends BaseDao {
         $stmt->execute(array($user_id, $comment_id));
     }
 
+    public function getCommentReactions($comment_id, $status){
+        $pdo = $this->getPDO();
+        $sql = "SELECT COUNT(*) AS count FROM users_react_comments 
+                WHERE comment_id = ? AND status = ?;";
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute(array($comment_id, $status));
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+        if ($row) {
+            return $row["count"];
+        } else {
+            return 0;
+        }
+    }
+
     public function getSubscriptions($logged_user){
         $pdo = $this->getPDO();
         $sql = "SELECT u.username, u.avatar_url, u.name, ufu.followed_id FROM users_follow_users AS ufu
