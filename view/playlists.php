@@ -29,6 +29,7 @@ if(isset($playlists)){
     }
 }
 ?>
+<a href="index.php?view=createPlaylist"><button>Create new playlist</button></a><br>
 <table>
 <?php
 if(isset($videos)){

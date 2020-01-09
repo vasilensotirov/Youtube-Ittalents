@@ -204,6 +204,7 @@ class UserController {
             $userdao = UserDAO::getInstance();
             $videodao = VideoDAO::getInstance();
             $user = $userdao->getById($id);
+            $user["id"] = $id;
             $videos = $videodao->getByOwnerId($id);
             include_once "view/profile.php";
         }

@@ -19,20 +19,16 @@ $user_id = $_SESSION["logged_user"]["id"];
 <?php
 require_once "header.php";
 require_once "navigation.php";
-?>
-<br>
-<a href="index.php"><button>Home</button></a>
-<a href="index.php?target=user&action=logout"><button>Logout</button></a>
-<br>
-<a href="index.php?target=view&action=viewRouter&view=upload"><button>Upload video</button></a>
-<br>
-<?php
+
 if (isset($user)) {
     echo "<img width=100px src='" . $user["avatar_url"] . "'>";
     echo $user["username"] . "<br>";
     echo "Name: " . $user["name"] . "<br>";
     echo "Registered on: " . $user["registration_date"] . "<br>";
-    echo "Videos:";
+    if ($user["id"] == $_SESSION["logged_user"]["id"]){
+        echo "<a href='index.php?view=editProfile'><button>Edit profile</button></a><br>";
+    }
+    echo "<h3>Videos:</h3>";
 }
 else {
     header("Location:main.php");

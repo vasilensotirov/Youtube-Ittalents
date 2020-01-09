@@ -21,8 +21,7 @@ if(isset($_SESSION['logged_user'])){
         <input  type="submit" name="search" value="Search">
     </form>
     <a href="index.php?target=view&action=viewRouter&view=upload"><button class="headerButtons">Upload video</button></a>
-    <a href="index.php?view=editProfile"><button class="headerButtons">Edit profile</button></a>
-    <a href="index.php?view=createPlaylist"><button class="headerButtons">Create playlist</button></a>
+    <a href="index.php?target=user&action=getById&id=<?= $user_id; ?>"><button class="headerButtons">View profile</button></a>
     <a href="index.php?target=user&action=logout"><button class="headerButtons">Logout</button></a>
 </header>
 </body>
