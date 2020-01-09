@@ -17,7 +17,7 @@ if(isset($_SESSION['logged_user'])){
 <header>
     <a href="index.php?target=video&action=getAll"><img class="youtubeLogo" src="styles/images/youtube_PNG5.png" alt="youtube logo"></a>
     <form id="searchForm" action="index.php?target=search&action=search" method="post">
-        <input  type="text" placeholder="Search" name="search_query">
+        <input style="width: 50%;height: 20px;"  type="text" placeholder="Search" name="search_query">
         <input  type="submit" name="search" value="Search">
     </form>
     <a href="index.php?target=view&action=viewRouter&view=upload"><button class="headerButtons">Upload video</button></a>

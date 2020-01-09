@@ -198,7 +198,6 @@ class UserDAO extends BaseDao {
             return false;
         }
     }
-
     public function getFollowedUser($followed_id){
         $pdo = $this->getPDO();
         $sql = "SELECT u.username, u.avatar_url, u.name,p.id, p.playlist_title, p.date_created, v.title,
@@ -210,12 +209,23 @@ class UserDAO extends BaseDao {
         $row = $stmt->fetchAll(PDO::FETCH_ASSOC);
         return $row;
     }
-
     public function addToHistory($video_id, $user_id, $date){
-        $pdo = $this->getPDO();
-        $sql = "INSERT INTO users_watch_videos (video_id, user_id, date)
+        try{
+            $pdo = $this->getPDO();
+            $pdo->beginTransaction();
+            $sql1 = "SELECT * FROM users_watch_videos WHERE video_id = ? AND user_id = ?;";
+            $sql2 = "INSERT INTO users_watch_videos (video_id, user_id, date)
                 VALUES (?, ?, ?)";
-        $stmt = $pdo->prepare($sql);
-        $stmt->execute(array($video_id, $user_id, $date));
+            $stmt1 = $pdo->prepare($sql1);
+            $stmt1->execute(array($video_id, $user_id));
+            if(!$stmt1->rowCount()){
+                $stmt2 = $pdo->prepare($sql2);
+                $stmt2->execute(array($video_id, $user_id, $date));
+            }
+            $pdo->commit();
+        } catch (PDOException $e){
+            $pdo->rollBack();
+            throw new PDOException();
+        }
     }
 }

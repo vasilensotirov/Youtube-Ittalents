@@ -18,8 +18,9 @@ header {
 }
 #searchForm {
     margin-top: 10px;
-    margin-left: 10px;
+    margin-left: 105px;
     float:left;
+    width : 65%;
 }
 .headerButtons {
     margin-top: 10px;
