@@ -205,6 +205,9 @@ class UserController {
             $videodao = VideoDAO::getInstance();
             $user = $userdao->getById($id);
             $user["id"] = $id;
+            if (isset($_SESSION["logged_user"]["id"])) {
+                $user["isFollowed"] = $userdao->isFollowing($_SESSION["logged_user"]["id"], $id);
+            }
             $videos = $videodao->getByOwnerId($id);
             include_once "view/profile.php";
         }

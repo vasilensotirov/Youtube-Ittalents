@@ -166,6 +166,7 @@ class VideoController{
             $dao = VideoDAO::getInstance();
             $videos = $dao->getByOwnerId($owner_id, $orderby);
             $action = "getByOwnerId";
+            $orderby = true;
             include_once "view/main.php";
         }
         catch (\PDOException $e){
@@ -215,6 +216,7 @@ class VideoController{
         $dao = VideoDAO::getInstance();
         $videos = $dao->getAll($orderby);
         $action = "getAll";
+        $orderby = true;
         include_once "view/main.php";
     }
 
@@ -259,10 +261,10 @@ class VideoController{
         }
     }
 
-    public function trending(){
+    public function getTrending(){
         $dao = VideoDAO::getInstance();
-        $mostWatchedVideos = $dao->getMostWatched();
-        include_once "view/trending.php";
+        $videos = $dao->getMostWatched();
+        include_once "view/main.php";
     }
 
     public function getHistory() {
@@ -287,6 +289,7 @@ class VideoController{
             echo "<h3>Login to record history!</h3>";
         }
         $action = "getHistory";
+        $orderby = true;
         include_once "view/main.php";
     }
 
@@ -325,6 +328,7 @@ class VideoController{
             echo "<h3>Login to like videos!</h3>";
         }
         $action = "getLikedVideos";
+        $orderby = true;
         include_once "view/main.php";
     }
 }

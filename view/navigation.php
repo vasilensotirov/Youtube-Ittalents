@@ -20,7 +20,7 @@ require_once "header.php";
 <nav>
     <ul>
     <li><a href="index.php?target=video&action=getAll"><img src="styles/images/homeLogo.png" class="navPics">Home</a></li>
-    <li><a href="index.php?target=video&action=trending"><img src="styles/images/trendingLogo.png" class="navPics"">Trending</a></li>
+    <li><a href="index.php?target=video&action=getTrending"><img src="styles/images/trendingLogo.png" class="navPics"">Trending</a></li>
     <li><a href="index.php?target=user&action=subscriptions&user_id=<?= $user_id ?>"><img src="styles/images/subscriptionsLogo.png" class="navPics">Subscriptions</a></li>
     <hr>
     <li><a href="index.php?target=video&action=getByOwnerId&owner_id=<?= $user_id; ?>"><img src="styles/images/libraryLogo.png" class="navPics">Library</a></li>

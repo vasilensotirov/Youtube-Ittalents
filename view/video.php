@@ -36,10 +36,10 @@ require_once "navigation.php";
         }
         else {
             if ($video["isFollowed"]) {
-                echo "<button id='follow-button' onclick='followUser(" . $video["user_id"] . ")'>Follow</button><br>";
+                echo "<button id='follow-button' onclick='unfollowUser(" . $video["user_id"] . ")'>Unsubscribe</button><br>";
             }
             else {
-                echo "<button id='follow-button' onclick='unfollowUser(" . $video["user_id"] . ")'>Unfollow</button><br>";
+                echo "<button id='follow-button' onclick='followUser(" . $video["user_id"] . ")'>Subscribe</button><br>";
             }
         }
         echo $video["description"] . "<br>";

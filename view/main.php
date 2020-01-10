@@ -20,11 +20,11 @@ require_once "header.php";
 require_once "navigation.php";
 ?>
 <main>
-    <b>Order by:</b>
-    <button><a href="index.php?target=video&action=<?= $action; ?>&orderby=date">Date ASC</a></button>
-    <button><a href="index.php?target=video&action=<?= $action; ?>&orderby=date&desc">Date DESC</a></button>
-    <button><a href="index.php?target=video&action=<?= $action; ?>&orderby=likes">Likes ASC</a></button>
-    <button><a href="index.php?target=video&action=<?= $action; ?>&orderby=likes&desc">Likes DESC</a></button>
+<?php
+if (isset($orderby)){
+    include_once "orderby.php";
+}
+?>
 
 <table>
     <?php
@@ -37,16 +37,22 @@ require_once "navigation.php";
             }
             echo $video["thumbnail_url"];
             echo "'></a></td></tr>";
-            echo "<tr><td>";
+            echo "<tr><td><b>";
             echo $video["title"];
-            echo "</td></tr>";
-            echo "<tr><td>";
-            echo $video["date_uploaded"];
-            echo "</td></tr>";
+            echo "</b></td></tr>";
             echo "<tr><td>";
             echo $video["username"];
             echo "</td></tr>";
+            echo "<tr><td>";
+            echo $video["views"];
+            echo " views</td></tr>";
+            echo "<tr><td>";
+            echo $video["date_uploaded"];
+            echo "</td></tr>";
             }
+        }
+        else {
+            echo "<h3>No videos to show.</h3>";
         }
     }
     if(isset($playlists)){
@@ -57,6 +63,9 @@ require_once "navigation.php";
                 echo $playlist["date_created"]. "<br>";
                 echo "</td></tr>";
             }
+        }
+        else {
+            echo "<h3>No playlists.</h3>";
         }
     }
     if(isset($users)){
@@ -72,6 +81,9 @@ require_once "navigation.php";
                 echo $user['registration_date'];
                 echo "</td></tr>";
             }
+        }
+        else {
+            echo "<h3>You don't have active subscriptions.</h3>";
         }
     }
     ?>

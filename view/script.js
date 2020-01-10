@@ -111,7 +111,7 @@ function followUser(user_id) {
     var xhttp = new XMLHttpRequest();
     xhttp.onreadystatechange = function() {
         if (this.readyState == 4 && this.status == 200) {
-            document.getElementById("follow-button").innerText="Unfollow";
+            document.getElementById("follow-button").innerText="Unsubscribe";
             document.getElementById("follow-button").onclick = function () {
                 unfollowUser(user_id);
             };
@@ -125,7 +125,7 @@ function unfollowUser(user_id) {
     var xhttp = new XMLHttpRequest();
     xhttp.onreadystatechange = function() {
         if (this.readyState == 4 && this.status == 200) {
-            document.getElementById("follow-button").innerText="Follow";
+            document.getElementById("follow-button").innerText="Subscribe";
             document.getElementById("follow-button").onclick = function () {
                 followUser(user_id);
             };

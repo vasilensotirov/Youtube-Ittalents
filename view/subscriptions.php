@@ -17,17 +17,22 @@ require_once "navigation.php";
 ?>
 <table>
     <?php
-    if(!empty($subscriptions)){
-        foreach ($subscriptions as $subscription) {
-            echo "<tr><td rowspan='2'><img style='border-radius: 50%;' alt='No photo' width='100px' src='";
-            echo $subscription['avatar_url'];
-            echo "'></td>";
-            echo "<td>";
-            echo "<a href='index.php?target=user&action=clickedUser&id=" . $subscription["followed_id"] ."'><b>" . $subscription["username"]. "</b></a>";
-            echo "</td></tr>";
-            echo "<tr><td>";
-            echo $subscription['name'];
-            echo "</td></tr>";
+    if(isset($subscriptions)){
+        if ($subscriptions) {
+            foreach ($subscriptions as $subscription) {
+                echo "<tr><td rowspan='2'><img style='border-radius: 50%;' alt='No photo' width='100px' src='";
+                echo $subscription['avatar_url'];
+                echo "'></td>";
+                echo "<td>";
+                echo "<a href='index.php?target=user&action=getById&id=" . $subscription["followed_id"] . "'><b>" . $subscription["username"] . "</b></a>";
+                echo "</td></tr>";
+                echo "<tr><td>";
+                echo $subscription['name'];
+                echo "</td></tr>";
+            }
+        }
+        else {
+            echo "<h3>No active subsciptions.</h3>";
         }
     }
     if(isset($user)){

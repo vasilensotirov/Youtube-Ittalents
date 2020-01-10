@@ -75,7 +75,7 @@ class VideoDAO extends BaseDao {
     public function getByOwnerId($owner_id, $orderby = null)
     {
         $pdo = $this->getPDO();
-        $sql = "SELECT v.id, v.title, v.date_uploaded, u.username, v.thumbnail_url, SUM(urv.status) AS likes FROM videos AS v 
+        $sql = "SELECT v.id, v.title, v.date_uploaded, u.username, v.views, v.thumbnail_url, SUM(urv.status) AS likes FROM videos AS v 
                 JOIN users AS u ON v.owner_id = u.id
                 LEFT JOIN users_react_videos AS urv ON urv.video_id = v.id
                 WHERE owner_id = ?
@@ -103,7 +103,7 @@ class VideoDAO extends BaseDao {
     public function getAll($orderby = null)
     {
         $pdo = $this->getPDO();
-        $sql = "SELECT v.id, v.title, v.date_uploaded, u.username, v.thumbnail_url, SUM(urv.status) AS likes FROM videos AS v 
+        $sql = "SELECT v.id, v.title, v.date_uploaded, u.username, v.views, v.thumbnail_url, SUM(urv.status) AS likes FROM videos AS v 
                 JOIN users AS u ON v.owner_id = u.id
                 LEFT JOIN users_react_videos AS urv ON urv.video_id = v.id
                 GROUP BY v.id
@@ -116,7 +116,7 @@ class VideoDAO extends BaseDao {
 
     public function getHistory ($user_id, $orderby=null){
         $pdo = $this->getPDO();
-        $sql = "SELECT v.id, v.title, v.date_uploaded, u.username, v.thumbnail_url, SUM(urv.status) AS likes FROM videos AS v 
+        $sql = "SELECT v.id, v.title, v.date_uploaded, u.username, v.views, v.thumbnail_url, SUM(urv.status) AS likes FROM videos AS v 
                 JOIN users AS u ON v.owner_id = u.id
                 LEFT JOIN users_react_videos AS urv ON urv.video_id = v.id
                 LEFT JOIN users_watch_videos AS uwv ON uwv.video_id = v.id
@@ -131,7 +131,7 @@ class VideoDAO extends BaseDao {
 
     public function getLikedVideos($user_id, $orderby=null){
         $pdo = $this->getPDO();
-        $sql = "SELECT v.id, v.title, v.date_uploaded, u.username, v.thumbnail_url, SUM(urv.status) AS likes FROM videos AS v 
+        $sql = "SELECT v.id, v.title, v.date_uploaded, u.username, v.views, v.thumbnail_url, SUM(urv.status) AS likes FROM videos AS v 
                 JOIN users AS u ON v.owner_id = u.id
                 LEFT JOIN users_react_videos AS urv ON urv.video_id = v.id
                 WHERE urv.user_id = ? AND urv.status = 1
@@ -195,17 +195,20 @@ class VideoDAO extends BaseDao {
         $stmt = $pdo->prepare($sql);
         $stmt->execute(array($comment_id, $owner_id));
     }
+
     public function updateViews($video_id){
         $pdo = $this->getPDO();
         $sql = "UPDATE videos SET views = views + 1 WHERE id = ?";
         $stmt = $pdo->prepare($sql);
         $stmt->execute(array($video_id));
     }
+
     public function getMostWatched(){
         $pdo = $this->getPDO();
-        $sql = "SELECT v.id, v.title, v.description, v.date_uploaded, v.owner_id, v.views, v.category_id, v.video_url, v.duration, v.thumbnail_url, 
-                u.id AS user_id, u.username, u.name FROM videos AS v
+        $sql = "SELECT v.id, v.title, v.date_uploaded, u.username, v.views, v.thumbnail_url, SUM(urv.status) AS likes FROM videos AS v 
                 JOIN users AS u ON v.owner_id = u.id
+                LEFT JOIN users_react_videos AS urv ON urv.video_id = v.id
+                GROUP BY v.id
                 ORDER BY views DESC LIMIT 5;";
         $stmt = $pdo->prepare($sql);
         $stmt->execute();
