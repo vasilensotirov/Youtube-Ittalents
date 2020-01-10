@@ -59,12 +59,11 @@ require_once "navigation.php";
     Write comment:
     <form method="post" action="index.php?target=video&action=addComment">
         <input type="hidden" id="video_id" name="video_id" value="<?= $video["id"]; ?>" required>
-        <input type="hidden" id="owner_ir" name="owner_id" value="<?= $_SESSION["logged_user"]["id"]; ?>" required>
+        <input type="hidden" id="owner_id" name="owner_id" value="<?= $_SESSION["logged_user"]["id"]; ?>" required>
         <textarea rows="5" cols="50" id="content" name="content" required></textarea><br>
-        <input type="submit" name="comment" value="Post comment">
+        <input type="button" onclick="addComment()" name="comment" value="Post comment">
     </form>
-    <span id="comments">
-        <table>
+        <table id="comments">
         <?php
         if (isset($comments) && $comments){
             foreach ($comments as $comment){
@@ -74,25 +73,24 @@ require_once "navigation.php";
                 if (!$comment["dislikes"]){
                     $comment["dislikes"] = 0;
                 }
-                echo "<tr>";
-                echo "<td rowspan='3'><img width='50px' src='" . $comment["avatar_url"] . "'></td>";
-                echo "<td>" . $comment["name"] . "</td><td>" . $comment["date"] . "</td></tr>";
-                echo "<td colspan='2'>" . $comment["content"] . "</td>";
-                echo "<tr><td>
-                    <button id='like-comment' onclick='likeComment(" . $comment["id"] . ")'>Like</button>(<span id='comment-likes'>" .
-                    $comment["likes"] .
-                    "</span>)<button id='dislike-comment' onclick='dislikeComment(" . $comment["id"] . ")'>Dislike</button>(<span id='comment-dislikes'>" .
-                    $comment["dislikes"] . "</span>)";
+                echo "<tr id='comment" . $comment["id"] . "'>";
+                echo "<td><img width='50px' src='" . $comment["avatar_url"] . "'></td>";
+                echo "<td>" . $comment["name"] . "</td><td>" . $comment["date"] . "</td>";
+                echo "<td>" . $comment["content"] . "</td>";
+                echo "<td>
+                    <button id='like-comment" . $comment["id"] . "' onclick='likeComment(" . $comment["id"] .
+                    ")'>Like</button>(<span id='comment" . $comment["id"] . "-likes'>" . $comment["likes"] .
+                    "</span>)<button id='dislike-comment" . $comment["id"] . "' onclick='dislikeComment(" . $comment["id"] .
+                    ")'>Dislike</button>(<span id='comment" . $comment["id"] . "-dislikes'>" . $comment["dislikes"] . "</span>)";
                 if ($comment["owner_id"] == $_SESSION["logged_user"]["id"]){
-                    echo "<button><a href='index.php?target=video&action=deleteComment&id=" . $comment["id"] .
-                        "&video_id=" . $video["id"] . "'>Delete</a></button>";
+                    echo "<button id='delete-comment' onclick='deleteComment(" . $comment["id"] .
+                        ")'>Delete</button>";
                 }
-                echo "</td></tr></tr>";
+                echo "</td></tr>";
             }
         }
         ?>
         </table>
-    </span>
 </main>
 </body>
 </html>

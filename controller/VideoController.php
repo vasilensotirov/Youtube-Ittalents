@@ -221,7 +221,7 @@ class VideoController{
     }
 
     public function addComment(){
-        if (isset($_POST["comment"])){
+        if (isset($_POST["content"])){
             $content = $_POST["content"];
             if (!$content){
                 echo "Content is empty.";
@@ -232,11 +232,13 @@ class VideoController{
             $date = (date("Y-m-d H:i:s"));
             try {
                 $dao = VideoDAO::getInstance();
-                $dao->addComment($video_id, $owner_id, $content, $date);
-                header("Location: index.php?target=video&action=getById&id=" . $video_id);
+                $comment_id = $dao->addComment($video_id, $owner_id, $content, $date);
+                $comment = $dao->getCommentById($comment_id);
+                echo json_encode($comment);
+                //header("Location: index.php?target=video&action=getById&id=" . $video_id);
             }
             catch (\PDOException $e){
-                header("Location: index.php?target=video&action=getById&id=" . $video_id);
+                //header("Location: index.php?target=video&action=getById&id=" . $video_id);
                 echo "Error posting comment!";
             }
         }
@@ -246,18 +248,13 @@ class VideoController{
         if (isset($_GET["id"])){
             $comment_id = $_GET["id"];
         }
-        if (isset($_GET["video_id"])){
-            $video_id = $_GET["video_id"];
-        }
         $owner_id = $_SESSION["logged_user"]["id"];
         try {
             $dao = VideoDAO::getInstance();
             $dao->deleteComment($comment_id, $owner_id);
-            header("Location: index.php?target=video&action=getById&id=" . $video_id);
         }
         catch (\PDOException $e){
-            header("Location: index.php?target=video&action=getById&id=" . $video_id);
-            echo "Error deleting comment!";
+            echo $e->getMessage();
         }
     }
 

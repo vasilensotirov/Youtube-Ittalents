@@ -172,16 +172,32 @@ class VideoDAO extends BaseDao {
                 VALUES (?, ?, ?, ?);";
         $stmt = $pdo->prepare($sql);
         $stmt->execute(array($video_id, $owner_id, $content, $date));
+        return $pdo->lastInsertId();
+    }
+
+    public function getCommentById($comment_id)
+    {
+        $pdo = $this->getPDO();
+        $sql = "SELECT c.id, c.content, c.date, c.owner_id, u.name, u.avatar_url, 
+                    COALESCE(SUM(urc.status), 0) AS likes, COALESCE((COUNT(urc.status) - SUM(urc.status)), 0) AS dislikes FROM comments AS c 
+                    JOIN users AS u ON c.owner_id = u.id
+					LEFT JOIN users_react_comments AS urc ON c.id = urc.comment_id
+                    WHERE c.id = ?;";
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute(array($comment_id));
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+        return $row;
     }
 
     public function getComments($video_id)
     {
         $pdo = $this->getPDO();
         $sql = "SELECT c.id, c.content, c.date, c.owner_id, u.name, u.avatar_url, 
-                SUM(urc.status) AS likes, (COUNT(urc.status) - SUM(urc.status)) AS dislikes FROM comments AS c 
-                JOIN users AS u ON c.owner_id = u.id
-                LEFT JOIN users_react_comments AS urc ON urc.comment_id = c.id
-                WHERE c.video_id = ?;";
+                    COALESCE(SUM(urc.status), 0) AS likes, COALESCE((COUNT(urc.status) - SUM(urc.status)), 0) AS dislikes FROM comments AS c 
+                    JOIN users AS u ON c.owner_id = u.id
+					LEFT JOIN users_react_comments AS urc ON c.id = urc.comment_id
+                    WHERE c.video_id = ?
+                    GROUP BY c.id;";
         $stmt = $pdo->prepare($sql);
         $stmt->execute(array($video_id));
         $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
