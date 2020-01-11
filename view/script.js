@@ -155,21 +155,24 @@ function unfollowUser(user_id) {
     xhttp.send();
 }
 
-function showMyPlaylists(user_id){
+function showMyPlaylists(user_id, video_id){
     var xhttp = new XMLHttpRequest();
     xhttp.onreadystatechange = function () {
         if(this.readyState == 4 && this.status == 200){
             var playlists = JSON.parse(this.response);
+            var text = document.getElementById("showPlaylists");
+            text.style.display = "none";
             for (var i = 0; i < playlists.length; i++){
                 var playlist = playlists[i];
                 var table = document.getElementById("playlist-holder");
                 var row = table.insertRow(i);
                 var cell1 = row.insertCell(0);
-                cell1.innerHTML = playlist.playlist_title;
+                cell1.innerHTML = "<input type='checkbox' onclick='addToPlaylist("+playlist.id+ "," + video_id+")'>"
+                    +playlist.playlist_title;
             }
-            var cell2 = row.insertCell(1);
-            cell2.innerHTML = "<button id='add"+playlist_id+""+video_id+"' onclick='addToPlaylist(" + playlist_id +
-                video_id+")'>Save</button>"
+            // var cell2 = row.insertCell(1);
+            // cell2.innerHTML = "<button id='add"+playlist_id+""+video_id+"' onclick='addToPlaylist(" + playlist.id +
+            //     video_id+")'>Save</button>"
         }
     };
     xhttp.open("GET", "index.php?target=playlist&action=getMyPlaylistsJSON&owner_id=" + user_id, true);
@@ -180,11 +183,13 @@ function addToPlaylist(playlist_id, video_id){
     var xhttp = new XMLHttpRequest();
     xhttp.onreadystatechange = function() {
         if (this.readyState == 4 && this.status == 200) {
-
+            var text = document.getElementById("showPlaylists");
+            var newtext = document.createElement('p');
+            newtext.innerHTML = "Added";
+            text.parentNode.replaceChild(newtext, text);
         }
         };
 
-    xhttp.open("GET", "index.php?target=playlist&action=addToplaylist&" +
-                                    "playlist_id=" + playlist_id + "&video_id=" + video_id, true);
+    xhttp.open("GET", "index.php?target=playlist&action=addToPlaylist&playlist_id=" + playlist_id + "&video_id=" + video_id, true);
     xhttp.send();
 }

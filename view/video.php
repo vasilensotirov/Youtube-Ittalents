@@ -23,6 +23,7 @@ require_once "navigation.php";
 <main>
     <?php
     if (isset($video)) {
+        $video_id = $video['id'];
         echo "<video width='854' height='480' controls autoplay>
         <source src='" . $video["video_url"] . "' type='video/mp4'></video><br>";
         echo $video["title"] . "<br>";
@@ -30,7 +31,7 @@ require_once "navigation.php";
         echo "<h3>Views: " . $video['views'] . "</h3><br>";
         echo $video["name"] . "<br>";
         echo "<a href='index.php?target=user&action=getById&id=" . $video["user_id"] . "'>" . $video["username"] . "</a><br>";
-        echo "<button id='showPlaylists' onclick='showMyPlaylists(". $user_id .")'>Add to playlist</button>";
+        echo "<button id='showPlaylists' onclick='showMyPlaylists(". $user_id." ,". $video_id .")'>Add to playlist</button>";
         echo "<table id='playlist-holder'></table>";
         if ($video["owner_id"] == $_SESSION["logged_user"]["id"]){
             echo "<a href='index.php?target=video&action=loadEdit&id=" . $video["id"] . "'><button>Edit video</button></a><br>";
