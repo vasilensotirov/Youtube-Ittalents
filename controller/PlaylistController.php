@@ -7,12 +7,14 @@ use \model\Playlist;
 use \model\PlaylistDAO;
 use model\VideoDAO;
 
-class PlaylistController {
-    public function create(){
-        if(isset($_POST['create'])){
+class PlaylistController
+{
+    public function create()
+    {
+        if (isset($_POST['create'])) {
             $error = false;
             $msg = "";
-            if(!isset($_POST['title']) || empty($_POST["title"])) {
+            if (!isset($_POST['title']) || empty($_POST["title"])) {
                 $msg = "Title not found";
                 $error = true;
             }
@@ -24,7 +26,7 @@ class PlaylistController {
                 echo $msg;
                 include_once "view/createPlaylist.php";
             }
-            if(!$error){
+            if (!$error) {
                 $playlist = new Playlist();
                 $title = $_POST['title'];
                 $owner_id = $_POST['owner_id'];
@@ -37,8 +39,7 @@ class PlaylistController {
                     $dao->create($playlist);
                     include_once "view/playlists.php";
                     echo "Created successfully!";
-                }
-                catch (\PDOException $e){
+                } catch (\PDOException $e) {
                     include_once "view/createPlaylist.php";
                     echo "Error creating playlist!";
                 }
@@ -46,31 +47,62 @@ class PlaylistController {
         }
     }
 
-    public function getMyPlaylists(){
-        if (isset($_GET["owner_id"])){
+    public function getMyPlaylists()
+    {
+        if (isset($_GET["owner_id"])) {
             $owner_id = $_GET["owner_id"];
         }
         try {
             $dao = PlaylistDAO::getInstance();
             $playlists = $dao->getAllByUserId($owner_id);
             include_once "view/playlists.php";
-        }
-        catch (\PDOException $e){
+        } catch (\PDOException $e) {
             include_once "view/main.php";
             echo "Error!";
         }
     }
 
-    public function clickedPlaylist(){
-        if(isset($_GET['id'])){
-            $playlist_id  = $_GET['id'];
+    public function clickedPlaylist()
+    {
+        if (isset($_GET['id'])) {
+            $playlist_id = $_GET['id'];
         }
         try {
             $dao = PlaylistDAO::getInstance();
             $videos = $dao->getVideosFromPlaylist($playlist_id);
             include_once "view/playlists.php";
+        } catch (\PDOException $e) {
+            include_once "view/main.php";
+            echo "Error!";
         }
-        catch (\PDOException $e){
+    }
+
+    public function addToPlaylist()
+    {
+        if (isset($_GET['playlist_id']) && isset($_GET['video_id'])) {
+            $playlist_id = $_GET['playlist_id'];
+            $video_id = $_GET['video_id'];
+            $date = date("Y-m-d H:i:s");
+            try {
+                $dao = PlaylistDAO::getInstance();
+                $dao->addToPlaylist($playlist_id, $video_id, $date);
+            } catch (\PDOException $e) {
+                include_once "view/main.php";
+                echo "Error!";
+            }
+        }
+    }
+
+    public function getMyPlaylistsJSON()
+    {
+        if (isset($_GET["owner_id"])) {
+            $owner_id = $_GET["owner_id"];
+        }
+        try {
+            $dao = PlaylistDAO::getInstance();
+            $playlists = $dao->getAllByUserId($owner_id);
+            echo json_encode($playlists);
+        } catch (\PDOException $e) {
             include_once "view/main.php";
             echo "Error!";
         }

@@ -88,4 +88,10 @@ class PlaylistDAO extends BaseDao {
         $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
         return $rows;
     }
+    public function addToPlaylist($playlist_id, $video_id, $date){
+        $pdo = $this->getPDO();
+        $sql = "INSERT INTO added_to_playlist (playlist_id, video_id, date_added) VALUES (?, ?, ?);";
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute(array($playlist_id, $video_id, $date));
+    }
 }

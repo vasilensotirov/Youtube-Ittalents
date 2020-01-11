@@ -154,3 +154,37 @@ function unfollowUser(user_id) {
     xhttp.open("GET", "index.php?target=user&action=unfollow&id=" + user_id, true);
     xhttp.send();
 }
+
+function showMyPlaylists(user_id){
+    var xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function () {
+        if(this.readyState == 4 && this.status == 200){
+            var playlists = JSON.parse(this.response);
+            for (var i = 0; i < playlists.length; i++){
+                var playlist = playlists[i];
+                var table = document.getElementById("playlist-holder");
+                var row = table.insertRow(i);
+                var cell1 = row.insertCell(0);
+                cell1.innerHTML = playlist.playlist_title;
+            }
+            var cell2 = row.insertCell(1);
+            cell2.innerHTML = "<button id='add"+playlist_id+""+video_id+"' onclick='addToPlaylist(" + playlist_id +
+                video_id+")'>Save</button>"
+        }
+    };
+    xhttp.open("GET", "index.php?target=playlist&action=getMyPlaylistsJSON&owner_id=" + user_id, true);
+    xhttp.send();
+}
+
+function addToPlaylist(playlist_id, video_id){
+    var xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function() {
+        if (this.readyState == 4 && this.status == 200) {
+
+        }
+        };
+
+    xhttp.open("GET", "index.php?target=playlist&action=addToplaylist&" +
+                                    "playlist_id=" + playlist_id + "&video_id=" + video_id, true);
+    xhttp.send();
+}
