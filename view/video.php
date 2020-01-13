@@ -13,6 +13,11 @@ $user_id = $_SESSION["logged_user"]["id"];
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <link rel="stylesheet" href="styles/style.css">
     <script type="text/javascript" src="view/script.js"></script>
+    <link href="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
     <title>Document</title>
 </head>
 <body>
@@ -28,7 +33,7 @@ require_once "navigation.php";
         <source src='" . $video["video_url"] . "' type='video/mp4'></video><br>";
         echo $video["title"] . "<br>";
         echo $video["date_uploaded"] . "<br>";
-        echo "<h3>Views: " . $video['views'] . "</h3><br>";
+        echo "Views: " . $video['views'] . "<br>";
         echo $video["name"] . "<br>";
         echo "<a href='index.php?target=user&action=getById&id=" . $video["user_id"] . "'>" . $video["username"] . "</a><br>";
         echo "<button id='showPlaylists' onclick='showMyPlaylists(". $user_id." ,". $video_id .")'>Add to playlist</button>";
@@ -39,7 +44,7 @@ require_once "navigation.php";
         }
         else {
             if ($video["isFollowed"]) {
-                echo "<button id='follow-button' onclick='unfollowUser(" . $video["user_id"] . ")'>Unsubscribe</button><br>";
+                echo "<button onclick='unfollowUser(" . $video["user_id"] . ")'>Unsubscribe</button><br>";
             }
             else {
                 echo "<button id='follow-button' onclick='followUser(" . $video["user_id"] . ")'>Subscribe</button><br>";
