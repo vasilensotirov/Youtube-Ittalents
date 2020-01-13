@@ -20,13 +20,13 @@ header {
     margin-top: 10px;
     margin-left: 105px;
     float:left;
-    width : 65%;
+    width : 60%;
 }
 .headerButtons {
     margin-top: 10px;
     margin-left: 10px;
-
 }
+/*}*/
 /*nav{*/
 /*    background-color: red;*/
 /*    width: 15%;*/
@@ -51,8 +51,8 @@ ul {
 }
 
 li a {
-    display: block;
-    color: #000;
-    padding: 10px 14px;
-    text-decoration: none;
+    display: block !important;
+    color: #000 !important;
+    padding: 10px 14px !important;
+    text-decoration: none !important;
 }
