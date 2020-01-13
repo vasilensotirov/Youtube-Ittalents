@@ -1,8 +1,8 @@
 <?php
-if (!isset($_SESSION["logged_user"])){
-    header("Location:login.php");
+$user_id = null;
+if (isset($_SESSION["logged_user"])){
+    $user_id = $_SESSION["logged_user"]["id"];
 }
-$user_id = $_SESSION["logged_user"]["id"];
 require_once "header.php";
 require_once "navigation.php";
 ?>
@@ -16,9 +16,12 @@ require_once "navigation.php";
         echo $video["date_uploaded"] . "<br>";
         echo "Views: " . $video['views'] . "<br>";
         echo $video["name"] . "<br>";
+        if(isset($_SESSION['logged_user'])){
         echo "<a href='index.php?target=user&action=getById&id=" . $video["user_id"] . "'>" . $video["username"] . "</a><br>";
         echo "<button id='showPlaylists' onclick='showMyPlaylists(". $user_id." ,". $video_id .")'>Add to playlist</button>";
         echo "<table id='playlist-holder'></table>";
+        }
+        if(isset($_SESSION['logged_user'])){
         if ($video["owner_id"] == $_SESSION["logged_user"]["id"]){
             echo "<a href='index.php?target=video&action=loadEdit&id=" . $video["id"] . "'><button>Edit video</button></a><br>";
             echo "<a href='index.php?target=video&action=delete&id=" . $video["id"] . "'><button>Delete video</button></a><br>";
@@ -31,6 +34,7 @@ require_once "navigation.php";
                 echo "<button id='follow-button' onclick='followUser(" . $video["user_id"] . ")'>Subscribe</button><br>";
             }
         }
+        }
         echo $video["description"] . "<br>";
     }
     else {
@@ -38,6 +42,9 @@ require_once "navigation.php";
     }
     ?>
     </p>
+    <?php
+    if(isset($_SESSION['logged_user'])){
+    ?>
 <img style="height: 30px;" src="styles/images/likeImg.png" id="like" <?php if ($video["isReacting"] == 1) { echo " style='color:blue' "; } else { echo " style='color:gray' "; }?>
         onclick="likeVideo(<?= $video["id"]; ?>)">
     (<span id="likes-count"><?= $video["likes"]; ?></span>)
@@ -52,8 +59,12 @@ require_once "navigation.php";
         <textarea rows="5" cols="50" id="content" name="content" required></textarea><br>
         <input type="button" onclick="addComment()" name="comment" value="Post comment">
     </form>
+        <?php
+    }
+    ?>
         <table id="comments" class="table">
         <?php
+        if(isset($_SESSION['logged_user'])){
         if (isset($comments) && $comments){
             foreach ($comments as $comment){
                 if (!$comment["likes"]){
@@ -77,6 +88,7 @@ require_once "navigation.php";
                 }
                 echo "</td></tr>";
             }
+        }
         }
         ?>
         </table>

@@ -39,7 +39,7 @@ if (isset($orderby)){
             }
         }
         else {
-            echo "<p>No videos to show with that name.</p>";
+            echo "<p>No videos</p>";
         }
     }
     if(isset($playlists)){
