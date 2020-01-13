@@ -44,7 +44,7 @@ require_once "navigation.php";
         }
         else {
             if ($video["isFollowed"]) {
-                echo "<button onclick='unfollowUser(" . $video["user_id"] . ")'>Unsubscribe</button><br>";
+                echo "<button id='follow-button' onclick='unfollowUser(" . $video["user_id"] . ")'>Unsubscribe</button><br>";
             }
             else {
                 echo "<button id='follow-button' onclick='followUser(" . $video["user_id"] . ")'>Subscribe</button><br>";
@@ -57,11 +57,11 @@ require_once "navigation.php";
     }
     ?>
     </p>
-<button id="like" <?php if ($video["isReacting"] == 1) { echo " style='color:blue' "; } else { echo " style='color:gray' "; }?>
-        onclick="likeVideo(<?= $video["id"]; ?>)">Like</button>
+<img style="height: 30px;" src="styles/images/likeImg.png" id="like" <?php if ($video["isReacting"] == 1) { echo " style='color:blue' "; } else { echo " style='color:gray' "; }?>
+        onclick="likeVideo(<?= $video["id"]; ?>)">
     (<span id="likes-count"><?= $video["likes"]; ?></span>)
-<button id="dislike"  <?php if ($video["isReacting"] == 0) { echo " style='color:blue' "; } else { echo " style='color:gray' "; }?>
-        onclick="dislikeVideo(<?= $video["id"]; ?>)">Dislike</button>
+<img style="height:30px;" src="styles/images/dislikeImg.png" id="dislike"  <?php if ($video["isReacting"] == 0) { echo " style='color:blue' "; } else { echo " style='color:gray' "; }?>
+        onclick="dislikeVideo(<?= $video["id"]; ?>)">
     (<span id="dislikes-count"><?= $video["dislikes"]; ?></span>)
     <br>
     Write comment:
@@ -71,7 +71,7 @@ require_once "navigation.php";
         <textarea rows="5" cols="50" id="content" name="content" required></textarea><br>
         <input type="button" onclick="addComment()" name="comment" value="Post comment">
     </form>
-        <table id="comments">
+        <table id="comments" class="table">
         <?php
         if (isset($comments) && $comments){
             foreach ($comments as $comment){
@@ -86,13 +86,13 @@ require_once "navigation.php";
                 echo "<td>" . $comment["name"] . "</td><td>" . $comment["date"] . "</td>";
                 echo "<td>" . $comment["content"] . "</td>";
                 echo "<td>
-                    <button id='like-comment" . $comment["id"] . "' onclick='likeComment(" . $comment["id"] .
-                    ")'>Like</button>(<span id='comment" . $comment["id"] . "-likes'>" . $comment["likes"] .
-                    "</span>)<button id='dislike-comment" . $comment["id"] . "' onclick='dislikeComment(" . $comment["id"] .
-                    ")'>Dislike</button>(<span id='comment" . $comment["id"] . "-dislikes'>" . $comment["dislikes"] . "</span>)";
+                    <img src='styles/images/likeImg.png' style='height: 30px;' id='like-comment" . $comment["id"] . "' onclick='likeComment(" . $comment["id"] .
+                    ")'>(<span id='comment" . $comment["id"] . "-likes'>" . $comment["likes"] .
+                    "</span>)<img src='styles/images/dislikeImg.png' style='height: 30px' id='dislike-comment" . $comment["id"] . "' onclick='dislikeComment(" . $comment["id"] .
+                    ")'>(<span id='comment" . $comment["id"] . "-dislikes'>" . $comment["dislikes"] . "</span>)";
                 if ($comment["owner_id"] == $_SESSION["logged_user"]["id"]){
-                    echo "<button id='delete-comment' onclick='deleteComment(" . $comment["id"] .
-                        ")'>Delete</button>";
+                    echo "<img style='height: 20px;margin-left: 5px;' src='styles/images/deleteIcon.png' id='delete-comment' onclick='deleteComment(" . $comment["id"] .
+                        ")'></button>";
                 }
                 echo "</td></tr>";
             }
