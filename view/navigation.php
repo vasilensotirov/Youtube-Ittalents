@@ -1,4 +1,5 @@
 <?php
+$user_id = null;
 if(isset($_SESSION['logged_user'])){
     $user_id = $_SESSION['logged_user']['id'];
 }
@@ -14,6 +15,6 @@ require_once "header.php";
     <li><a href="index.php?target=video&action=getHistory"><img src="styles/images/historyLogo.png" class="navPics">History</a></li>
     <li><a href="index.php?target=video&action=getWatchLater"><img src="styles/images/watchlaterLogo.png" class="navPics">Watch Later</a></li>
     <li><a href="index.php?target=video&action=getLikedVideos"><img src="styles/images/likedLogo.png" class="navPics">Liked videos</a></li>
-    <li><a href="index.php?target=playlist&action=getMyPlaylists&owner_id=<?= $user_id; ?>""><img src="styles/images/playlistLogo.png" class="navPics">Playlists</a></li>
+    <li><a href="index.php?target=playlist&action=getMyPlaylists"><img src="styles/images/playlistLogo.png" class="navPics">Playlists</a></li>
     </ul>
 </nav>

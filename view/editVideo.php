@@ -1,12 +1,13 @@
 <?php
+if (!isset($_SESSION["logged_user"]["id"])) {
+    header("Location:index.php");
+}
+$user_id = $_SESSION["logged_user"]["id"];
+if (!isset($video) || !isset($categories)){
+    header("Location:index.php");
+}
 require_once "header.php";
 require_once "navigation.php";
-if (!isset($_SESSION["logged_user"])){
-    header("Location:login.php");
-}
-if (!isset($video) || !isset($categories)){
-    header("Location:main.php");
-}
 ?>
 <form action="index.php?target=video&action=edit" method="post" enctype="multipart/form-data">
     <table>

@@ -1,5 +1,7 @@
 <?php
-//include_once "main.php";
+if (!isset($_SESSION["logged_user"])){
+    header("Location:index.php");
+}
 $user = $_SESSION['logged_user'];
 require_once "header.php";
 require_once "navigation.php";

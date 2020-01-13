@@ -49,16 +49,15 @@ class PlaylistController
 
     public function getMyPlaylists()
     {
-        if (isset($_GET["owner_id"])) {
-            $owner_id = $_GET["owner_id"];
-        }
-        try {
+        if (isset($_SESSION["logged_user"]["id"])){
+            $owner_id = $_SESSION["logged_user"]["id"];
             $dao = PlaylistDAO::getInstance();
             $playlists = $dao->getAllByUserId($owner_id);
             include_once "view/playlists.php";
-        } catch (\PDOException $e) {
-            include_once "view/main.php";
-            echo "Error!";
+            }
+        else {
+            include_once "view/playlists.php";
+            echo "<h3>Login to view playlists!</h3>";
         }
     }
 
@@ -98,13 +97,23 @@ class PlaylistController
         if (isset($_GET["owner_id"])) {
             $owner_id = $_GET["owner_id"];
         }
-        try {
-            $dao = PlaylistDAO::getInstance();
-            $playlists = $dao->getAllByUserId($owner_id);
-            echo json_encode($playlists);
-        } catch (\PDOException $e) {
-            include_once "view/main.php";
-            echo "Error!";
+        else {
+            if (isset($_SESSION["logged_user"]["id"])){
+                $owner_id = $_SESSION["logged_user"]["id"];
+            }
+        }
+        if ($owner_id) {
+            try {
+                $dao = PlaylistDAO::getInstance();
+                $playlists = $dao->getAllByUserId($owner_id);
+                echo json_encode($playlists);
+            } catch (\PDOException $e) {
+                include_once "view/main.php";
+                echo "Error!";
+            }
+        }
+        else {
+            echo "<h3>Login to view playlists!</h3>";
         }
     }
 }

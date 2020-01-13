@@ -26,9 +26,20 @@ if(isset($_SESSION['logged_user'])){
         <input style="width: 50%;height: 29px;"  type="text" placeholder="Search" name="search_query">
         <input  type="submit" name="search" value="Search">
     </form>
-    <a href="index.php?target=view&action=viewRouter&view=upload"><button class="headerButtons">Upload video</button></a>
-    <a href="index.php?target=user&action=getById&id=<?= $user_id; ?>"><button class="headerButtons">View profile</button></a>
-    <a href="index.php?target=user&action=logout"><button class="headerButtons">Logout</button></a>
+    <?php
+    if (isset($user_id)){
+        ?>
+        <a href="index.php?target=view&action=viewRouter&view=upload"><button class="headerButtons">Upload video</button></a>
+        <a href="index.php?target=user&action=getById&id=<?= $user_id; ?>"><button class="headerButtons">View profile</button></a>
+        <a href="index.php?target=user&action=logout"><button class="headerButtons">Logout</button></a>
+        <?php
+    }
+    else {
+        ?>
+        <a href="index.php?target=view&action=viewRouter&view=login"><button class="headerButtons">Login</button></a>
+        <?php
+    }
+    ?>
 </header>
 </body>
 </html>

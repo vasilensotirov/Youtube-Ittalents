@@ -51,7 +51,7 @@
                     <small class="text-muted">By clicking the 'Sign Up' button, you confirm that you accept our <br> Terms of use and Privacy Policy.</small>
                 </form>
             </article>
-            <div class="border-top card-body text-center">Already have an account? <a href="index.php?view=login">Log In</a></div>
+            <div class="border-top card-body text-center">Already have an account? <a href="index.php?target=view&action=viewRouter&view=login">Log In</a></div>
         </div>
     </div>
 </div>

@@ -16,8 +16,11 @@ if(isset($playlists)){
         echo "<hr>";
     }
 }
-?>
-<a href="index.php?view=createPlaylist"><button>Create new playlist</button></a><br>
+if (isset($user_id)){
+    ?>
+    <a href="index.php?view=createPlaylist"><button>Create new playlist</button>
+    </a><br>
+<?php } ?>
 <table>
 <?php
 if(isset($videos)){

@@ -1,4 +1,8 @@
 <?php
+if (!isset($_SESSION["logged_user"])) {
+    header("Location:index.php");
+}
+$user_id = $_SESSION["logged_user"]["id"];
 if (!isset($categories)){
     header("Location:index.php");
 }
