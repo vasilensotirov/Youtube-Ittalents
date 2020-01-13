@@ -3,7 +3,6 @@
 
 namespace model;
 use PDO;
-use PDOException;
 
 class PlaylistDAO extends BaseDao {
     private static $instance;
@@ -93,5 +92,29 @@ class PlaylistDAO extends BaseDao {
         $sql = "INSERT INTO added_to_playlist (playlist_id, video_id, date_added) VALUES (?, ?, ?);";
         $stmt = $pdo->prepare($sql);
         $stmt->execute(array($playlist_id, $video_id, $date));
+    }
+    public function existsPlaylist($playlist_id){
+        $pdo = $this->getPDO();
+        $sql = "SELECT * FROM playlists WHERE id = ?;";
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute(array($playlist_id));
+        $row = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        if($row){
+            return true;
+        }else{
+            return false;
+        }
+    }
+    public function existsVideo($video_id){
+        $pdo = $this->getPDO();
+        $sql = "SELECT * FROM videos WHERE id = ?;";
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute(array($video_id));
+        $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        if($rows){
+            return true;
+        }else{
+            return false;
+        }
     }
 }

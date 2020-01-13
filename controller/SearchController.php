@@ -24,22 +24,20 @@ class SearchController{
                 }
                 catch (\PDOException $e){
                     include_once "view/main.php";
-                    echo "Error!";
+                    echo $e->getMessage();
                 }
             }
             else {
                 try {
-                    $videodao = VideoDAO::getInstance();
-                    $playlistdao = PlaylistDAO::getInstance();
-                    $userdao = UserDAO::getInstance();
-                    $videos = $videodao->getAll();
-                    $playlists = $playlistdao->getAll();
-                    $users = $userdao->getAll();
+                    $playlistdao = SearchDAO::getInstance();
+                    $videos = $playlistdao->getAllVideos();
+                    $playlists = $playlistdao->getAllPlaylists();
+                    $users = $playlistdao->getAllUsers();
                     include_once "view/main.php";
                 }
                 catch (\PDOException $e){
                     include_once "view/main.php";
-                    echo "Error!";
+                    echo $e->getMessage();
                 }
             }
         }

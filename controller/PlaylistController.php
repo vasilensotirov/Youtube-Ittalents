@@ -79,12 +79,17 @@ class PlaylistController
     public function addToPlaylist()
     {
         if (isset($_GET['playlist_id']) && isset($_GET['video_id'])) {
+            try {
+            $dao = PlaylistDAO::getInstance();
             $playlist_id = $_GET['playlist_id'];
             $video_id = $_GET['video_id'];
+            if($dao->existsPlaylist($playlist_id) && $dao->existsVideo($video_id)){
             $date = date("Y-m-d H:i:s");
-            try {
-                $dao = PlaylistDAO::getInstance();
-                $dao->addToPlaylist($playlist_id, $video_id, $date);
+            $dao->addToPlaylist($playlist_id, $video_id, $date);
+            }else{
+                include_once "view/main.php";
+                echo "No playlist or video with that id!";
+            }
             } catch (\PDOException $e) {
                 include_once "view/main.php";
                 echo "Error!";

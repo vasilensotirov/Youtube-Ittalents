@@ -61,4 +61,28 @@ class SearchDAO extends BaseDao {
             return $rows;
         }
     }
+    public function getAllPlaylists(){
+        $pdo = $this->getPDO();
+        $sql = "SELECT * FROM playlists";
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute();
+        $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        return $rows;
+    }
+    public function getAllVideos(){
+        $pdo = $this->getPDO();
+        $sql = "SELECT * FROM videos";
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute();
+        $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        return $rows;
+    }
+    public function getAllUsers(){
+        $pdo = $this->getPDO();
+        $sql = "SELECT * FROM users";
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute();
+        $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        return $rows;
+    }
 }

@@ -140,6 +140,7 @@ class VideoController{
         catch (\PDOException $e) {
             include_once "view/main.php";
             echo "Error deleting video!";
+            echo $e->getMessage();
         }
     }
 
