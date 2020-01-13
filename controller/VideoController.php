@@ -130,12 +130,17 @@ class VideoController{
         if (isset($_GET["id"])){
             $id = $_GET["id"];
         }
-        $user_id = $_SESSION["logged_user"]["id"];
+        $owner_id = $_SESSION["logged_user"]["id"];
         try {
             $dao = VideoDAO::getInstance();
-            $dao->delete($id, $user_id);
+            if($dao->getById($id)){
+            $dao->delete($id, $owner_id);
             include_once "view/main.php";
             echo "Delete successful.";
+            }else{
+                include_once "view/main.php";
+                echo "Video doesn't exist!";
+            }
         }
         catch (\PDOException $e) {
             include_once "view/main.php";

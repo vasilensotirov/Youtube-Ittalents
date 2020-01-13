@@ -47,19 +47,6 @@ class PlaylistDAO extends BaseDao {
         $playlist_id = $pdo->lastInsertId();
         $playlist->setId($playlist_id);
     }
-
-    public function delete(Playlist $playlist){
-        $playlist_id = $playlist->getId();
-        $owner_id = $playlist->getOwnerId();
-        $pdo = $this->getPDO();
-        $sql = "DELETE FROM playlists WHERE id = ? AND owner_id = ?;";
-        $params = [];
-        $params[] = $playlist_id;
-        $params[] = $owner_id;
-        $stmt = $pdo->prepare($sql);
-        $stmt->execute($params);
-    }
-
     public function getVideosFromPlaylist($playlist_id){
         $pdo = $this->getPDO();
         $sql = "SELECT v.id, v.title, v.date_uploaded, p.playlist_title, u.username, v.thumbnail_url FROM videos AS v 
