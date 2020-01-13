@@ -24,7 +24,7 @@ class UserController {
                     if (password_verify($password, $user['password'])) {
                         $user['full_name'] = $user['name'];
                         $_SESSION['logged_user'] = $user;
-                        include_once "view/main.php";
+                        header ("Location:index.php");
                         echo "Successful login! <br>";
                     } else {
                         echo 'Invalid email or password.Try again.';
@@ -348,12 +348,23 @@ class UserController {
         if(isset($_GET['user_id'])){
             $user_id = $_GET['user_id'];
         }
-        try{
-        $dao = UserDAO::getInstance();
-        $subscriptions = $dao->getSubscriptions($user_id);
-        include_once "view/subscriptions.php";
-        }catch(\PDOException $e){
-            echo "Error!" . $e->getMessage();
+        else {
+            if (isset($_SESSION["logged_user"]["id"])){
+                $user_id = $_SESSION["logged_user"]["id"];
+            }
+        }
+        if ($user_id) {
+            try {
+                $dao = UserDAO::getInstance();
+                $subscriptions = $dao->getSubscriptions($user_id);
+                include_once "view/subscriptions.php";
+            } catch (\PDOException $e) {
+                echo "Error!" . $e->getMessage();
+            }
+        }
+        else {
+            include_once "view/subscriptions.php";
+            echo "<h3>Login to view subscriptions!</h3>";
         }
 
     }

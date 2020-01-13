@@ -1,8 +1,8 @@
 <?php
-if (!isset($_SESSION["logged_user"])){
-    header("Location:login.php");
+$user_id = null;
+if (isset($_SESSION["logged_user"])){
+    $user_id = $_SESSION["logged_user"]["id"];
 }
-$user_id = $_SESSION["logged_user"]["id"];
 require_once "header.php";
 require_once "navigation.php";
 ?>

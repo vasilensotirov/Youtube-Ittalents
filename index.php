@@ -10,12 +10,14 @@ spl_autoload_register(function ($class){
 
 session_start();
 $fileNotFoundFlag = false;
-$controllerName = isset($_GET["target"]) ? $_GET["target"] : "view";
-$methodName     = isset($_GET["action"]) ? $_GET["action"] : "viewRouter";
+$controllerName = isset($_GET["target"]) ? $_GET["target"] : "video";
+$methodName     = isset($_GET["action"]) ? $_GET["action"] : "getAll";
 $view           = isset($_GET["view"]) ? $_GET["view"] : "main";
-//if (!isset($_SESSION["logged_user"])) {
-//    $view = "login";
-//}
+/*if (!isset($_SESSION["logged_user"])) {
+    $controllerName="view";
+    $methodName="viewRouter";
+    $view = "login";
+}*/
 $controllerClassName = "\\controller\\" . ucfirst($controllerName) . "Controller";
 if (class_exists($controllerClassName)){
     $controller = new $controllerClassName();
@@ -48,7 +50,9 @@ if (class_exists($controllerClassName)){
             }
         }
     }  else if (method_exists($controller,$methodName)){
-        if (!($controllerName == "user" && in_array($methodName,array("login","register")))){
+        if (!(in_array($methodName,array("login", "register", "getById", "getByOwnerId", "getAll",
+            "getTrending", "getHistory", "getWatchLater", "getLikedVideos", "getMyPlaylists", "subscriptions",
+            "clickedUser", "clickedPlaylist", "search", "viewRouter")))){
             if (!isset($_SESSION["logged_user"])){
                 header("HTTP/1.0 401 Not Authorized");
                 die();
@@ -63,8 +67,10 @@ if (class_exists($controllerClassName)){
     }else{
         $fileNotFoundFlag = true;
     }
-}else{
+}
+else {
     $fileNotFoundFlag = true;
+    header("Location:index.php?target=video&action=getAll");
 }
 ?>
 <!doctype html>

@@ -14,7 +14,7 @@
     <div class="wrapper fadeInDown">
         <div id="formContent">
             <div class="fadeIn first">
-                <img src="styles/images/youtube_PNG5.png" id="icon" alt="User Icon" />
+                <a href="index.php?target=video&action=getAll"><img src="styles/images/youtube_PNG5.png" id="icon" alt="User Icon" /></a>
             </div>
             <form action="index.php?target=user&action=login" method="post">
                 <input type="text" id="login" class="fadeIn second" name="email" placeholder="email">
@@ -22,7 +22,7 @@
                 <input type="submit" class="fadeIn fourth" name="login" value="Log In">
             </form>
             <div id="formFooter">
-                Don't have an account? <a class="underlineHover" href='index.php?view=register'>Sign Up</a>
+                Don't have an account? <a class="underlineHover" href='index.php?target=view&action=viewRouter&view=register'>Sign Up</a>
             </div>
         </div>
     </div>

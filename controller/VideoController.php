@@ -281,13 +281,14 @@ class VideoController{
             }
             $dao = VideoDAO::getInstance();
             $videos = $dao->getHistory($user_id, $orderby);
+            include_once "view/main.php";
         }
         else {
+            include_once "view/main.php";
             echo "<h3>Login to record history!</h3>";
         }
         $action = "getHistory";
         $orderby = true;
-        include_once "view/main.php";
     }
 
     public function getWatchLater() {
@@ -295,12 +296,13 @@ class VideoController{
             $user_id = $_SESSION["logged_user"]["id"];
             $dao = PlaylistDAO::getInstance();
             $videos = $dao->getWatchLater($user_id);
+            include_once "view/main.php";
         }
         else {
+            include_once "view/main.php";
             echo "<h3>Login to save videos for watching later!</h3>";
         }
         $action = "getWatchLater";
-        include_once "view/main.php";
     }
 
     public function getLikedVideos() {
@@ -320,12 +322,13 @@ class VideoController{
             }
             $dao = VideoDAO::getInstance();
             $videos = $dao->getLikedVideos($user_id, $orderby);
+            include_once "view/main.php";
         }
         else {
+            include_once "view/main.php";
             echo "<h3>Login to like videos!</h3>";
         }
         $action = "getLikedVideos";
         $orderby = true;
-        include_once "view/main.php";
     }
 }
