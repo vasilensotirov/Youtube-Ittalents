@@ -21,7 +21,7 @@ class SearchDAO extends BaseDao {
 
     public function getSearchedVideos($search_query){
         $pdo = $this->getPDO();
-        $sql = "SELECT v.id, v.title, v.date_uploaded, u.username, v.thumbnail_url FROM videos AS v 
+        $sql = "SELECT v.id, v.title, v.date_uploaded, u.username, v.thumbnail_url, v.views FROM videos AS v 
                     JOIN users AS u ON v.owner_id = u.id WHERE v.title = ?;";
         $stmt = $pdo->prepare($sql);
         $stmt->execute(array($search_query));

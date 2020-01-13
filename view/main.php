@@ -39,7 +39,7 @@ if (isset($orderby)){
             }
         }
         else {
-            echo "<h3>No videos to show.</h3>";
+            echo "<p>No videos to show with that name.</p>";
         }
     }
     if(isset($playlists)){
@@ -52,7 +52,7 @@ if (isset($orderby)){
             }
         }
         else {
-            echo "<h3>No playlists.</h3>";
+            echo "<p>No playlists with that name.</p>";
         }
     }
     if(isset($users)){
@@ -70,7 +70,7 @@ if (isset($orderby)){
             }
         }
         else {
-            echo "<h3>You don't have active subscriptions.</h3>";
+            echo "<p>No subscriptions with that name.</p>";
         }
     }
     ?>
