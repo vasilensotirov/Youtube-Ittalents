@@ -78,6 +78,7 @@ class PlaylistController
 
     public function addToPlaylist()
     {
+        //todo validations
         if (isset($_GET['playlist_id']) && isset($_GET['video_id'])) {
             try {
             $dao = PlaylistDAO::getInstance();

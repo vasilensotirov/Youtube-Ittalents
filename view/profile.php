@@ -14,7 +14,7 @@ if (isset($user)) {
     echo "Name: " . $user["name"] . "<br>";
     echo "Registered on: " . $user["registration_date"] . "<br>";
     if ($user["id"] == $user_id){
-        echo "<a href='index.php?view=editProfile'><button>Edit profile</button></a><br>";
+        echo "<a href='index.php?target=view&action=viewRouter&view=editProfile'><button>Edit profile</button></a><br>";
     }
     elseif ($user_id) {
         if ($user["isFollowed"]) {
@@ -27,7 +27,7 @@ if (isset($user)) {
     echo "<h3>Videos:</h3>";
 }
 else {
-    header("Location:main.php");
+    header("Location:index.php");
 }
 if (isset($videos)) {
     if ($videos) {
