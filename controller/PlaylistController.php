@@ -78,6 +78,7 @@ class PlaylistController
 
     public function addToPlaylist()
     {
+        //todo validations
         if (isset($_GET['playlist_id']) && isset($_GET['video_id'])) {
             $playlist_id = $_GET['playlist_id'];
             $video_id = $_GET['video_id'];

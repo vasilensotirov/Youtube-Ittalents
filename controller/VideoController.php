@@ -193,6 +193,10 @@ class VideoController{
                 $video["isFollowed"] = $userdao->isFollowing($user_id, $video["owner_id"]);
                 $video["isReacting"] = $userdao->isReacting($user_id, $id);
             }
+            else {
+                $video["isFollowed"] = false;
+                $video["isReacting"] = false;
+            }
         }
         catch (\PDOException $e){
             echo "<br>Error!" . $e->getMessage();

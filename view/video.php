@@ -21,30 +21,26 @@ require_once "navigation.php";
         echo "<button id='showPlaylists' onclick='showMyPlaylists(". $user_id." ,". $video_id .")'>Add to playlist</button>";
         echo "<table id='playlist-holder'></table>";
         }
-        if(isset($_SESSION['logged_user'])){
-        if ($video["owner_id"] == $_SESSION["logged_user"]["id"]){
+        if ($video["owner_id"] == $user_id){
             echo "<a href='index.php?target=video&action=loadEdit&id=" . $video["id"] . "'><button>Edit video</button></a><br>";
             echo "<a href='index.php?target=video&action=delete&id=" . $video["id"] . "'><button>Delete video</button></a><br>";
         }
         else {
-            if ($video["isFollowed"]) {
-                echo "<button id='follow-button' onclick='unfollowUser(" . $video["user_id"] . ")'>Unsubscribe</button><br>";
+            if ($user_id) {
+                if ($video["isFollowed"]) {
+                    echo "<button id='follow-button' onclick='unfollowUser(" . $video["user_id"] . ")'>Unsubscribe</button><br>";
+                } else {
+                    echo "<button id='follow-button' onclick='followUser(" . $video["user_id"] . ")'>Subscribe</button><br>";
+                }
             }
-            else {
-                echo "<button id='follow-button' onclick='followUser(" . $video["user_id"] . ")'>Subscribe</button><br>";
-            }
-        }
         }
         echo $video["description"] . "<br>";
     }
     else {
-        header("Location:main.php");
+        header("Location:index.php");
     }
     ?>
     </p>
-    <?php
-    if(isset($_SESSION['logged_user'])){
-    ?>
 <img style="height: 30px;" src="styles/images/likeImg.png" id="like" <?php if ($video["isReacting"] == 1) { echo " style='color:blue' "; } else { echo " style='color:gray' "; }?>
         onclick="likeVideo(<?= $video["id"]; ?>)">
     (<span id="likes-count"><?= $video["likes"]; ?></span>)
@@ -52,6 +48,9 @@ require_once "navigation.php";
         onclick="dislikeVideo(<?= $video["id"]; ?>)">
     (<span id="dislikes-count"><?= $video["dislikes"]; ?></span>)
     <br>
+    <?php
+    if($user_id){
+        ?>
     Write comment:
     <form method="post" action="index.php?target=video&action=addComment">
         <input type="hidden" id="video_id" name="video_id" value="<?= $video["id"]; ?>" required>
@@ -64,7 +63,6 @@ require_once "navigation.php";
     ?>
         <table id="comments" class="table">
         <?php
-        if(isset($_SESSION['logged_user'])){
         if (isset($comments) && $comments){
             foreach ($comments as $comment){
                 if (!$comment["likes"]){
@@ -82,13 +80,12 @@ require_once "navigation.php";
                     ")'>(<span id='comment" . $comment["id"] . "-likes'>" . $comment["likes"] .
                     "</span>)<img src='styles/images/dislikeImg.png' style='height: 30px' id='dislike-comment" . $comment["id"] . "' onclick='dislikeComment(" . $comment["id"] .
                     ")'>(<span id='comment" . $comment["id"] . "-dislikes'>" . $comment["dislikes"] . "</span>)";
-                if ($comment["owner_id"] == $_SESSION["logged_user"]["id"]){
+                if ($comment["owner_id"] == $user_id){
                     echo "<img style='height: 20px;margin-left: 5px;' src='styles/images/deleteIcon.png' id='delete-comment' onclick='deleteComment(" . $comment["id"] .
                         ")'></button>";
                 }
                 echo "</td></tr>";
             }
-        }
         }
         ?>
         </table>

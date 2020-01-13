@@ -75,6 +75,7 @@ class UserController {
                         $dao = UserDAO::getInstance();
                         $dao->registerUser($user);
                         $this->createWatchLater($user->getId());
+                        //TODO transaction!
                         $arrayUser = [];
                         $arrayUser['username'] = $user->getUsername();
                         $arrayUser['full_name'] = $user->getFullName();
