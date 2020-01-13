@@ -17,7 +17,7 @@ if(isset($playlists)){
 }
 if (isset($user_id)){
     ?>
-    <a href="index.php?view=createPlaylist"><button>Create new playlist</button>
+    <a href="index.php?target=view&action=viewRouter&view=createPlaylist"><button>Create new playlist</button>
     </a><br>
 <?php } ?>
 <table>

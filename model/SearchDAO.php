@@ -24,7 +24,7 @@ class SearchDAO extends BaseDao {
         $sql = "SELECT v.id, v.title, v.date_uploaded, u.username, v.thumbnail_url, v.views FROM videos AS v 
                     JOIN users AS u ON v.owner_id = u.id WHERE v.title LIKE ?;";
         $stmt = $pdo->prepare($sql);
-        $stmt->execute(array($search_query));
+        $stmt->execute(array("%$search_query%"));
         $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
         if (empty($rows)) {
             return false;
@@ -36,9 +36,9 @@ class SearchDAO extends BaseDao {
 
     public function getSearchedUsers($search_query){
         $pdo = $this->getPDO();
-        $sql = "SELECT u.id, u.username, u.name, u.avatar_url, u.registration_date FROM users AS u WHERE u.username = ?;";
+        $sql = "SELECT u.id, u.username, u.name, u.avatar_url, u.registration_date FROM users AS u WHERE u.username LIKE ?;";
         $stmt = $pdo->prepare($sql);
-        $stmt->execute(array($search_query));
+        $stmt->execute(array("%$search_query%"));
         $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
         if (empty($rows)){
             return false;
@@ -50,9 +50,9 @@ class SearchDAO extends BaseDao {
 
     public function getSearchedPlaylists($search_query){
         $pdo = $this->getPDO();
-        $sql = "SELECT p.id, p.playlist_title, p.date_created FROM playlists AS p WHERE p.playlist_title = ?;";
+        $sql = "SELECT p.id, p.playlist_title, p.date_created FROM playlists AS p WHERE p.playlist_title LIKE ?;";
         $stmt = $pdo->prepare($sql);
-        $stmt->execute(array($search_query));
+        $stmt->execute(array("%$search_query%"));
         $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
         if (empty($rows)){
             return false;

@@ -122,4 +122,18 @@ class PlaylistController
             echo "<h3>Login to view playlists!</h3>";
         }
     }
+    public function delete($playlist_id){
+        if(isset($_GET['playlist_id'])){
+            $dao = PlaylistDAO::getInstance();
+            $playlist_id = $_GET['playlist_id'];
+            if($dao->existsPlaylist($playlist_id)){
+                $dao->delete($playlist_id);
+                include_once "view/playlists.php";
+                echo "Deleted successfully!";
+            }else{
+                include_once "view/playlists.php";
+                echo "The playlist doesn't exist!Try again!";
+            }
+        }
+    }
 }
