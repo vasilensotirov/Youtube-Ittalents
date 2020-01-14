@@ -49,7 +49,7 @@ class PlaylistDAO extends BaseDao {
     }
     public function getVideosFromPlaylist($playlist_id){
         $pdo = $this->getPDO();
-        $sql = "SELECT v.id, v.title, v.date_uploaded, p.playlist_title, u.username, v.thumbnail_url FROM videos AS v 
+        $sql = "SELECT v.id, v.title, v.date_uploaded, p.playlist_title, u.username, v.views, v.thumbnail_url FROM videos AS v 
                 JOIN users AS u ON v.owner_id = u.id
                 JOIN added_to_playlist AS atp ON v.id = atp.video_id
                 JOIN playlists AS p ON p.id = atp.playlist_id
@@ -63,7 +63,7 @@ class PlaylistDAO extends BaseDao {
 
     public function getWatchLater($user_id){
         $pdo = $this->getPDO();
-        $sql = "SELECT v.id, v.title, v.date_uploaded, p.playlist_title, u.username, v.thumbnail_url FROM videos AS v 
+        $sql = "SELECT v.id, v.title, v.date_uploaded, p.playlist_title, u.username, v.views, v.thumbnail_url FROM videos AS v 
                 JOIN users AS u ON v.owner_id = u.id
                 JOIN added_to_playlist AS atp ON v.id = atp.video_id
                 JOIN playlists AS p ON p.id = atp.playlist_id

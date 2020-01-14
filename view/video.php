@@ -16,8 +16,8 @@ require_once "navigation.php";
         echo $video["date_uploaded"] . "<br>";
         echo "Views: " . $video['views'] . "<br>";
         echo $video["name"] . "<br>";
-        if(isset($_SESSION['logged_user'])){
         echo "<a href='index.php?target=user&action=getById&id=" . $video["user_id"] . "'>" . $video["username"] . "</a><br>";
+        if(isset($_SESSION['logged_user'])){
         echo "<button id='showPlaylists' onclick='showMyPlaylists(". $user_id." ,". $video_id .")'>Add to playlist</button>";
         echo "<table id='playlist-holder'></table>";
         }
@@ -49,12 +49,12 @@ require_once "navigation.php";
     (<span id="dislikes-count"><?= $video["dislikes"]; ?></span>)
     <br>
     <?php
-    if($user_id){
+    if(isset($user_id) && !empty($user_id)){
         ?>
     Write comment:
     <form method="post" action="index.php?target=video&action=addComment">
         <input type="hidden" id="video_id" name="video_id" value="<?= $video["id"]; ?>" required>
-        <input type="hidden" id="owner_id" name="owner_id" value="<?= $_SESSION["logged_user"]["id"]; ?>" required>
+        <input type="hidden" id="owner_id" name="owner_id" value="<?= $user_id; ?>" required>
         <textarea rows="5" cols="50" id="content" name="content" required></textarea><br>
         <input type="button" onclick="addComment()" name="comment" value="Post comment">
     </form>

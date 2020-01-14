@@ -3,6 +3,7 @@
 
 namespace controller;
 
+use exceptions\InvalidArgumentException;
 use \model\Playlist;
 use \model\PlaylistDAO;
 use model\VideoDAO;
@@ -26,7 +27,7 @@ class PlaylistController
                 echo $msg;
                 include_once "view/createPlaylist.php";
             }
-            if (!$error) {
+            else {
                 $playlist = new Playlist();
                 $title = $_POST['title'];
                 $owner_id = $_POST['owner_id'];
@@ -34,16 +35,14 @@ class PlaylistController
                 $playlist->setTitle($title);
                 $playlist->setOwnerId($owner_id);
                 $playlist->setDateCreated($date_created);
-                try {
-                    $dao = PlaylistDAO::getInstance();
-                    $dao->create($playlist);
-                    include_once "view/playlists.php";
-                    echo "Created successfully!";
-                } catch (\PDOException $e) {
-                    include_once "view/createPlaylist.php";
-                    echo "Error creating playlist!";
-                }
+                $dao = PlaylistDAO::getInstance();
+                $dao->create($playlist);
+                include_once "view/playlists.php";
+                echo "Created successfully!";
             }
+        }
+        else {
+            throw new InvalidArgumentException("Invalid arguments.");
         }
     }
 
@@ -66,35 +65,30 @@ class PlaylistController
         if (isset($_GET['id'])) {
             $playlist_id = $_GET['id'];
         }
-        try {
-            $dao = PlaylistDAO::getInstance();
-            $videos = $dao->getVideosFromPlaylist($playlist_id);
-            include_once "view/playlists.php";
-        } catch (\PDOException $e) {
-            include_once "view/main.php";
-            echo "Error!";
+        if (empty($playlist_id)){
+            throw new InvalidArgumentException("Invalid arguments.");
         }
+        $dao = PlaylistDAO::getInstance();
+        $videos = $dao->getVideosFromPlaylist($playlist_id);
+        include_once "view/playlists.php";
     }
 
     public function addToPlaylist()
     {
         //todo validations
-        if (isset($_GET['playlist_id']) && isset($_GET['video_id'])) {
-            try {
-            $dao = PlaylistDAO::getInstance();
-            $playlist_id = $_GET['playlist_id'];
-            $video_id = $_GET['video_id'];
-            if($dao->existsPlaylist($playlist_id) && $dao->existsVideo($video_id)){
+        if (empty($_GET['playlist_id']) || empty($_GET['video_id'])) {
+            throw new InvalidArgumentException("Invalid arguments.");
+        }
+        $dao = PlaylistDAO::getInstance();
+        $playlist_id = $_GET['playlist_id'];
+        $video_id = $_GET['video_id'];
+        if ($dao->existsPlaylist($playlist_id) && $dao->existsVideo($video_id)) {
             $date = date("Y-m-d H:i:s");
             $dao->addToPlaylist($playlist_id, $video_id, $date);
-            }else{
-                include_once "view/main.php";
-                echo "No playlist or video with that id!";
-            }
-            } catch (\PDOException $e) {
-                include_once "view/main.php";
-                echo "Error!";
-            }
+        }
+        else {
+            include_once "view/main.php";
+            echo "No playlist or video with that id!";
         }
     }
 
@@ -108,15 +102,10 @@ class PlaylistController
                 $owner_id = $_SESSION["logged_user"]["id"];
             }
         }
-        if ($owner_id) {
-            try {
-                $dao = PlaylistDAO::getInstance();
-                $playlists = $dao->getAllByUserId($owner_id);
-                echo json_encode($playlists);
-            } catch (\PDOException $e) {
-                include_once "view/main.php";
-                echo "Error!";
-            }
+        if (!empty($owner_id)) {
+            $dao = PlaylistDAO::getInstance();
+            $playlists = $dao->getAllByUserId($owner_id);
+            echo json_encode($playlists);
         }
         else {
             echo "<h3>Login to view playlists!</h3>";

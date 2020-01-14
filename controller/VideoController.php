@@ -2,6 +2,7 @@
 namespace controller;
 include_once "fileHandler.php";
 
+use exceptions\InvalidArgumentException;
 use model\PlaylistDAO;
 use model\UserDAO;
 use model\Video;
@@ -36,7 +37,7 @@ class VideoController{
                 include_once "view/upload.php";
                 echo $msg;
             }
-            if (!$error) {
+            else {
                 $video = new Video();
                 $video->setTitle($_POST["title"]);
                 $video->setDescription($_POST["description"]);
@@ -46,17 +47,14 @@ class VideoController{
                 $video->setDuration(0);
                 $video->setVideoUrl(uploadFile("video", $_SESSION["logged_user"]["username"]));
                 $video->setThumbnailUrl(uploadFile("thumbnail", $_SESSION["logged_user"]["username"]));
-                try {
-                    $dao = VideoDAO::getInstance();
-                    $dao->add($video);
-                    include_once "view/main.php";
-                    echo "Upload successfull.";
-                }
-                catch (\PDOException $e) {
-                    include_once "view/upload.php";
-                    echo "Error uploading video!";
-                }
+                $dao = VideoDAO::getInstance();
+                $dao->add($video);
+                include_once "view/main.php";
+                echo "Upload successfull.";
             }
+        }
+        else {
+            throw new InvalidArgumentException("Invalid arguments.");
         }
     }
 
@@ -64,16 +62,13 @@ class VideoController{
         if (isset($_GET["id"])){
             $id = $_GET["id"];
         }
-        try {
-            $dao = VideoDAO::getInstance();
-            $video = $dao->getById($id);
-            $categories = $dao->getCategories();
-            include_once "view/editVideo.php";
+        if (empty($id)){
+            throw new InvalidArgumentException("Invalid arguments.");
         }
-        catch (\PDOException $e){
-            include_once "index.php";
-            echo "Error!";
-        }
+        $dao = VideoDAO::getInstance();
+        $video = $dao->getById($id);
+        $categories = $dao->getCategories();
+        include_once "view/editVideo.php";
     }
 
     public function edit($id=null){
@@ -112,17 +107,14 @@ class VideoController{
                 if ($video->getThumbnailUrl() == false) {
                     $video->setThumbnailUrl($_POST["thumbnail_url"]);
                 }
-                try {
-                    $dao = VideoDAO::getInstance();
-                    $dao->edit($video);
-                    echo "Edit successfull.";
-                    include_once "view/main.php";
-                }
-                catch (\PDOException $e) {
-                    include_once "view/editVideo.php";
-                    echo "Error editing video!";
-                }
+                $dao = VideoDAO::getInstance();
+                $dao->edit($video);
+                include_once "view/main.php";
+                echo "Edit successfull.";
             }
+        }
+        else {
+            throw new InvalidArgumentException("Invalid arguments.");
         }
     }
 
@@ -131,21 +123,18 @@ class VideoController{
             $id = $_GET["id"];
         }
         $owner_id = $_SESSION["logged_user"]["id"];
-        try {
-            $dao = VideoDAO::getInstance();
-            if($dao->getById($id)){
+        if (empty($id) || empty($owner_id)){
+            throw new InvalidArgumentException("Invalid arguments.");
+        }
+        $dao = VideoDAO::getInstance();
+        if ($dao->getById($id)){
             $dao->delete($id, $owner_id);
             include_once "view/main.php";
             echo "Delete successful.";
-            }else{
-                include_once "view/main.php";
-                echo "Video doesn't exist!";
-            }
         }
-        catch (\PDOException $e) {
+        else {
             include_once "view/main.php";
-            echo "Error deleting video!";
-            echo $e->getMessage();
+            echo "Video doesn't exist!";
         }
     }
 
@@ -155,6 +144,9 @@ class VideoController{
         }
         else {
             $owner_id = $_SESSION["logged_user"]["id"];
+        }
+        if (empty($owner_id)){
+            throw new InvalidArgumentException("Invalid arguments.");
         }
         $orderby = null;
         if (isset($_GET["orderby"])){
@@ -168,44 +160,36 @@ class VideoController{
                 $orderby .= " DESC";
             }
         }
-        try {
-            $dao = VideoDAO::getInstance();
-            $videos = $dao->getByOwnerId($owner_id, $orderby);
-            $action = "getByOwnerId";
-            $orderby = true;
-            include_once "view/main.php";
-        }
-        catch (\PDOException $e){
-            include_once "view/main.php";
-            echo "Error!";
-        }
+        $dao = VideoDAO::getInstance();
+        $videos = $dao->getByOwnerId($owner_id, $orderby);
+        $action = "getByOwnerId";
+        $orderby = true;
+        include_once "view/main.php";
     }
     
     public function getById($id=null){
         if (isset ($_GET["id"])){
             $id = $_GET["id"];
         }
-        try {
-            $videodao = VideoDAO::getInstance();
-            $userdao = UserDAO::getInstance();
-            $videodao->updateViews($id);
-            $video = $videodao->getById($id);
-            $video["likes"] = $videodao->getReactions($id, 1);
-            $video["dislikes"] = $videodao->getReactions($id, 0);
-            $comments = $videodao->getComments($id);
-            if (isset($_SESSION["logged_user"]["id"])) {
-                $user_id = $_SESSION["logged_user"]["id"];
-                $userdao->addToHistory($id, $user_id, date("Y-m-d H:i:s"));
-                $video["isFollowed"] = $userdao->isFollowing($user_id, $video["owner_id"]);
-                $video["isReacting"] = $userdao->isReacting($user_id, $id);
-            }
-            else {
-                $video["isFollowed"] = false;
-                $video["isReacting"] = false;
-            }
+        if (empty($id)){
+            throw new InvalidArgumentException("Invalid arguments.");
         }
-        catch (\PDOException $e){
-            echo "<br>Error!" . $e->getMessage();
+        $videodao = VideoDAO::getInstance();
+        $userdao = UserDAO::getInstance();
+        $videodao->updateViews($id);
+        $video = $videodao->getById($id);
+        $video["likes"] = $videodao->getReactions($id, 1);
+        $video["dislikes"] = $videodao->getReactions($id, 0);
+        $comments = $videodao->getComments($id);
+        if (isset($_SESSION["logged_user"]["id"])) {
+            $user_id = $_SESSION["logged_user"]["id"];
+            $userdao->addToHistory($id, $user_id, date("Y-m-d H:i:s"));
+            $video["isFollowed"] = $userdao->isFollowing($user_id, $video["owner_id"]);
+            $video["isReacting"] = $userdao->isReacting($user_id, $id);
+        }
+        else {
+            $video["isFollowed"] = false;
+            $video["isReacting"] = false;
         }
         include_once "view/video.php";
     }
@@ -231,41 +215,31 @@ class VideoController{
     }
 
     public function addComment(){
-        if (isset($_POST["content"])){
+        if (isset($_POST["content"])) {
             $content = $_POST["content"];
-            if (!$content){
-                echo "Content is empty.";
-                return;
-            }
             $video_id = $_POST["video_id"];
             $owner_id = $_POST["owner_id"];
-            $date = (date("Y-m-d H:i:s"));
-            try {
-                $dao = VideoDAO::getInstance();
-                $comment_id = $dao->addComment($video_id, $owner_id, $content, $date);
-                $comment = $dao->getCommentById($comment_id);
-                echo json_encode($comment);
-                //header("Location: index.php?target=video&action=getById&id=" . $video_id);
-            }
-            catch (\PDOException $e){
-                //header("Location: index.php?target=video&action=getById&id=" . $video_id);
-                echo "Error posting comment!";
-            }
         }
+        if (empty($content) || empty($video_id) || empty($owner_id)){
+            throw new InvalidArgumentException("Invalid arguments.");
+        }
+        $date = (date("Y-m-d H:i:s"));
+        $dao = VideoDAO::getInstance();
+        $comment_id = $dao->addComment($video_id, $owner_id, $content, $date);
+        $comment = $dao->getCommentById($comment_id);
+        echo json_encode($comment);
     }
 
     public function deleteComment($comment_id=null, $owner_id=null){
         if (isset($_GET["id"])){
             $comment_id = $_GET["id"];
+            $owner_id = $_SESSION["logged_user"]["id"];
         }
-        $owner_id = $_SESSION["logged_user"]["id"];
-        try {
-            $dao = VideoDAO::getInstance();
-            $dao->deleteComment($comment_id, $owner_id);
+        if (empty($comment_id) || empty($owner_id)){
+            throw new InvalidArgumentException("Invalid arguments.");
         }
-        catch (\PDOException $e){
-            echo $e->getMessage();
-        }
+        $dao = VideoDAO::getInstance();
+        $dao->deleteComment($comment_id, $owner_id);
     }
 
     public function getTrending(){

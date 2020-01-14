@@ -27,7 +27,7 @@ if(isset($_SESSION['logged_user'])){
         <input  type="submit" name="search" value="Search">
     </form>
     <?php
-    if (isset($user_id)){
+    if (isset($user_id) && !empty($user_id)){
         ?>
         <a href="index.php?target=view&action=viewRouter&view=upload"><button class="headerButtons">Upload video</button></a>
         <a href="index.php?target=user&action=getById&id=<?= $user_id; ?>"><button class="headerButtons">View profile</button></a>

@@ -2,6 +2,19 @@
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
+
+function handleExceptions(Exception $exception){
+    $status = $exception instanceof BaseException ? $exception->getStatusCode() : 500;
+    $msg = $exception->getMessage();
+    $html = "<h1>$msg</h1>";
+    echo $html;
+    $obj = new stdClass();
+    $obj->msg = $exception->getMessage();
+    $obj->status = $status;
+    http_response_code($status);
+    //echo json_encode($obj);
+}
+set_exception_handler("handleExceptions");
 //AUTOCOMPLETE
 spl_autoload_register(function ($class){
     $class = str_replace("\\", DIRECTORY_SEPARATOR, $class) . ".php";
