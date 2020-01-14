@@ -214,34 +214,6 @@ class VideoController{
         include_once "view/main.php";
     }
 
-    public function addComment(){
-        if (isset($_POST["content"])) {
-            $content = $_POST["content"];
-            $video_id = $_POST["video_id"];
-            $owner_id = $_POST["owner_id"];
-        }
-        if (empty($content) || empty($video_id) || empty($owner_id)){
-            throw new InvalidArgumentException("Invalid arguments.");
-        }
-        $date = (date("Y-m-d H:i:s"));
-        $dao = VideoDAO::getInstance();
-        $comment_id = $dao->addComment($video_id, $owner_id, $content, $date);
-        $comment = $dao->getCommentById($comment_id);
-        echo json_encode($comment);
-    }
-
-    public function deleteComment($comment_id=null, $owner_id=null){
-        if (isset($_GET["id"])){
-            $comment_id = $_GET["id"];
-            $owner_id = $_SESSION["logged_user"]["id"];
-        }
-        if (empty($comment_id) || empty($owner_id)){
-            throw new InvalidArgumentException("Invalid arguments.");
-        }
-        $dao = VideoDAO::getInstance();
-        $dao->deleteComment($comment_id, $owner_id);
-    }
-
     public function getTrending(){
         $dao = VideoDAO::getInstance();
         $videos = $dao->getMostWatched();

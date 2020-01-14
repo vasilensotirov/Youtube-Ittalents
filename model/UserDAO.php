@@ -47,17 +47,27 @@ class UserDAO extends BaseDao {
         $full_name = $user->getFullName();
         $date = $user->getRegistrationDate();
         $avatar_url = $user->getAvatarUrl();
-        $pdo = $this->getPDO();
-        $sql = "INSERT INTO users (username,  email, password, name, registration_date, avatar_url)
+        try {
+            $pdo = $this->getPDO();
+            $pdo->beginTransaction();
+            $sql = "INSERT INTO users (username,  email, password, name, registration_date, avatar_url)
                 VALUES (?, ?, ?, ?, ?, ?)";
-        $stmt = $pdo->prepare($sql);
-        $stmt->execute(array($username, $email, $password, $full_name, $date, $avatar_url));
-        $user->setId($pdo->lastInsertId());
-        if ($pdo->lastInsertId() > 0) {
+            $stmt = $pdo->prepare($sql);
+            $stmt->execute(array($username, $email, $password, $full_name, $date, $avatar_url));
+            $user->setId($pdo->lastInsertId());
+
+            $playlist_title = "Watch Later";
+            $owner_id = $user->getId();
+            $date_created = date("Y-m-d H:i:s");
+            $sql = "INSERT INTO playlists (playlist_title, owner_id, date_created) VALUES (?, ?, ?);";
+            $stmt = $pdo->prepare($sql);
+            $stmt->execute(array($playlist_title, $owner_id, $date_created));
+            $pdo->commit();
             return true;
         }
-        else {
-            return false;
+        catch (PDOException $e){
+            $pdo->rollBack();
+            throw $e;
         }
     }
 

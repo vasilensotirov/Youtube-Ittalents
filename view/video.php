@@ -52,7 +52,7 @@ require_once "navigation.php";
     if(isset($user_id) && !empty($user_id)){
         ?>
     Write comment:
-    <form method="post" action="index.php?target=video&action=addComment">
+    <form method="post" action="index.php?target=comment&action=add">
         <input type="hidden" id="video_id" name="video_id" value="<?= $video["id"]; ?>" required>
         <input type="hidden" id="owner_id" name="owner_id" value="<?= $user_id; ?>" required>
         <textarea rows="5" cols="50" id="content" name="content" required></textarea><br>

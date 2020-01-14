@@ -164,14 +164,14 @@ class VideoDAO extends BaseDao {
         $sql = "";
     }
 
-    public function addComment($video_id, $owner_id, $content, $date)
+    public function addComment(Comment $comment)
     {
         $pdo = $this->getPDO();
         $sql = "INSERT INTO comments
                 (video_id, owner_id, content, date)
                 VALUES (?, ?, ?, ?);";
         $stmt = $pdo->prepare($sql);
-        $stmt->execute(array($video_id, $owner_id, $content, $date));
+        $stmt->execute(array($comment->getVideoId(), $comment->getOwnerId(), $comment->getContent(), $comment->getDate()));
         return $pdo->lastInsertId();
     }
 

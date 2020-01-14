@@ -69,7 +69,7 @@ function addComment() {
                 "</span>) <button onclick='deleteComment("+comment_id+")'>Delete</button>";
         }
     };
-    xhttp.open("POST", "index.php?target=video&action=addComment&ajax", true);
+    xhttp.open("POST", "index.php?target=comment&action=add", true);
     xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
     xhttp.send('video_id=' + video_id +  '&owner_id=' + owner_id + '&content=' + content);
 }
@@ -81,7 +81,7 @@ function deleteComment(comment_id) {
             document.getElementById("comment"+comment_id).remove();
         }
     };
-    xhttp.open("GET", "index.php?target=video&action=deleteComment&id=" + comment_id, true);
+    xhttp.open("GET", "index.php?target=comment&action=delete&id=" + comment_id, true);
     xhttp.send();
 }
 
@@ -102,7 +102,7 @@ function likeComment(comment_id) {
             }
         }
     };
-    xhttp.open("GET", "index.php?target=user&action=reactComment&id=" + comment_id + "&status=1", true);
+    xhttp.open("GET", "index.php?target=comment&action=react&id=" + comment_id + "&status=1", true);
     xhttp.send();
 }
 
@@ -123,7 +123,7 @@ function dislikeComment(comment_id) {
             }
         }
     };
-    xhttp.open("GET", "index.php?target=user&action=reactComment&id=" + comment_id + "&status=0", true);
+    xhttp.open("GET", "index.php?target=comment&action=react&id=" + comment_id + "&status=0", true);
     xhttp.send();
 }
 

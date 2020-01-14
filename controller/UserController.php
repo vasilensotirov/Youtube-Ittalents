@@ -65,8 +65,6 @@ class UserController {
                     $user = new User($username, $email, $password, $full_name, $registration_date, $avatar_url);
                     $dao = UserDAO::getInstance();
                     $dao->registerUser($user);
-                    $this->createWatchLater($user->getId());
-                    //TODO transaction!
                     $arrayUser = [];
                     $arrayUser['username'] = $user->getUsername();
                     $arrayUser['full_name'] = $user->getFullName();
@@ -159,23 +157,6 @@ class UserController {
             }
         }
         return $msg;
-    }
-
-    public function createWatchLater($owner_id=null){
-        if (isset($_SESSION["logged_user"]["id"])){
-            $owner_id = $_SESSION["logged_user"]["id"];
-        }
-        if (empty($owner_id)){
-            throw new InvalidArgumentException("Invalid arguments.");
-        }
-        $playlist = new Playlist();
-        $title = "Watch Later";
-        $date_created = date("Y-m-d H:i:s");
-        $playlist->setTitle($title);
-        $playlist->setOwnerId($owner_id);
-        $playlist->setDateCreated($date_created);
-        $dao = PlaylistDAO::getInstance();
-        $dao->create($playlist);
     }
 
     public function getById($id=null){
@@ -271,43 +252,6 @@ class UserController {
         echo json_encode($arr);
     }
 
-    public function isReactingComment($user_id=null, $comment_id=null){
-        if (isset($_GET["id"])){
-            $comment_id = $_GET["id"];
-            $user_id = $_SESSION["logged_user"]["id"];
-        }
-        if (empty($user_id) || empty($comment_id)){
-            throw new InvalidArgumentException("Invalid arguments.");
-        }
-        $dao = UserDAO::getInstance();
-        return $dao->isReactingComment($user_id, $comment_id);
-    }
-
-    public function reactComment(){
-        if (isset($_GET["id"]) && isset($_GET["status"])){
-            $comment_id = $_GET["id"];
-            $status = $_GET["status"];
-        }
-        $user_id = $_SESSION["logged_user"]["id"];
-        if (empty($comment_id) || empty($user_id)){
-            throw new InvalidArgumentException("Invalid arguments.");
-        }
-        $isReacting = $this->isReactingComment($user_id, $comment_id);
-        $dao = UserDAO::getInstance();
-        if ($isReacting == -1) {//if there has been no reaction
-            $dao->reactComment($user_id, $comment_id, $status);
-        } elseif ($isReacting == $status) { //if liking liked or disliking disliked video
-            $dao->unreactComment($user_id, $comment_id);
-        } elseif ($isReacting != $status) { //if liking disliked or disliking liked video
-            $dao->unreactComment($user_id, $comment_id);
-            $dao->reactComment($user_id, $comment_id, 1 - $isReacting);
-        }
-        $arr = [];
-        $arr["stat"] = $this->isReactingComment();
-        $arr["likes"] = $dao->getCommentReactions($comment_id, 1);
-        $arr["dislikes"] = $dao->getCommentReactions($comment_id, 0);
-        echo json_encode($arr);
-    }
     public function subscriptions(){
         if(isset($_GET['user_id'])){
             $user_id = $_GET['user_id'];
