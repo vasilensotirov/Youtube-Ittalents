@@ -45,7 +45,8 @@ if (isset($orderby)){
     if(isset($playlists)){
         if($playlists){
             foreach ($playlists as $playlist){
-                echo "<tr><td><a style='text-decoration: none' href='index.php?target=playlist&action=clickedPlaylist&id=" . $playlist["id"] ."'><b>" . $playlist["playlist_title"]. "</b></a></td></tr>" . "<br>";
+                echo "<tr><td><a style='text-decoration: none' href='index.php?target=playlist&action=clickedPlaylist&id=" .
+                    $playlist["id"] ."'><b>" . $playlist["playlist_title"]. "</b></a></td></tr>" . "<br>";
                 echo "<tr><td>";
                 echo $playlist["date_created"]. "<br>";
                 echo "</td></tr>";
@@ -61,9 +62,8 @@ if (isset($orderby)){
                 echo "<tr><td><img style='border-radius: 50%;' alt='No photo' width='100px' src='";
                 echo $user['avatar_url'];
                 echo "'></td>";
-                echo "<td><b>";
-                echo $user['username'];
-                echo "</b></td></tr>";
+                echo "<td><b><a href='index.php?target=user&action=getById&id=" . $user["id"] . "'>" . $user['username'];
+                echo "</b></td></tr></a>";
                 echo "<tr><td>";
                 echo $user['registration_date'];
                 echo "</td></tr>";

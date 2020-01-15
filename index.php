@@ -1,4 +1,7 @@
 <?php
+
+use exceptions\BaseException;
+
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
@@ -6,12 +9,12 @@ error_reporting(E_ALL);
 function handleExceptions(Exception $exception){
     $status = $exception instanceof BaseException ? $exception->getStatusCode() : 500;
     $msg = $exception->getMessage();
+    header($_SERVER["SERVER_PROTOCOL"]." " . $status);
     $html = "<h1>$msg</h1>";
     echo $html;
-    $obj = new stdClass();
+    /*$obj = new stdClass();
     $obj->msg = $exception->getMessage();
-    $obj->status = $status;
-    http_response_code($status);
+    $obj->status = $status;*/
     //echo json_encode($obj);
 }
 set_exception_handler("handleExceptions");
@@ -36,34 +39,19 @@ if (class_exists($controllerClassName)){
     $controller = new $controllerClassName();
     if($controllerName == "view"){
         if (isset($_SESSION["logged_user"])) {
-            try {
                 $controller->$methodName($view);
-                die();
-            } catch (Exception $exception) {
-                echo "error -> " . $exception->getMessage();
-                die();
-            }
-        } else {
+        }
+        else {
             if ($view != 'login' && $view != 'register') {
-                try {
                     $controller->$methodName('login');
                     die();
-                } catch (Exception $exception) {
-                    echo "error -> " . $exception->getMessage();
-                    die();
-                }
-            } else if ($view == 'login' || $view == 'register') {
-                try {
+            }
+            else {
                     $controller->$methodName($view);
-                    die();
-                } catch (Exception $exception) {
-                    echo "error -> " . $exception->getMessage();
-                    die();
-                }
             }
         }
-    }  else if (method_exists($controller,$methodName)){
-        if (!(in_array($methodName,array("login", "register", "getById", "getByOwnerId", "getAll",
+    }  else if (method_exists($controller, $methodName)){
+        if (!(in_array($methodName, array ("login", "register", "getById", "getByOwnerId", "getAll",
             "getTrending", "getHistory", "getWatchLater", "getLikedVideos", "getMyPlaylists", "subscriptions",
             "clickedUser", "clickedPlaylist", "search", "viewRouter")))){
             if (!isset($_SESSION["logged_user"])){
@@ -71,18 +59,16 @@ if (class_exists($controllerClassName)){
                 die();
             }
         }
-        try{
-            return $controller->$methodName();
-        }catch (Exception $exception){
-            echo "error -> " . $exception->getMessage();
-            die();
-        }
-    }else{
+        return $controller->$methodName();
+    }
+    else {
         $fileNotFoundFlag = true;
     }
 }
 else {
     $fileNotFoundFlag = true;
+}
+if ($fileNotFoundFlag === true){
     header("Location:index.php?target=video&action=getAll");
 }
 ?>
