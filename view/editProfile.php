@@ -17,20 +17,20 @@ require_once "navigation.php";
             <td><input type="email" id="email" name="email" value="<?= $user['email'] ?>" required></td>
         </tr>
         <tr>
+            <td><label for="full_name"><b>Name:</b></label></td>
+            <td><input type="text" id="full_name" name="full_name" value="<?= $user['full_name'] ?>" required></td>
+        </tr>
+        <tr>
             <td><label for="password"><b>Current password:</b></label></td>
             <td><input type="password" id="password" name="password" required></td>
         </tr>
         <tr>
             <td><label for="new_password"><b>New password:</b></label></td>
-            <td><input type="password" id="new_password" name="new_password" required></td>
+            <td><input type="password" id="new_password" name="new_password"></td>
         </tr>
         <tr>
             <td><label for="cpassword"><b>Confirm password:</b></label></td>
-            <td><input type="password" id="cpassword" name="cpassword" required></td>
-        </tr>
-        <tr>
-            <td><label for="full_name"><b>Full name:</b></label></td>
-            <td><input type="text" id="full_name" name="full_name" value="<?= $user['full_name'] ?>" required></td>
+            <td><input type="password" id="cpassword" name="cpassword"></td>
         </tr>
         <tr>
             <td><label for="avatar"><b>Change avatar</b></label></td>

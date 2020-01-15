@@ -24,12 +24,28 @@ class UserDAO extends BaseDao {
         $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
         return $rows;
     }
+
     public function checkUser($email)
     {
         $pdo = $this->getPDO();
-        $sql = "SELECT * FROM users WHERE email = ?";
+        $sql = "SELECT id, username, email, password, name, avatar_url FROM users WHERE email = ?";
         $stmt = $pdo->prepare($sql);
         $stmt->execute(array($email));
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+        if (empty($row)) {
+            return false;
+        }
+        else {
+            return $row;
+        }
+    }
+
+    public function checkUsername($username)
+    {
+        $pdo = $this->getPDO();
+        $sql = "SELECT id, username, email FROM users WHERE username = ?";
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute(array($username));
         $row = $stmt->fetch(PDO::FETCH_ASSOC);
         if (empty($row)) {
             return false;
@@ -190,7 +206,8 @@ class UserDAO extends BaseDao {
         $row = $stmt->fetch(PDO::FETCH_ASSOC);
         if ($row) {
             return $row["count"];
-        } else {
+        }
+        else {
             return 0;
         }
     }
@@ -202,9 +219,10 @@ class UserDAO extends BaseDao {
         $stmt = $pdo->prepare($sql);
         $stmt->execute(array($logged_user));
         $row = $stmt->fetchAll(PDO::FETCH_ASSOC);
-        if($row){
+        if ($row){
             return $row;
-        }else{
+        }
+        else {
             return false;
         }
     }
@@ -219,6 +237,7 @@ class UserDAO extends BaseDao {
         $row = $stmt->fetchAll(PDO::FETCH_ASSOC);
         return $row;
     }
+
     public function addToHistory($video_id, $user_id, $date){
         try{
             $pdo = $this->getPDO();
@@ -226,11 +245,17 @@ class UserDAO extends BaseDao {
             $sql1 = "SELECT * FROM users_watch_videos WHERE video_id = ? AND user_id = ?;";
             $sql2 = "INSERT INTO users_watch_videos (video_id, user_id, date)
                 VALUES (?, ?, ?)";
+            $sql3 = "UPDATE users_watch_videos SET date = ?
+                    WHERE video_id = ? AND user_id = ?;";
             $stmt1 = $pdo->prepare($sql1);
             $stmt1->execute(array($video_id, $user_id));
             if(!$stmt1->rowCount()){
                 $stmt2 = $pdo->prepare($sql2);
                 $stmt2->execute(array($video_id, $user_id, $date));
+            }
+            else {
+                $stmt3 = $pdo->prepare($sql3);
+                $stmt3->execute(array($date, $video_id, $user_id));
             }
             $pdo->commit();
         } catch (PDOException $e){
@@ -238,4 +263,5 @@ class UserDAO extends BaseDao {
             throw new PDOException();
         }
     }
+
 }

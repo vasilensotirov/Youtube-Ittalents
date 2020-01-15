@@ -71,6 +71,22 @@ class VideoDAO extends BaseDao {
         $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
         return $rows;
     }
+
+    public function getCategoryById($id)
+    {
+        $pdo = $this->getPDO();
+        $sql = "SELECT id, name FROM categories WHERE id = ?;";
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute(array($id));
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+        if ($row){
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
+
     public function getByOwnerId($owner_id, $orderby = null)
     {
         $pdo = $this->getPDO();
@@ -121,7 +137,7 @@ class VideoDAO extends BaseDao {
                 LEFT JOIN users_watch_videos AS uwv ON uwv.video_id = v.id
                 WHERE uwv.user_id = ?
                 GROUP BY v.id
-                $orderby;";
+                ORDER BY uwv.date DESC";
         $stmt = $pdo->prepare($sql);
         $stmt->execute(array($user_id));
         $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -134,8 +150,7 @@ class VideoDAO extends BaseDao {
                 JOIN users AS u ON v.owner_id = u.id
                 LEFT JOIN users_react_videos AS urv ON urv.video_id = v.id
                 WHERE urv.user_id = ? AND urv.status = 1
-                GROUP BY v.id
-                $orderby;";
+                GROUP BY v.id;";
         $stmt = $pdo->prepare($sql);
         $stmt->execute(array($user_id));
         $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -223,16 +238,5 @@ class VideoDAO extends BaseDao {
         $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
         return $rows;
     }
-    public function getByIdAndOwnerId($id, $owner_id)
-    {
-        $pdo = $this->getPDO();
-        $sql = "SELECT v.id, v.title, v.description, v.date_uploaded, v.owner_id, v.views, v.category_id, v.video_url, v.duration, v.thumbnail_url, 
-                u.id AS user_id, u.username, u.name FROM videos AS v
-                JOIN users AS u ON v.owner_id = u.id
-                WHERE v.id = ? AND v.owner_id = ?;";
-        $stmt = $pdo->prepare($sql);
-        $stmt->execute(array($id, $owner_id));
-        $row = $stmt->fetch(PDO::FETCH_ASSOC);
-        return $row;
-    }
+
 }
