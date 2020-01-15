@@ -25,7 +25,7 @@ class UserController {
             $dao = UserDAO::getInstance();
             $user = $dao->checkUser($email);
             if (!$user) {
-                echo "<p style='text-align: center;'>Invalid password or email! Try again.</p>";
+                $msg = "Invalid password or email! Try again.";
                 include_once "view/login.php";
                 return;
             }
@@ -38,7 +38,7 @@ class UserController {
                 return;
             }
             else {
-                echo "<p style='text-align: center;'>Invalid password or email! Try again.</p>";
+                $msg = "Invalid password or email! Try again.";
                 include_once "view/login.php";
             }
         }
@@ -53,27 +53,26 @@ class UserController {
             $error = false;
             $msg = "";
             if (!isset($_POST["username"]) || empty(trim($_POST["username"]))) {
-                $msg = "<p style='text-align: center;'>Username is empty!</p>";
+                $msg = "Username is empty!";
                 $error = true;
             }
             elseif (!isset($_POST["full_name"]) || empty(trim($_POST["full_name"]))) {
-                $msg = "<p style='text-align: center;'>Name is empty!</p>";
+                $msg = "Name is empty!";
                 $error = true;
             }
             elseif (!isset($_POST["email"]) || empty(trim($_POST["email"]))) {
-                $msg = "<p style='text-align: center;'>Email is empty!</p>";
+                $msg = "Email is empty!";
                 $error = true;
             }
             elseif (!isset($_POST["password"]) || empty(trim($_POST["password"]))) {
-                $msg = "<p style='text-align: center;'>Password is empty!</p>";
+                $msg = "Password is empty!";
                 $error = true;
             }
             elseif (!isset($_POST["cpassword"]) || empty(trim($_POST["cpassword"]))) {
-                $msg = "<p style='text-align: center;'>Confirm password is empty!</p>";
+                $msg = "Confirm password is empty!";
                 $error = true;
             }
             if ($error) {
-                echo "<p style='text-align: center;'>$msg</p>";
                 include_once "view/register.php";
                 return;
             }
@@ -84,20 +83,19 @@ class UserController {
             $cpassword = $_POST['cpassword'];
             $msg = $this->registerValidator($username, $email, $password, $cpassword);
             if ($msg != '') {
-                echo "<p style='text-align: center;'>$msg</p>";
                 include_once "view/register.php";
                 return;
             }
             $dao = UserDAO::getInstance();
             $user = $dao->checkUser($email);
             if ($user) {
-                echo "<p style='text-align: center;'>User with that email already exists!</p>";
+                $msg = "User with that email already exists!";
                 include_once "view/login.php";
                 return;
             }
             $user = $dao->checkUsername($username);
             if ($user) {
-                echo "<p style='text-align: center;'>User with that username already exists!</p>";
+                $msg = "User with that username already exists!";
                 include_once "view/login.php";
                 return;
             }
@@ -149,7 +147,6 @@ class UserController {
             }
             if ($error) {
                 include_once "view/editProfile.php";
-                echo $msg;
                 return;
             }
             $dao = UserDAO::getInstance();
