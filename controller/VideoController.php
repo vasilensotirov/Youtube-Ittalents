@@ -61,11 +61,16 @@ class VideoController{
     public function loadEdit($id=null){
         if (isset($_GET["id"])){
             $id = $_GET["id"];
+            $dao = VideoDAO::getInstance();
+            $videosOfOwner = $dao->getById($id);
+            if($_SESSION['logged_user']['id'] != $videosOfOwner['owner_id']){
+                include_once "view/main.php";
+                throw new InvalidArgumentException("Invalid arguments.");
+            }
         }
         if (empty($id)){
             throw new InvalidArgumentException("Invalid arguments.");
         }
-        $dao = VideoDAO::getInstance();
         $video = $dao->getById($id);
         $categories = $dao->getCategories();
         include_once "view/editVideo.php";
@@ -127,14 +132,14 @@ class VideoController{
             throw new InvalidArgumentException("Invalid arguments.");
         }
         $dao = VideoDAO::getInstance();
-        if ($dao->getById($id)){
+        if ($dao->getByIdAndOwnerId($id, $_SESSION['logged_user']['id'])){
             $dao->delete($id, $owner_id);
             include_once "view/main.php";
             echo "Delete successful.";
         }
         else {
             include_once "view/main.php";
-            echo "Video doesn't exist!";
+            throw new InvalidArgumentException("Video doesn't exist or isn't yours!");
         }
     }
 

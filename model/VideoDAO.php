@@ -71,7 +71,6 @@ class VideoDAO extends BaseDao {
         $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
         return $rows;
     }
-
     public function getByOwnerId($owner_id, $orderby = null)
     {
         $pdo = $this->getPDO();
@@ -157,13 +156,6 @@ class VideoDAO extends BaseDao {
             return 0;
         }
     }
-
-    public function addToPlaylist()
-    {
-        $pdo = $this->getPDO();
-        $sql = "";
-    }
-
     public function addComment(Comment $comment)
     {
         $pdo = $this->getPDO();
@@ -230,5 +222,17 @@ class VideoDAO extends BaseDao {
         $stmt->execute();
         $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
         return $rows;
+    }
+    public function getByIdAndOwnerId($id, $owner_id)
+    {
+        $pdo = $this->getPDO();
+        $sql = "SELECT v.id, v.title, v.description, v.date_uploaded, v.owner_id, v.views, v.category_id, v.video_url, v.duration, v.thumbnail_url, 
+                u.id AS user_id, u.username, u.name FROM videos AS v
+                JOIN users AS u ON v.owner_id = u.id
+                WHERE v.id = ? AND v.owner_id = ?;";
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute(array($id, $owner_id));
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+        return $row;
     }
 }
