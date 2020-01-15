@@ -45,8 +45,8 @@ class VideoController{
                 $video->setOwnerId($_POST["owner_id"]);
                 $video->setCategoryId($_POST["category_id"]);
                 $video->setDuration(0);
-                $video->setVideoUrl(uploadFile("video", $_SESSION["logged_user"]["username"]));
-                $video->setThumbnailUrl(uploadFile("thumbnail", $_SESSION["logged_user"]["username"]));
+                $video->setVideoUrl(uploadVideo("video", $_SESSION["logged_user"]["username"]));
+                $video->setThumbnailUrl(uploadImage("thumbnail", $_SESSION["logged_user"]["username"]));
                 $dao = VideoDAO::getInstance();
                 $dao->add($video);
                 include_once "view/main.php";
@@ -107,7 +107,7 @@ class VideoController{
                 $video->setDescription($_POST["description"]);
                 $video->setCategoryId($_POST["category_id"]);
                 if (isset($_FILES["thumbnail"])) {
-                    $video->setThumbnailUrl(uploadFile("thumbnail", $_SESSION["logged_user"]["username"]));
+                    $video->setThumbnailUrl(uploadImage("thumbnail", $_SESSION["logged_user"]["username"]));
                 }
                 if ($video->getThumbnailUrl() == false) {
                     $video->setThumbnailUrl($_POST["thumbnail_url"]);
@@ -151,25 +151,30 @@ class VideoController{
             $owner_id = $_SESSION["logged_user"]["id"];
         }
         if (empty($owner_id)){
-            throw new InvalidArgumentException("Invalid arguments.");
+            include_once "view/main.php";
+            echo "<h3>Login to like videos!</h3>";
         }
-        $orderby = null;
-        if (isset($_GET["orderby"])){
-            switch ($_GET["orderby"]){
-                case "date": $orderby = "ORDER BY date_uploaded";
-                    break;
-                case "likes": $orderby = "ORDER BY likes";
-                    break;
+        else {
+            $orderby = null;
+            if (isset($_GET["orderby"])) {
+                switch ($_GET["orderby"]) {
+                    case "date":
+                        $orderby = "ORDER BY date_uploaded";
+                        break;
+                    case "likes":
+                        $orderby = "ORDER BY likes";
+                        break;
+                }
+                if (isset($_GET["desc"]) && $orderby) {
+                    $orderby .= " DESC";
+                }
             }
-            if (isset($_GET["desc"]) && $orderby){
-                $orderby .= " DESC";
-            }
+            $dao = VideoDAO::getInstance();
+            $videos = $dao->getByOwnerId($owner_id, $orderby);
+            $action = "getByOwnerId";
+            $orderby = true;
+            include_once "view/main.php";
         }
-        $dao = VideoDAO::getInstance();
-        $videos = $dao->getByOwnerId($owner_id, $orderby);
-        $action = "getByOwnerId";
-        $orderby = true;
-        include_once "view/main.php";
     }
     
     public function getById($id=null){
