@@ -36,7 +36,7 @@ require_once "navigation.php";
                 </select></td>
         </tr>
         <tr>
-            <td>Current thumbnail:</td>
+            <td><b>Current thumbnail:</b></td>
             <td><img width="200px" src="<?= $video["thumbnail_url"] ?>" </td>
         </tr>
         <tr>

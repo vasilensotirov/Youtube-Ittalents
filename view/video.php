@@ -34,6 +34,7 @@ require_once "navigation.php";
                 }
             }
         }
+        echo "<hr>";
         echo $video["description"] . "<br>";
     }
     else {

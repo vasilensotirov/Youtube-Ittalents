@@ -62,11 +62,11 @@ function addComment() {
             cell2.innerHTML = res.name;
             cell3.innerHTML = res.date;
             cell4.innerHTML = res.content;
-            cell5.innerHTML = "<button id='like-comment"+comment_id+"' onclick='likeComment(" + comment_id +
-                ")'>Like</button> (<span id='comment" + comment_id + "-likes'>" + res.likes +
-                "</span>) <button id='dislike-comment"+comment_id+"' onclick='dislikeComment(" + comment_id +
-                ")'>Dislike</button> (<span id='comment" + comment_id + "-dislikes'>" + res.dislikes +
-                "</span>) <button onclick='deleteComment("+comment_id+")'>Delete</button>";
+            cell5.innerHTML = "<img src='styles/images/likeImg.png' style='height: 30px;' id='like-comment"+comment_id+"' onclick='likeComment(" + comment_id +
+                ")'></> (<span id='comment" + comment_id + "-likes'>" + res.likes +
+                "</span>) <img src='styles/images/dislikeImg.png' style='height: 30px;' id='dislike-comment"+comment_id+"' onclick='dislikeComment(" + comment_id +
+                ")'> (<span id='comment" + comment_id + "-dislikes'>" + res.dislikes +
+                "</span>) <img style='height: 20px;margin-left: 5px;' src='styles/images/deleteIcon.png' onclick='deleteComment("+comment_id+")'>";
         }
     };
     xhttp.open("POST", "index.php?target=comment&action=add", true);
