@@ -4,9 +4,8 @@
 namespace controller;
 
 use exceptions\InvalidArgumentException;
-use \model\Playlist;
-use \model\PlaylistDAO;
-use model\VideoDAO;
+use model\Playlist;
+use model\PlaylistDAO;
 
 class PlaylistController
 {

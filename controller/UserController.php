@@ -3,8 +3,6 @@ namespace controller;
 
 use exceptions\InvalidArgumentException;
 use exceptions\InvalidFileException;
-use model\Playlist;
-use model\PlaylistDAO;
 use model\User;
 use model\UserDAO;
 use model\VideoDAO;
@@ -23,7 +21,7 @@ class UserController {
                 $dao = UserDAO::getInstance();
                 $user = $dao->checkUser($email);
                 if (!$user) {
-                    echo "Invalid password or email! Try again.";
+                    echo "<p style='text-align: center;'>Invalid password or email! Try again.</p>";
                     include_once "view/login.php";
                 } else {
                     if (password_verify($password, $user['password'])) {
@@ -52,11 +50,11 @@ class UserController {
                 $dao = UserDAO::getInstance();
                 $user = $dao->checkUser($email);
                 if ($user) {
-                    echo "User with that email already exists";
+                    echo "<p style='text-align: center;'>User with that email already exists</p>";
                     include_once "view/login.php";
                 }
                 elseif ($msg != '') {
-                    echo $msg;
+                    echo "<p style='text-align: center;'>$msg</p>";
                     include_once "view/register.php";
                 }
                 else{
@@ -70,7 +68,6 @@ class UserController {
                     $arrayUser['username'] = $user->getUsername();
                     $arrayUser['full_name'] = $user->getFullName();
                     $arrayUser['password'] = $user->getPassword();
-                    //TODO remove password from session!
                     $arrayUser['email'] = $user->getEmail();
                     $arrayUser['id'] = $user->getId();
                     $_SESSION['logged_user'] = $arrayUser;

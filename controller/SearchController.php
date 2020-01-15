@@ -5,11 +5,8 @@ namespace controller;
 
 
 use exceptions\InvalidArgumentException;
-use model\PlaylistDAO;
 use model\SearchDAO;
 use model\UserDAO;
-use model\Video;
-use model\VideoDAO;
 
 class SearchController{
     public function search(){
