@@ -21,7 +21,7 @@ class UserController {
                 $dao = UserDAO::getInstance();
                 $user = $dao->checkUser($email);
                 if (!$user) {
-                    echo "<p style='text-align: center;'>Invalid password or email! Try again.</p>";
+                   $msg = "Invalid password or email! Try again.";
                     include_once "view/login.php";
                 } else {
                     if (password_verify($password, $user['password'])) {
@@ -30,7 +30,7 @@ class UserController {
                         header ("Location:index.php");
                         echo "Successful login! <br>";
                     } else {
-                        echo 'Invalid email or password.Try again.';
+                        $msg = 'Invalid email or password.Try again.';
                         include_once "view/login.php";
                     }
                 }
@@ -50,11 +50,10 @@ class UserController {
                 $dao = UserDAO::getInstance();
                 $user = $dao->checkUser($email);
                 if ($user) {
-                    echo "<p style='text-align: center;'>User with that email already exists</p>";
+                    $msg = 'User with that email already exists';
                     include_once "view/login.php";
                 }
                 elseif ($msg != '') {
-                    echo "<p style='text-align: center;'>$msg</p>";
                     include_once "view/register.php";
                 }
                 else{

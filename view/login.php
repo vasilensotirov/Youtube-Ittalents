@@ -10,6 +10,15 @@
     <title>Youtube</title>
 </head>
 <body>
+<?php
+if(isset($msg)){
+    ?>
+    <div style="text-align: center;" class="alert alert-danger" role="alert">
+        <?php echo $msg ?>
+</div>
+<?php
+}
+?>
 <form action="index.php?target=user&action=login" method="post">
     <div class="wrapper fadeInDown">
         <div id="formContent">

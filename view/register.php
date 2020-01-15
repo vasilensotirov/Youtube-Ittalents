@@ -10,6 +10,15 @@
     <title>Youtube</title>
 </head>
 <body>
+<?php
+if(isset($msg)){
+    ?>
+    <div style="text-align: center;" class="alert alert-danger" role="alert">
+        <?php echo $msg ?>
+    </div>
+    <?php
+}
+?>
 <div class="container">
 <div class="row justify-content-center">
     <div class="col-md-6">
