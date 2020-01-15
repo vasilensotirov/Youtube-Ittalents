@@ -2,6 +2,7 @@
 namespace controller;
 include_once "fileHandler.php";
 
+use exceptions\AuthorizationException;
 use exceptions\InvalidArgumentException;
 use model\PlaylistDAO;
 use model\UserDAO;
@@ -13,31 +14,40 @@ class VideoController{
         if(isset($_POST["upload"])) {
             $error = false;
             $msg = "";
-            if (!isset($_POST["title"]) || empty($_POST["title"])) {
-                $msg = "Title not found";
+            if (!isset($_POST["title"]) || empty(trim($_POST["title"]))) {
+                $msg = "Title is empty";
                 $error = true;
             }
-            if (!isset($_POST["description"]) || empty($_POST["description"])) {
-                $msg = "Description not found";
+            elseif (!isset($_POST["description"]) || empty(trim($_POST["description"]))) {
+                $msg = "Description is empty";
                 $error = true;
             }
-            if (!isset($_POST["category_id"]) || empty($_POST["category_id"])) {
-                $msg = "Category not found";
+            elseif (!isset($_POST["category_id"]) || empty($_POST["category_id"])) {
+                $msg = "Category is empty";
                 $error = true;
             }
-            if (!isset($_POST["owner_id"]) || empty($_POST["owner_id"])) {
-                $msg = "Owner not found";
-                $error = true;
+            elseif (!isset($_POST["owner_id"]) || empty($_POST["owner_id"])) {
+                throw new InvalidArgumentException("Invalid arguments.");
             }
-            if (!isset($_FILES["video"]["tmp_name"])) {
-                $msg = "Video not found";
+            elseif ($_POST["owner_id"] != $_SESSION["logged_user"]["id"]) {
+                throw new AuthorizationException("Unauthorized user.");
+            }
+            elseif (!isset($_FILES["video"]["tmp_name"])) {
+                $msg = "Video not uploaded";
                 $error = true;
             }
             if ($error) {
+                $dao = VideoDAO::getInstance();
+                $categories = $dao->getCategories();
                 include_once "view/upload.php";
                 echo $msg;
             }
             else {
+                $dao = VideoDAO::getInstance();
+                $categoryExists = $dao->getCategoryById($_POST["category_id"]);
+                if (!$categoryExists){
+                    throw new InvalidArgumentException("Invalid category.");
+                }
                 $video = new Video();
                 $video->setTitle($_POST["title"]);
                 $video->setDescription($_POST["description"]);
@@ -47,7 +57,6 @@ class VideoController{
                 $video->setDuration(0);
                 $video->setVideoUrl(uploadVideo("video", $_SESSION["logged_user"]["username"]));
                 $video->setThumbnailUrl(uploadImage("thumbnail", $_SESSION["logged_user"]["username"]));
-                $dao = VideoDAO::getInstance();
                 $dao->add($video);
                 include_once "view/main.php";
                 echo "Upload successfull.";
@@ -58,20 +67,22 @@ class VideoController{
         }
     }
 
-    public function loadEdit($id=null){
-        if (isset($_GET["id"])){
+    public function loadEdit($id=null)
+    {
+        if (isset($_GET["id"])) {
             $id = $_GET["id"];
-            $dao = VideoDAO::getInstance();
-            $videosOfOwner = $dao->getById($id);
-            if($_SESSION['logged_user']['id'] != $videosOfOwner['owner_id']){
-                include_once "view/main.php";
-                throw new InvalidArgumentException("Invalid arguments.");
-            }
         }
-        if (empty($id)){
+        if (empty($id)) {
             throw new InvalidArgumentException("Invalid arguments.");
         }
+        $dao = VideoDAO::getInstance();
         $video = $dao->getById($id);
+        if (empty($video)){
+            throw new InvalidArgumentException("Invalid video.");
+        }
+        if ($video["owner_id"] != $_SESSION["logged_user"]["id"]){
+            throw new AuthorizationException("Unauthorized user.");
+        }
         $categories = $dao->getCategories();
         include_once "view/editVideo.php";
     }
@@ -81,26 +92,43 @@ class VideoController{
             $error = false;
             $msg = "";
             if (!isset($_POST["id"]) || empty($_POST["id"])) {
-                $msg = "Video not found";
+                throw new InvalidArgumentException("Invalid arguments.");
+            }
+            elseif (!isset($_POST["title"]) || empty(trim($_POST["title"]))) {
+                $msg = "Title is empty";
                 $error = true;
             }
-            if (!isset($_POST["title"]) || empty($_POST["title"])) {
-                $msg = "Title not found";
+            elseif (!isset($_POST["description"]) || empty(trim($_POST["description"]))) {
+                $msg = "Description is empty";
                 $error = true;
             }
-            if (!isset($_POST["description"]) || empty($_POST["description"])) {
-                $msg = "Description not found";
+            elseif (!isset($_POST["category_id"]) || empty($_POST["category_id"])) {
+                $msg = "Category is empty";
                 $error = true;
             }
-            if (!isset($_POST["category_id"]) || empty($_POST["category_id"])) {
-                $msg = "Category not found";
-                $error = true;
+            elseif (!isset($_POST["owner_id"]) || empty($_POST["owner_id"])) {
+                throw new InvalidArgumentException("Invalid arguments.");
+            }
+            elseif ($_POST["owner_id"] != $_SESSION["logged_user"]["id"]) {
+                throw new AuthorizationException("Unauthorized user.");
             }
             if ($error) {
-                echo $msg;
+                $dao = VideoDAO::getInstance();
+                $video = $dao->getById($_POST["id"]);
+                $categories = $dao->getCategories();
                 include_once "view/editVideo.php";
+                echo $msg;
             }
             if (!$error) {
+                $dao = VideoDAO::getInstance();
+                $categoryExists = $dao->getCategoryById($_POST["category_id"]);
+                if (!$categoryExists){
+                    throw new InvalidArgumentException("Invalid category.");
+                }
+                $getvideo = $dao->getById($_POST["id"]);
+                if (empty($getvideo)){
+                    throw new InvalidArgumentException("Invalid video.");
+                }
                 $video = new Video();
                 $video->setId($_POST["id"]);
                 $video->setTitle($_POST["title"]);
@@ -109,10 +137,9 @@ class VideoController{
                 if (isset($_FILES["thumbnail"])) {
                     $video->setThumbnailUrl(uploadImage("thumbnail", $_SESSION["logged_user"]["username"]));
                 }
-                if ($video->getThumbnailUrl() == false) {
+                if (!($video->getThumbnailUrl())) {
                     $video->setThumbnailUrl($_POST["thumbnail_url"]);
                 }
-                $dao = VideoDAO::getInstance();
                 $dao->edit($video);
                 include_once "view/main.php";
                 echo "Edit successfull.";
@@ -128,19 +155,20 @@ class VideoController{
             $id = $_GET["id"];
         }
         $owner_id = $_SESSION["logged_user"]["id"];
-        if (empty($id) || empty($owner_id)){
+        if (empty($id)){
             throw new InvalidArgumentException("Invalid arguments.");
         }
         $dao = VideoDAO::getInstance();
-        if ($dao->getByIdAndOwnerId($id, $_SESSION['logged_user']['id'])){
-            $dao->delete($id, $owner_id);
-            include_once "view/main.php";
-            echo "Delete successful.";
+        $video = $dao->getById($id);
+        if (empty($video)){
+            throw new InvalidArgumentException("Invalid video.");
         }
-        else {
-            include_once "view/main.php";
-            throw new InvalidArgumentException("Video doesn't exist or isn't yours!");
+        if ($video["owner_id"] != $_SESSION["logged_user"]["id"]){
+            throw new AuthorizationException("Unauthorized user.");
         }
+        $dao->delete($id, $owner_id);
+        include_once "view/main.php";
+        echo "Delete successful.";
     }
 
     public function getByOwnerId($owner_id=null){
@@ -185,13 +213,16 @@ class VideoController{
             throw new InvalidArgumentException("Invalid arguments.");
         }
         $videodao = VideoDAO::getInstance();
-        $userdao = UserDAO::getInstance();
-        $videodao->updateViews($id);
         $video = $videodao->getById($id);
+        if (empty($video)){
+            throw new InvalidArgumentException("Invalid video.");
+        }
+        $videodao->updateViews($id);
         $video["likes"] = $videodao->getReactions($id, 1);
         $video["dislikes"] = $videodao->getReactions($id, 0);
         $comments = $videodao->getComments($id);
         if (isset($_SESSION["logged_user"]["id"])) {
+            $userdao = UserDAO::getInstance();
             $user_id = $_SESSION["logged_user"]["id"];
             $userdao->addToHistory($id, $user_id, date("Y-m-d H:i:s"));
             $video["isFollowed"] = $userdao->isFollowing($user_id, $video["owner_id"]);

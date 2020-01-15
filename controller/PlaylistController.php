@@ -3,6 +3,7 @@
 
 namespace controller;
 
+use exceptions\AuthorizationException;
 use exceptions\InvalidArgumentException;
 use model\Playlist;
 use model\PlaylistDAO;
@@ -14,31 +15,28 @@ class PlaylistController
         if (isset($_POST['create'])) {
             $error = false;
             $msg = "";
-            if (!isset($_POST['title']) || empty($_POST["title"])) {
-                $msg = "Title not found";
-                $error = true;
+            if (!isset($_POST['title']) || empty(trim($_POST["title"]))) {
+                include_once "view/createPlaylist.php";
+                echo "Title is empty";
+                return;
             }
             if (!isset($_POST["owner_id"]) || empty($_POST["owner_id"])) {
-                $msg = "Owner not found";
-                $error = true;
+                throw new InvalidArgumentException("Invalid arguments.");
             }
-            if ($error) {
-                echo $msg;
-                include_once "view/createPlaylist.php";
+            if ($_POST["owner_id"] != $_SESSION["logged_user"]["id"]) {
+                throw new AuthorizationException("Unauthorized user.");
             }
-            else {
-                $playlist = new Playlist();
-                $title = $_POST['title'];
-                $owner_id = $_POST['owner_id'];
-                $date_created = date("Y-m-d H:i:s");
-                $playlist->setTitle($title);
-                $playlist->setOwnerId($owner_id);
-                $playlist->setDateCreated($date_created);
-                $dao = PlaylistDAO::getInstance();
-                $dao->create($playlist);
-                include_once "view/playlists.php";
-                echo "Created successfully!";
-            }
+            $playlist = new Playlist();
+            $title = $_POST['title'];
+            $owner_id = $_POST['owner_id'];
+            $date_created = date("Y-m-d H:i:s");
+            $playlist->setTitle($title);
+            $playlist->setOwnerId($owner_id);
+            $playlist->setDateCreated($date_created);
+            $dao = PlaylistDAO::getInstance();
+            $dao->create($playlist);
+            include_once "view/playlists.php";
+            echo "Created successfully!";
         }
         else {
             throw new InvalidArgumentException("Invalid arguments.");
@@ -52,7 +50,7 @@ class PlaylistController
             $dao = PlaylistDAO::getInstance();
             $playlists = $dao->getAllByUserId($owner_id);
             include_once "view/playlists.php";
-            }
+        }
         else {
             include_once "view/playlists.php";
             echo "<h3>Login to view playlists!</h3>";
@@ -68,26 +66,40 @@ class PlaylistController
             throw new InvalidArgumentException("Invalid arguments.");
         }
         $dao = PlaylistDAO::getInstance();
+        $exists = $dao->existsPlaylist($playlist_id);
+        if (!$exists){
+            throw new InvalidArgumentException("Invalid playlist.");
+        }
         $videos = $dao->getVideosFromPlaylist($playlist_id);
         include_once "view/playlists.php";
     }
 
     public function addToPlaylist()
     {
-        //todo validations
-        if (empty($_GET['playlist_id']) || empty($_GET['video_id'])) {
+        $playlist_id = $_GET['playlist_id'];
+        $video_id = $_GET['video_id'];
+        if (empty($playlist_id) || empty($video_id)) {
             throw new InvalidArgumentException("Invalid arguments.");
         }
         $dao = PlaylistDAO::getInstance();
-        $playlist_id = $_GET['playlist_id'];
-        $video_id = $_GET['video_id'];
-        if ($dao->existsPlaylist($playlist_id) && $dao->existsVideo($video_id)) {
-            $date = date("Y-m-d H:i:s");
-            $dao->addToPlaylist($playlist_id, $video_id, $date);
+        $playlist = $dao->existsPlaylist($playlist_id);
+        if (!$playlist){
+            throw new InvalidArgumentException("Invalid playlist.");
+            }
+        if ($playlist["owner_id"] != $_SESSION["logged_user"]["id"]){
+            throw new AuthorizationException("Unauthorized user.");
+        }
+        $existsVideo = $dao->existsVideo($video_id);
+        if (!$existsVideo){
+            throw new InvalidArgumentException("Invalid video.");
+        }
+        $date = date("Y-m-d H:i:s");
+        $existsRecord = $dao->existsRecord($playlist_id, $video_id);
+        if ($existsRecord){
+            $dao->updateRecord($playlist_id, $video_id, $date);
         }
         else {
-            include_once "view/main.php";
-            echo "No playlist or video with that id!";
+            $dao->addToPlaylist($playlist_id, $video_id, $date);
         }
     }
 

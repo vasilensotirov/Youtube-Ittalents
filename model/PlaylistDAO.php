@@ -47,6 +47,7 @@ class PlaylistDAO extends BaseDao {
         $playlist_id = $pdo->lastInsertId();
         $playlist->setId($playlist_id);
     }
+
     public function getVideosFromPlaylist($playlist_id){
         $pdo = $this->getPDO();
         $sql = "SELECT v.id, v.title, v.date_uploaded, p.playlist_title, u.username, v.views, v.thumbnail_url FROM videos AS v 
@@ -74,24 +75,28 @@ class PlaylistDAO extends BaseDao {
         $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
         return $rows;
     }
+
     public function addToPlaylist($playlist_id, $video_id, $date){
         $pdo = $this->getPDO();
         $sql = "INSERT INTO added_to_playlist (playlist_id, video_id, date_added) VALUES (?, ?, ?);";
         $stmt = $pdo->prepare($sql);
         $stmt->execute(array($playlist_id, $video_id, $date));
     }
+
     public function existsPlaylist($playlist_id){
         $pdo = $this->getPDO();
         $sql = "SELECT * FROM playlists WHERE id = ?;";
         $stmt = $pdo->prepare($sql);
         $stmt->execute(array($playlist_id));
-        $row = $stmt->fetchAll(PDO::FETCH_ASSOC);
-        if($row){
-            return true;
-        }else{
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+        if ($row){
+            return $row;
+        }
+        else{
             return false;
         }
     }
+
     public function existsVideo($video_id){
         $pdo = $this->getPDO();
         $sql = "SELECT * FROM videos WHERE id = ?;";
@@ -100,8 +105,31 @@ class PlaylistDAO extends BaseDao {
         $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
         if($rows){
             return true;
-        }else{
+        }
+        else{
             return false;
         }
+    }
+
+    public function existsRecord($playlist_id, $video_id){
+        $pdo = $this->getPDO();
+        $sql = "SELECT * FROM added_to_playlist WHERE playlist_id = ? AND video_id = ?;";
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute(array($playlist_id, $video_id));
+        $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        if($rows){
+            return true;
+        }
+        else{
+            return false;
+        }
+    }
+
+    public function updateRecord($playlist_id, $video_id, $date){
+        $pdo = $this->getPDO();
+        $sql = "UPDATE added_to_playlist SET date_added = ? 
+                WHERE playlist_id = ? AND video_id = ?;";
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute(array($date, $playlist_id, $video_id));
     }
 }

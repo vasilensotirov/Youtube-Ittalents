@@ -16,6 +16,9 @@ function uploadVideo ($file, $username){
         if (move_uploaded_file($_FILES[$file]["tmp_name"], $file_url)){
             return $file_url;
         }
+        else {
+            throw new InvalidFileException("File handling error.");
+        }
     }
     return false;
 }

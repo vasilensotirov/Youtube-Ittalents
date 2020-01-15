@@ -24,31 +24,31 @@ if(isset($msg)){
     <div class="col-md-6">
         <div class="card">
             <header class="card-header">
-                <a href="index.php?view=login" class="float-right btn btn-outline-primary mt-1">Log in</a>
+                <a href="index.php?target=view&action=viewRouter&view=login" class="float-right btn btn-outline-primary mt-1">Log in</a>
                 <h4 class="card-title mt-2">Sign up</h4>
             </header>
             <article class="card-body">
                 <form action="index.php?target=user&action=register" method="post" enctype="multipart/form-data">
                     <div class="form-group">
                         <label>Username</label>
-                        <input type="text" name="username" class="form-control" placeholder="">
+                        <input type="text" name="username" class="form-control" placeholder="" required>
                     </div>
                     <div class="form-group">
                         <label>Email address</label>
-                        <input type="email" name="email" class="form-control" placeholder="">
+                        <input type="email" name="email" class="form-control" placeholder="" required>
                         <small class="form-text text-muted">We'll never share your email with anyone else.</small>
                     </div>
                     <div class="form-group">
+                        <label>Name</label>
+                        <input class="form-control" type="text" name="full_name" required>
+                    </div>
+                    <div class="form-group">
                         <label>Password</label>
-                        <input type="password" name="password" class="form-control" placeholder="">
+                        <input type="password" name="password" class="form-control" placeholder="" required>
                     </div>
                     <div class="form-group">
                         <label>Confirm password</label>
-                        <input type="password" name="cpassword" class="form-control" placeholder="">
-                    </div>
-                    <div class="form-group">
-                        <label>Full name</label>
-                        <input class="form-control" type="text" name="full_name">
+                        <input type="password" name="cpassword" class="form-control" placeholder="" required>
                     </div>
                     <div class="form-group">
                         <label>Add avatar</label>

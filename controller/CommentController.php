@@ -9,21 +9,34 @@ use model\VideoDAO;
 class CommentController
 {
     public function add(){
-        if (empty($_POST["content"]) || empty($_POST["video_id"]) || empty($_POST["owner_id"])) {
+        if (!isset($_SESSION["logged_user"]["id"])){
+            throw new AuthorizationException("Log in to comment.");
+        }
+        if (empty($_POST["video_id"]) || empty($_POST["owner_id"])) {
             throw new InvalidArgumentException("Invalid arguments.");
+        }
+        if ($_POST["owner_id"] != $_SESSION["logged_user"]["id"]){
+            throw new AuthorizationException("Unauthorized user.");
+        }
+        if (empty($_POST["content"])){
+            throw new InvalidArgumentException("Comment is empty.");
+        }
+        $dao = VideoDAO::getInstance();
+        $video = $dao->getById($_POST["video_id"]);
+        if (empty($video)){
+            throw new InvalidArgumentException("Invalid video.");
         }
         $comment = new Comment();
         $comment->setContent($_POST["content"]);
         $comment->setVideoId($_POST["video_id"]);
         $comment->setOwnerId($_POST["owner_id"]);
         $comment->setDate(date("Y-m-d H:i:s"));
-        $dao = VideoDAO::getInstance();
         $comment_id = $dao->addComment($comment);
         $comment = $dao->getCommentById($comment_id);
         echo json_encode($comment);
     }
 
-    public function delete($comment_id=null, $owner_id=null){
+    public function delete(){
         if (isset($_GET["id"])){
             $comment_id = $_GET["id"];
             $owner_id = $_SESSION["logged_user"]["id"];
@@ -32,9 +45,13 @@ class CommentController
             throw new InvalidArgumentException("Invalid arguments.");
         }
         if ($owner_id != $_SESSION["logged_user"]["id"]){
-            throw new AuthorizationException("Not authorized.");
+            throw new AuthorizationException("Unauthorized user.");
         }
         $dao = VideoDAO::getInstance();
+        $comment = $dao->getCommentById($comment_id);
+        if (empty($comment)){
+            throw new InvalidArgumentException("Invalid comment.");
+        }
         $dao->deleteComment($comment_id, $owner_id);
     }
 
@@ -59,20 +76,28 @@ class CommentController
         if (empty($comment_id) || empty($user_id)){
             throw new InvalidArgumentException("Invalid arguments.");
         }
+        if ($status != 0 && $status != 1){
+            throw new InvalidArgumentException("Invalid arguments.");
+        }
+        $videodao = VideoDAO::getInstance();
+        $comment = $videodao->getCommentById($comment_id);
+        if (empty($comment)){
+            throw new InvalidArgumentException("Invalid comment.");
+        }
         $isReacting = $this->isReactingComment($user_id, $comment_id);
-        $dao = UserDAO::getInstance();
+        $userdao = UserDAO::getInstance();
         if ($isReacting == -1) {//if there has been no reaction
-            $dao->reactComment($user_id, $comment_id, $status);
+            $userdao->reactComment($user_id, $comment_id, $status);
         } elseif ($isReacting == $status) { //if liking liked or disliking disliked video
-            $dao->unreactComment($user_id, $comment_id);
+            $userdao->unreactComment($user_id, $comment_id);
         } elseif ($isReacting != $status) { //if liking disliked or disliking liked video
-            $dao->unreactComment($user_id, $comment_id);
-            $dao->reactComment($user_id, $comment_id, 1 - $isReacting);
+            $userdao->unreactComment($user_id, $comment_id);
+            $userdao->reactComment($user_id, $comment_id, 1 - $isReacting);
         }
         $arr = [];
         $arr["stat"] = $this->isReactingComment();
-        $arr["likes"] = $dao->getCommentReactions($comment_id, 1);
-        $arr["dislikes"] = $dao->getCommentReactions($comment_id, 0);
+        $arr["likes"] = $userdao->getCommentReactions($comment_id, 1);
+        $arr["dislikes"] = $userdao->getCommentReactions($comment_id, 0);
         echo json_encode($arr);
     }
 }
