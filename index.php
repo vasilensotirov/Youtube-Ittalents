@@ -10,7 +10,7 @@ function handleExceptions(Exception $exception){
     $status = $exception instanceof BaseException ? $exception->getStatusCode() : 500;
     $msg = $exception->getMessage();
     header($_SERVER["SERVER_PROTOCOL"]." " . $status);
-    $html = "<h1>$msg</h1>";
+    $html = "<h3 style='color: red'>$msg</h3>";
     echo $html;
     /*$obj = new stdClass();
     $obj->msg = $exception->getMessage();

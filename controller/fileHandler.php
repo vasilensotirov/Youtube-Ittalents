@@ -1,7 +1,14 @@
 <?php
 namespace controller;
-function uploadFile ($file, $username){
+use exceptions\InvalidFileException;
+
+function uploadVideo ($file, $username){
     if (is_uploaded_file($_FILES[$file]["tmp_name"])) {
+        $finfo = finfo_open(FILEINFO_MIME_TYPE);
+        $mime = finfo_file($finfo, $_FILES[$file]["tmp_name"]);
+        if ($mime != 'video/mp4') {
+            throw new InvalidFileException ("File is not in MP4 video format.");
+        }
         $file_name_parts = explode(".", $_FILES[$file]["name"]);
         $extension = $file_name_parts[count($file_name_parts) - 1];
         $filename = $username . "-" . time() . "." . $extension;

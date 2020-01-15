@@ -2,6 +2,7 @@
 namespace controller;
 
 use exceptions\InvalidArgumentException;
+use exceptions\InvalidFileException;
 use model\Playlist;
 use model\PlaylistDAO;
 use model\User;
@@ -61,7 +62,7 @@ class UserController {
                 else{
                     $password = password_hash($_POST['password'], PASSWORD_BCRYPT);
                     $registration_date = date("Y-m-d H:i:s");
-                    $avatar_url = $this->uploadFile("avatar", $_POST['username']);
+                    $avatar_url = $this->uploadImage("avatar", $_POST['username']);
                     $user = new User($username, $email, $password, $full_name, $registration_date, $avatar_url);
                     $dao = UserDAO::getInstance();
                     $dao->registerUser($user);
@@ -93,7 +94,7 @@ class UserController {
                 if(isset($_POST['password']) && !empty($_POST['password'])){
                     if(password_verify($_POST['password'], $password)){
                         if(isset($_POST['new_password']) && isset($_POST['cpassword'])) {
-                            $newAvatar = $this->uploadFile("avatar", $_POST['username']);
+                            $newAvatar = $this->uploadImage("avatar", $_POST['username']);
                             $password = password_hash($_POST['new_password'], PASSWORD_BCRYPT);
                             $email = $_SESSION['logged_user']['email'];
                             $user = new User($_POST['username'], $email, $password, $_POST['full_name'], null, $newAvatar);
@@ -119,8 +120,12 @@ class UserController {
         }
     }
 
-    public function uploadFile($file, $username){
-        if (is_uploaded_file($_FILES[$file]["tmp_name"])) {
+    public function uploadImage($file, $username){
+        if (is_uploaded_file($_FILES[$file]["tmp_name"])) {$finfo = finfo_open(FILEINFO_MIME_TYPE);
+            $mime = finfo_file($finfo, $_FILES[$file]["tmp_name"]);
+            if (!(in_array($mime, array ('image/bmp', 'image/jpeg', 'image/png')))){
+                throw new InvalidFileException ("File is not in supported format.");
+            }
             $file_name_parts = explode(".", $_FILES[$file]["name"]);
             $extension = $file_name_parts[count($file_name_parts) - 1];
             $filename = $username . "-" . time() . "." . $extension;
