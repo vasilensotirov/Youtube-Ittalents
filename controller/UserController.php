@@ -18,7 +18,7 @@ class UserController {
             $email = $_POST['email'];
             $password = $_POST['password'];
             if (empty(trim($email)) || empty(trim($password))){
-                echo "<p style='text-align: center;'>Empty field(s).</p>";
+                $msg = "Empty field(s)!";
                 include_once "view/login.php";
                 return;
             }
@@ -153,6 +153,18 @@ class UserController {
             $user = $dao->checkUser($_SESSION["logged_user"]["email"]);
             if (empty($user)) {
                 throw new AuthorizationException("Unauthorized user.");
+            }
+            $user = $dao->checkUsername($_POST["username"]);
+            if ($user && $user["id"] != $_SESSION["logged_user"]["id"]) {
+                include_once "view/editProfile.php";
+                echo "User with that username already exists!";
+                return;
+            }
+            $user = $dao->checkUser($_POST["email"]);
+            if ($user && $user["id"] != $_SESSION["logged_user"]["id"]) {
+                include_once "view/editProfile.php";
+                echo "User with that email already exists!";
+                return;
             }
             $password = $user['password'];
             if(password_verify($_POST['password'], $password)){

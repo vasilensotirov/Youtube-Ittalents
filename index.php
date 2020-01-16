@@ -9,6 +9,9 @@ error_reporting(E_ALL);
 function handleExceptions(Exception $exception){
     $status = $exception instanceof BaseException ? $exception->getStatusCode() : 500;
     $msg = $exception->getMessage();
+    if ($status == 500){
+        $msg = "Server error!";
+    }
     header($_SERVER["SERVER_PROTOCOL"]." " . $status);
     $html = "<h3 style='color: red'>$msg</h3>";
     include_once "view/main.php";
